@@ -3,10 +3,89 @@
   <head>
     <title>Simple Game in TypeScript</title>
     <style>
+      /* For most browsers (Chrome, Edge, etc.) */
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+      }
+
+      /* For Firefox */
+      input[type="number"] {
+          -moz-appearance: textfield;
+      }
+
+      input[type="number"] {
+        width: 35px;
+      }
+       body {
+          display: flex;
+          justify-content: center; /* Horizontally center */
+          height: 100vh;          /* Full viewport height */
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+      }
+      form {
+          background: #fff;
+          padding: 20px 60px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
     </style>
   </head>
+
   <body>
-    <script src="sokoban.js"></script>
+    <script src="arithmetic.js"></script>
   </body>
+
+  <div id="app">
+    <form id="settings" style="width: 80%">
+      <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
+      <br>
+      <label>Range: <input type="number" id="addition-min-range" /></label>
+      <label>to: <input type="number" id="addition-max-range" /></label>
+      <br>
+      <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
+      <br>
+      <label id="decimal-addition-display" style="display:none;">Decimal places</label><input type="number" id="decimal-addition-amount" style="display:none;"/> 
+      <br>
+      <label><input type="checkbox" id="subtraction-toggle"/> Subtraction</label>
+      <br>
+      <label>Range: <input type="number" id="subtraction-min-range" /></label>
+      <label>to: <input type="number" id="subtraction-max-range" /></label>
+      <br><br>
+      <label><input type="checkbox" id="multiplication-toggle"/> Multiplication</label>
+      <br>
+      <label>Range: <input type="number" id="multiplication-min-range" /></label>
+      <label>to: <input type="number" id="multiplication-max-range" /></label>
+      <br><br>
+      <label><input type="checkbox" id="division-toggle"/> Division</label>
+      <br>
+      <label>Range: <input type="number" id="division-min-range" /></label>
+      <label>to: <input type="number" id="division-max-range" /></label>
+      <br><br>
+      <label>Time Limit (seconds): <input type="number" id="time-limit" /></label>
+      <p></p>
+      <button type="button" class="start-game">Start Game</button>
+    </form>
+
+    <div id="game" style="display: none;">
+      <p id="question"></p>
+      <input type="number" id="answer" autocomplete="off"/>
+      <button type="button" id="submit-answer">Submit</button>
+      <p>Time Left: <span id="timer"></span></p>
+      <p>Score: <span id="score"></span></p>
+    </div>
+    
+    <div id="ending" style="display:none;">
+      <p>Final score: <span id="endScore"></span></p>
+      <button type="button" class="start-game">Try again</button>
+    </div>
+
+  </div>
+
+
 </html>
 
