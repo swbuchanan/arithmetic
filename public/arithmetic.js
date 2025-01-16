@@ -1,51 +1,59 @@
-// Basic TypeScript setup for a mental arithmetic game
 document.addEventListener("DOMContentLoaded", function () {
-    //    const startButton = document.getElementById("start-game") as HTMLButtonElement;
     var startButtons = document.querySelectorAll(".start-game");
     var gameDiv = document.getElementById("game");
     var endDiv = document.getElementById("ending");
     var settingsForm = document.getElementById("settings");
     var questionEl = document.getElementById("question");
     var answerInput = document.getElementById("answer");
-    var submitButton = document.getElementById("submit-answer");
+    //    const submitButton = document.getElementById("submit-answer") as HTMLButtonElement;
     var timerEl = document.getElementById("timer");
     var scoreEl = document.getElementById("score");
     var endScoreEl = document.getElementById("endScore");
     var additionMinRange = 1;
     var additionMaxRange = 99;
-    var multiplicationMinRange = 1;
-    var multiplicationMaxRange = 99;
+    var additionDecimalPlaces = 0;
+    var multiplicationMinRange = 2;
+    var multiplicationMaxRange = 12;
     var timeLimit = 120;
     var timer;
     var score = 0;
     var correctAnswer = 0;
-    // Button stuff
-    document.getElementById('decimal-addition-toggle').addEventListener('change', function () {
-        var element1 = document.getElementById('decimal-addition-amount');
-        var element2 = document.getElementById('decimal-addition-display');
-        if (this.checked) {
-            console.log("click");
-            element1.style.display = 'inline'; // Show the element
-            element2.style.display = 'inline'; // Show the element
-        }
-        else {
-            element1.style.display = 'none'; // Show the element
-            element2.style.display = 'none'; // Show the element
-        }
-    });
+    var additionProblems = true;
+    var subtractionProblems = true;
+    var multiplicationProblems = true;
+    var divisionProblems = true;
+    var oper = [];
     var operations = {
         add: function (a, b) { return a + b; },
         subtract: function (a, b) { return a - b; },
         multiply: function (a, b) { return a * b; },
         divide: function (a, b) { return a / b; }
     };
+    var setActiveOperations = function () {
+        if (additionProblems) {
+            oper.push(['add', "+"]);
+        }
+        if (subtractionProblems) {
+            oper.push(['subtract', '−']);
+        }
+        if (multiplicationProblems) {
+            oper.push(['multiply', '×']);
+        }
+        if (divisionProblems) {
+            oper.push(['divide', '÷']);
+        }
+    };
     // Generate a random question
     var generateQuestion = function () {
-        var opernum = Math.floor(Math.random() * 3) + 1;
-        var oper = ['+', '-', '*', '/'][opernum];
+        var opernum = Math.floor(Math.random() * oper.length) + 1; // chooses a random operator
+        //        const oper = ['+', '−', '×', '÷'][opernum];
+        var thisoper = oper[opernum];
+        console.log(thisoper);
+        var opername = thisoper[0];
+        var operstr = thisoper[1];
         var num1;
         var num2;
-        if (oper === "+" || oper === "-") {
+        if (opername === "add" || opername === "subtract") {
             num1 = Math.floor(Math.random() * (additionMaxRange - additionMinRange + 1)) + additionMinRange;
             num2 = Math.floor(Math.random() * (additionMaxRange - additionMinRange + 1)) + additionMinRange;
         }
@@ -53,10 +61,10 @@ document.addEventListener("DOMContentLoaded", function () {
             num1 = Math.floor(Math.random() * (multiplicationMaxRange - multiplicationMinRange + 1)) + multiplicationMinRange;
             num2 = Math.floor(Math.random() * (multiplicationMaxRange - multiplicationMinRange + 1)) + multiplicationMinRange;
         }
-        if (oper === "/") {
-            return { question: num1 * num2 + " / " + num1, answer: num2 };
+        if (opername === 'divide') {
+            return { question: num1 * num2 + " \u00F7 " + num1 + " =", answer: num2 };
         }
-        return { question: num1 + " " + oper + " " + num2, answer: operations[['add', 'subtract', 'multiply', 'divide'][opernum]](num1, num2) };
+        return { question: num1 + " " + oper + " " + num2 + " =", answer: operations[opername](num1, num2) };
     };
     // Start the game
     var startGame = function () {
@@ -65,10 +73,10 @@ document.addEventListener("DOMContentLoaded", function () {
         var mulMinRangeInput = document.getElementById("multiplication-min-range").value;
         var mulMaxRangeInput = document.getElementById("multiplication-max-range").value;
         var timeLimitInput = document.getElementById("time-limit").value;
-        additionMinRange = parseInt(addMinRangeInput) || 1;
-        additionMaxRange = parseInt(addMaxRangeInput) || 99;
-        multiplicationMinRange = parseInt(mulMinRangeInput) || 1;
-        multiplicationMaxRange = parseInt(mulMaxRangeInput) || 12;
+        additionMinRange = parseInt(addMinRangeInput) || additionMinRange;
+        additionMaxRange = parseInt(addMaxRangeInput) || additionMaxRange;
+        multiplicationMinRange = parseInt(mulMinRangeInput) || multiplicationMinRange;
+        multiplicationMaxRange = parseInt(mulMaxRangeInput) || multiplicationMaxRange;
         timeLimit = parseInt(timeLimitInput) || 120;
         score = 0;
         settingsForm.style.display = "none";
@@ -93,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Load the next question
     var loadNextQuestion = function () {
         var _a = generateQuestion(), question = _a.question, answer = _a.answer;
-        questionEl.textContent = question;
+        questionEl.innerHTML = question;
         correctAnswer = answer;
         answerInput.value = "";
         answerInput.focus();
@@ -120,17 +128,34 @@ document.addEventListener("DOMContentLoaded", function () {
         settingsForm.style.display = "none";
     };
     // Event listeners
-    // startButton.addEventListener("click", startGame);
     startButtons.forEach(function (button) {
         button.addEventListener("click", startGame);
     });
-    submitButton.addEventListener("click", checkAnswer);
+    // submitButton.addEventListener("click", checkAnswer);
     answerInput.addEventListener("input", function () {
         checkAnswer();
     });
-    //    answerInput.addEventListener("keyup", (event) => {
-    //        if (event.key === "Enter") {
-    //            checkAnswer();
-    //        }
-    //    });
+    // Operations
+    document.getElementById('addition-toggle').addEventListener('change', function () {
+        if (this.checked) {
+            additionProblems = true;
+        }
+        else {
+            additionProblems = false;
+        }
+    });
+    // Decimals
+    document.getElementById('decimal-addition-toggle').addEventListener('change', function () {
+        var element1 = document.getElementById('decimal-addition-amount');
+        var element2 = document.getElementById('decimal-addition-display');
+        if (this.checked) {
+            console.log("click");
+            element1.style.display = 'inline'; // Show the element
+            element2.style.display = 'inline'; // Show the element
+        }
+        else {
+            element1.style.display = 'none'; // Show the element
+            element2.style.display = 'none'; // Show the element
+        }
+    });
 });
