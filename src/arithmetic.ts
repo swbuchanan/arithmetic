@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let multiplicationProblems = true;
     let divisionProblems = true;
 
-    const oper = [];
+    let oper = [];
 
     type Operation = (a: number, b: number) => number;
 
@@ -40,11 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const setActiveOperations = () => {
+      oper = [];
       if (additionProblems) {
         oper.push(['add', "+"]);
         console.log('addition');
       }
       if (subtractionProblems) {
+        console.log('subtract');
         oper.push(['subtract','−']);
       }
       if (multiplicationProblems) {
@@ -53,12 +55,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (divisionProblems) {
         oper.push(['divide','÷']);
       }
+      console.log("Update:");
+      console.log(oper);
     }
 
     // Generate a random question
     const generateQuestion = (): { question: string; answer: number } => {
-        const opernum = Math.floor(Math.random() * oper.length) + 1; // chooses a random operator
-//        const oper = ['+', '−', '×', '÷'][opernum];
+        const opernum = Math.floor(Math.random() * oper.length); // chooses a random operator
+        console.log(opernum);
         const thisoper = oper[opernum];
         console.log(thisoper);
         const opername = thisoper[0];
@@ -75,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (opername === 'divide') {
           return { question: `${num1 * num2} ÷ ${num1} =`, answer: num2 };
         }
-        return { question: `${num1} ${oper} ${num2} =`, answer: operations[opername](num1,num2) };
+        return { question: `${num1} ${operstr} ${num2} =`, answer: operations[opername](num1,num2) };
     };
 
     // Start the game
@@ -85,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const mulMinRangeInput = (document.getElementById("multiplication-min-range") as HTMLInputElement).value;
         const mulMaxRangeInput = (document.getElementById("multiplication-max-range") as HTMLInputElement).value;
         const timeLimitInput = (document.getElementById("time-limit") as HTMLInputElement).value;
+
+        setActiveOperations();
 
         additionMinRange = parseInt(addMinRangeInput) || additionMinRange;
         additionMaxRange = parseInt(addMaxRangeInput) || additionMaxRange;
@@ -162,12 +168,43 @@ document.addEventListener("DOMContentLoaded", () => {
     // Operations
 
     document.getElementById('addition-toggle').addEventListener('change', function(this: HTMLInputElement){
+      console.log("tog1");
       if (this.checked) {
         additionProblems = true;
-        setActiveOperations();
       } else {
         additionProblems = false;
       }
+      setActiveOperations();
+    });
+
+    document.getElementById('subtraction-toggle').addEventListener('change', function(this: HTMLInputElement){
+      console.log("tog2");
+      if (this.checked) {
+        subtractionProblems = true;
+      } else {
+        subtractionProblems = false;
+      }
+      setActiveOperations();
+    });
+
+    document.getElementById('multiplication-toggle').addEventListener('change', function(this: HTMLInputElement){
+      console.log("tog3");
+      if (this.checked) {
+        multiplicationProblems = true;
+      } else {
+        multiplicationProblems = false;
+      }
+      setActiveOperations();
+    });
+
+    document.getElementById('division-toggle').addEventListener('change', function(this: HTMLInputElement){
+      console.log("tog4");
+      if (this.checked) {
+        divisionProblems = true;
+      } else {
+        divisionProblems = false;
+      }
+      setActiveOperations();
     });
 
 

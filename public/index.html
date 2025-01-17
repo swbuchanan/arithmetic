@@ -44,28 +44,64 @@
   <div id="app"; style="width: 40%;">
     <form id="settings" style="width: 80%">
       <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
+
       <br>
-      <label>Range: <input type="number" id="addition-min-range" /></label>
-      <label>to: <input type="number" id="addition-max-range" /></label>
-      <br>
-      <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
+
+      <div style="margin-left: 20px">
+        <label>Range: <input type="number" id="addition-min-range" /></label>
+        <label>to: <input type="number" id="addition-max-range" /></label>
+        <br>
+        <label><input type="checkbox" id="integer-addition-toggle" checked="true"/> Integers</label>
+        <br>
+        <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
+        <br>
+        <label><input type="checkbox" id="fraction-addition-toggle" checked="true"/> Fractions</label>
+      </div>
+
       <br>
       <label id="decimal-addition-display" style="display:none;">Decimal places </label><input type="number" id="decimal-addition-amount" style="display:none;"/> 
       <br>
+
+
       <label><input type="checkbox" id="subtraction-toggle" checked="true"/> Subtraction</label>
       <br>
-      <label>Range: <input type="number" id="subtraction-min-range" /></label>
-      <label>to: <input type="number" id="subtraction-max-range" /></label>
+      <div style="margin-left: 20px">
+        <label>Range: <input type="number" id="subtraction-min-range" /></label>
+        <label>to: <input type="number" id="subtraction-max-range" /></label>
+        <br>
+        <label><input type="checkbox" id="integer-subtraction-toggle" checked="true"/> Integers</label>
+        <br>
+        <label><input type="checkbox" id="decimal-subtraction-toggle" checked="true"/> Decimals</label>
+        <br>
+        <label><input type="checkbox" id="fraction-subtraction-toggle" checked="true"/> Fractions</label>
+      </div>
       <br><br>
+
       <label><input type="checkbox" id="multiplication-toggle" checked="true"/> Multiplication</label>
       <br>
-      <label>Range: <input type="number" id="multiplication-min-range" /></label>
-      <label>to: <input type="number" id="multiplication-max-range" /></label>
+      <div style="margin-left: 20px">
+        <label>Range: <input type="number" id="multiplication-min-range" /></label>
+        <label>to: <input type="number" id="multiplication-max-range" /></label>
+        <br>
+        <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
+        <br>
+        <label><input type="checkbox" id="decimal-multiplication-toggle" checked="true"/> Decimals</label>
+        <br>
+        <label><input type="checkbox" id="fraction-multiplication-toggle" checked="true"/> Fractions</label>
+      </div>
       <br><br>
       <label><input type="checkbox" id="division-toggle" checked="true"/> Division</label>
       <br>
-      <label>Range: <input type="number" id="division-min-range" /></label>
-      <label>to: <input type="number" id="division-max-range" /></label>
+      <div style="margin-left: 20px">
+        <label>Range: <input type="number" id="division-min-range" placeholder=100 /></label>
+        <label>to: <input type="number" id="division-max-range" /></label>
+        <br>
+        <label><input type="checkbox" id="integer-division-toggle" checked="true"/> Integers</label>
+        <br>
+        <label><input type="checkbox" id="decimal-division-toggle" checked="true"/> Decimals</label>
+        <br>
+        <label><input type="checkbox" id="fraction-division-toggle" checked="true"/> Fractions</label>
+      </div>
       <br><br>
       <label>Time Limit (seconds): <input type="number" id="time-limit" /></label>
       <p></p>

@@ -30,10 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
         divide: function (a, b) { return a / b; }
     };
     var setActiveOperations = function () {
+        oper = [];
         if (additionProblems) {
             oper.push(['add', "+"]);
+            console.log('addition');
         }
         if (subtractionProblems) {
+            console.log('subtract');
             oper.push(['subtract', '−']);
         }
         if (multiplicationProblems) {
@@ -42,11 +45,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (divisionProblems) {
             oper.push(['divide', '÷']);
         }
+        console.log("Update:");
+        console.log(oper);
     };
     // Generate a random question
     var generateQuestion = function () {
-        var opernum = Math.floor(Math.random() * oper.length) + 1; // chooses a random operator
-        //        const oper = ['+', '−', '×', '÷'][opernum];
+        var opernum = Math.floor(Math.random() * oper.length); // chooses a random operator
+        console.log(opernum);
         var thisoper = oper[opernum];
         console.log(thisoper);
         var opername = thisoper[0];
@@ -64,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (opername === 'divide') {
             return { question: num1 * num2 + " \u00F7 " + num1 + " =", answer: num2 };
         }
-        return { question: num1 + " " + oper + " " + num2 + " =", answer: operations[opername](num1, num2) };
+        return { question: num1 + " " + operstr + " " + num2 + " =", answer: operations[opername](num1, num2) };
     };
     // Start the game
     var startGame = function () {
@@ -73,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var mulMinRangeInput = document.getElementById("multiplication-min-range").value;
         var mulMaxRangeInput = document.getElementById("multiplication-max-range").value;
         var timeLimitInput = document.getElementById("time-limit").value;
+        setActiveOperations();
         additionMinRange = parseInt(addMinRangeInput) || additionMinRange;
         additionMaxRange = parseInt(addMaxRangeInput) || additionMaxRange;
         multiplicationMinRange = parseInt(mulMinRangeInput) || multiplicationMinRange;
@@ -137,12 +143,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     // Operations
     document.getElementById('addition-toggle').addEventListener('change', function () {
+        console.log("tog1");
         if (this.checked) {
             additionProblems = true;
         }
         else {
             additionProblems = false;
         }
+        setActiveOperations();
+    });
+    document.getElementById('subtraction-toggle').addEventListener('change', function () {
+        console.log("tog2");
+        if (this.checked) {
+            subtractionProblems = true;
+        }
+        else {
+            subtractionProblems = false;
+        }
+        setActiveOperations();
+    });
+    document.getElementById('multiplication-toggle').addEventListener('change', function () {
+        console.log("tog3");
+        if (this.checked) {
+            multiplicationProblems = true;
+        }
+        else {
+            multiplicationProblems = false;
+        }
+        setActiveOperations();
+    });
+    document.getElementById('division-toggle').addEventListener('change', function () {
+        console.log("tog4");
+        if (this.checked) {
+            divisionProblems = true;
+        }
+        else {
+            divisionProblems = false;
+        }
+        setActiveOperations();
     });
     // Decimals
     document.getElementById('decimal-addition-toggle').addEventListener('change', function () {
