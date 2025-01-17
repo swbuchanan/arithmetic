@@ -1,69 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <link rel="stylesheet" href="style.css">
     <title>Simple Game in TypeScript</title>
     <style>
-      /* Removing the arrows on the number input boxes */
-      /* For most browsers (Chrome, Edge, etc.) */
-      input[type="number"]::-webkit-inner-spin-button,
-      input[type="number"]::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-      }
-      /* For Firefox */
-      input[type="number"] {
-          -moz-appearance: textfield;
-      }
-
-      input[type="number"] {
-        width: 35px;
-      }
-       body {
-          display: flex;
-          justify-content: center; /* Horizontally center */
-          height: 100vh;          /* Full viewport height */
-          margin: 0;
-          font-family: "Computer Modern", sans-serif;
-          background-color: #f4f4f4;
-      }
-      form {
-          background: #fff;
-          padding: 20px 60px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+        /* Removing the arrows on the number input boxes */
+          /* For most browsers (Chrome, Edge, etc.) */
+          input[type="number"]::-webkit-inner-spin-button,
+          input[type="number"]::-webkit-outer-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+          }
+          /* For Firefox */
+          input[type="number"] {
+              -moz-appearance: textfield;
+          }
+    
+          input[type="number"] {
+            width: 35px;
+          }
+           body {
+              display: flex;
+              justify-content: center; /* Horizontally center */
+              height: 100vh;          /* Full viewport height */
+              margin: 0;
+              font-family: "Computer Modern", sans-serif;
+              background-color: #f4f4f4;
+          }
+          form {
+              background: #fff;
+              padding: 20px 60px;
+              border: 1px solid #ccc;
+              border-radius: 10px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <script src="arithmetic.js"></script>
-  </body>
+</body>
 
-  <div id="app"; style="width: 50%;">
+<div id="app" ; style="width: 50%; display:flex; align-items:center; justify-content:center;">
     <form id="settings" style="width: 80%">
-      A more customizable zetamac-type drill. Math rendering may not work on all browsers.
-      <br>
-      <br>
-      <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
+        A more customizable zetamac-type drill. Math rendering may not work on all browsers.
+        <br>
+        <br>
+        <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
 
-      <br>
+        <br>
 
-      <div style="margin-left: 20px">
-        <label>Range: (<input type="number" id="addition-left-min" placeholder=1 /></label>
-        <label> to <input type="number" id="addition-left-max" placeholder=99 />)</label> +
-        (<input type="number" id="addition-right-min" placeholder=1 /> to <input type="number" id="addition-right-max" placeholder=99 />)
+        <div style="margin-left: 20px">
+            <label>Range: (<input type="number" id="addition-left-min" placeholder=1 /></label>
+            <label> to <input type="number" id="addition-left-max" placeholder=99 />)</label> +
+            (<input type="number" id="addition-right-min" placeholder=1 /> to <input type="number" id="addition-right-max" placeholder=99 />)
+            <br>
+            <label><input type="checkbox" id="integer-addition-toggle" checked="true"/> Integers</label>
+            <br>
+            <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
+            <label id="decimal-addition-display" style="display:none;"><br>Decimal places </label><input type="number" id="decimal-addition-amount" style="display:none;" placeholder=2 />
+            <br>
+            <label><input type="checkbox" id="fraction-addition-toggle"/> Fractions</label>
+        </div>
+
         <br>
-        <label><input type="checkbox" id="integer-addition-toggle" checked="true"/> Integers</label>
         <br>
-        <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
-        <br>
-        <label><input type="checkbox" id="fraction-addition-toggle"/> Fractions</label>
-      </div>
-      <label id="decimal-addition-display" style="display:none;">Decimal places </label><input type="number" id="decimal-addition-amount" style="display:none;" placeholder=2 /> 
-      <br>
-      <br>
+
+        <!-- SUBTRACTION --!>
       <label><input type="checkbox" id="subtraction-toggle" checked="true"/> Subtraction</label>
       <br>
       <div style="margin-left: 20px">
@@ -83,6 +87,7 @@
       </div>
       <br><br>
 
+      <!-- MULTIPLICATION --!>
       <label><input type="checkbox" id="multiplication-toggle" checked="true"/> Multiplication</label>
       <br>
       <div style="margin-left: 20px">
@@ -93,6 +98,7 @@
         <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
         <br>
         <label><input type="checkbox" id="decimal-multiplication-toggle"/> Decimals</label>
+            <label id="decimal-multiplication-display" style="display:none;"><br>Decimal places </label><input type="number" id="decimal-multiplication-amount" style="display:none;" placeholder=2 />
         <br>
         <label><input type="checkbox" id="fraction-multiplication-toggle"/> Fractions</label>
       </div>
@@ -120,7 +126,7 @@
       <button type="button" class="start-game">Start Game</button>
     </form>
 
-    <div id="game" style="display: none; padding-top: 100%">
+    <div id="game" style="display: none; padding-top: 0%; text-align:center">
       <span id="question"></span>
       <input type="number" id="answer" autocomplete="off"/>
       <p>Time Left: <span id="timer"></span></p>
@@ -134,46 +140,5 @@
 
   </div>
 
-  <span>
-  The infinite sum
-  <math display="block">
-    <mrow>
-      <munderover>
-        <mo>∑</mo>
-        <mrow>
-          <mi>n</mi>
-          <mo>=</mo>
-          <mn>1</mn>
-        </mrow>
-        <mrow>
-          <mo>+</mo>
-          <mn>∞</mn>
-        </mrow>
-      </munderover>
-      <mfrac>
-        <mn>1</mn>
-        <msup>
-          <mi>n</mi>
-          <mn>2</mn>
-        </msup>
-      </mfrac>
-    </mrow>
-  </math>
-  is equal to the real number
-  <math display="inline">
-    <mfrac>
-      <msup>
-        <mi>π</mi>
-        <mn>2</mn>
-      </msup>
-      <mn>6</mn>
-    </mfrac>
-  </math>
-
-  <math display="inline">1 + 3 = 4</math>
-  .
-</span>
-
 
 </html>
-

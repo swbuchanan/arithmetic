@@ -34,6 +34,31 @@ document.addEventListener("DOMContentLoaded", () => {
     let divRightMin = 1;
     let divRightMax = 10;
 
+    let addIntegers = true;
+    let mulIntegers = true;
+    let subIntegers = true;
+    let divIntegers = true;
+
+    let addDecimals = false;
+    let mulDecimals = false;
+    let subDecimals = false;
+    let divDecimals = false;
+
+    let addFractions = false;
+    let mulFractions = false;
+    let subFractions = false;
+    let divFractions = false;
+
+    let addTypes = [];
+    let subTypes = [];
+    let mulTypes = [];
+    let divTypes = [];
+
+    let addDecimalPlaces = 2;
+    let subDecimalPlaces = 2;
+    let mulDecimalPlaces = 2;
+    let divDecimalPlaces = 2;
+
 
     let timeLimit = 120;
     let timer: number;
@@ -63,10 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
       oper = [];
       if (additionProblems) {
         oper.push(['add', "+"]);
-        console.log('addition');
       }
       if (subtractionProblems) {
-        console.log('subtract');
         oper.push(['subtract','−']);
       }
       if (multiplicationProblems) {
@@ -75,9 +98,45 @@ document.addEventListener("DOMContentLoaded", () => {
       if (divisionProblems) {
         oper.push(['divide','÷']);
       }
-      console.log("Update:");
-      console.log(oper);
-    }
+      console.log(`Active operations: ${oper}`);
+    };
+
+    const setActiveProblemTypes = () => {
+      addTypes = [];
+      subTypes = [];
+      mulTypes = [];
+      divTypes = [];
+      
+      let bools = [[addIntegers, addDecimals, addFractions],
+                [subIntegers, subDecimals, subFractions],
+                [mulIntegers, mulDecimals, mulFractions],
+                [divIntegers, divDecimals, divFractions]];
+      let names = ["integer", "decimal", "fraction"];
+
+      [addTypes, subTypes, mulTypes, divTypes].forEach((types, index) => {
+        bools[index].forEach((bool, jndex) => {
+          if (bool) {
+            types.push(names[jndex]);
+          }
+        });
+      });
+      console.log(addTypes);
+    };
+
+    // generate a random integer between the bounds
+    const generateInt = (lowerBound: number, upperBound: number): number => {
+      return Math.floor(Math.random()*(upperBound - lowerBound)) + lowerBound;
+    };
+
+    // generate a random number with the given conditions
+    const generateDec = (lowerBound: number, upperBound: number, decimalPlaces: number): number => {
+      const num = Math.random()*(upperBound - lowerBound) + lowerBound;
+      return parseFloat(num.toFixed(decimalPlaces));
+    };
+
+
+    // generate a random fraction
+
 
     // Generate a random question
     const generateQuestion = (): { question: string; answer: number } => {
@@ -90,22 +149,33 @@ document.addEventListener("DOMContentLoaded", () => {
         const opername = thisoper[0];
         const operstr = thisoper[1];
 
-        // make a fake dict with the bounds on the numbers
 
-        if (opername === "add"){
-          num1 = Math.floor(Math.random() * (addLeftMax - addLeftMin + 1)) + addLeftMin[0];
-          num2 = Math.floor(Math.random() * (addRightMax - addRightMin + 1)) + addRightMin[0];
-        } else {
-          num1 = Math.floor(Math.random() * (mulLeftMax - mulLeftMin + 1)) + mulLeftMin[0];
-          num2 = Math.floor(Math.random() * (mulRightMax - mulRightMin + 1)) + mulRightMin[0];
+        if (opername === "add") {
+
+          // choose a random number type
+          const type = addTypes[Math.floor(Math.random()*addTypes.length)];
+          if (type === "integer"){
+            num1 = generateInt(addLeftMin, addLeftMax);
+            num2 = generateInt(addRightMin, addRightMax);
+          } else if (type == "decimal"){
+            num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
+            num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
+          }
+        } else if (opername === "subtract")  {
+          num1 = generateInt(subLeftMin, subLeftMax);
+          num2 = generateInt(subRightMin, subRightMax);
+        } else if (opername === "multiply") {
+          num1 = generateInt(mulLeftMin, mulLeftMax);
+          num2 = generateInt(mulRightMin, mulRightMax);
+        } else if (opername === 'divide') {
+          num1 = generateInt(divLeftMin, divLeftMax);
+          num2 = generateInt(divRightMin, divRightMax);
+          num1 = num1*num2;
         }
-        if (opername === 'divide') {
-          return { question: `${num1 * num2} ÷ ${num1} =`, answer: num2 };
-        }
-//        return { question: `${num1} ${operstr} ${num2} =`, answer: operations[opername](num1,num2) };
 
         // Format this into some nice math
 
+        console.log(operations[opername](num1,num2));
         return {
           question:`
           <math display="inline">${num1} ${operstr} ${num2} =</math>
@@ -139,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const timeLimitInput = (document.getElementById("time-limit") as HTMLInputElement).value;
 
         setActiveOperations(); // only sets to active the operations that the user selected
+        setActiveProblemTypes();
 
         addLeftMin = parseInt(addLeftMinInput) || addLeftMin;
         addLeftMax = parseInt(addLeftMaxInput) || addLeftMax;
@@ -198,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Check the answer
     const checkAnswer = () => {
-        const userAnswer = parseInt(answerInput.value);
+        const userAnswer = parseFloat(answerInput.value);
         if (userAnswer === correctAnswer) {
             score++;
             scoreEl.textContent = score.toString();
@@ -268,7 +339,52 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
+    // NUMBER TYPES
+
+    // Integers for addition
+    document.getElementById('integer-addition-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        addIntegers = true;
+      } else {
+        addIntegers = false;
+      }
+      setActiveProblemTypes();
+    });
+
+    // Integers for subtraction
+    document.getElementById('integer-subtraction-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        subIntegers = true;
+      } else {
+        subIntegers = false;
+      }
+      setActiveProblemTypes();
+    });
+
+    // Integers for multiplication
+    document.getElementById('integer-multiplication-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        mulIntegers = true;
+      } else {
+        mulIntegers = false;
+      }
+      setActiveProblemTypes();
+    });
+
+    // Integers for division
+    document.getElementById('integer-division-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        divIntegers = true;
+      } else {
+        divIntegers = false;
+      }
+      setActiveProblemTypes();
+    });
+
+
     // Decimals
+
+    // Addition
     document.getElementById('decimal-addition-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
       var element1 = document.getElementById('decimal-addition-amount');
       var element2 = document.getElementById('decimal-addition-display');
@@ -276,22 +392,35 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("click");
         element1.style.display = 'inline';  // Show the element
         element2.style.display = 'inline';  // Show the element
+        addDecimals = true;
       } else {
         element1.style.display = 'none';  // Show the element
         element2.style.display = 'none';  // Show the element
+        addDecimals = false;
       }
+      setActiveProblemTypes();
     });
 
+    // Addition decimal places
+    document.getElementById('decimal-addition-amount').addEventListener('input', function(this: HTMLInputElement) {
+      addDecimalPlaces = parseInt(this.value);
+      console.log(addDecimalPlaces);
+    });
+
+
+    // Multiplication decimal toggle
     document.getElementById('decimal-multiplication-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
       var element1 = document.getElementById('decimal-multiplication-amount');
-      var element2 = document.getElementById('decimal-addition-display');
+      var element2 = document.getElementById('decimal-multiplication-display');
       if (this.checked) {
         console.log("click");
         element1.style.display = 'inline';  // Show the element
         element2.style.display = 'inline';  // Show the element
+        mulDecimals = true;
       } else {
         element1.style.display = 'none';  // Show the element
         element2.style.display = 'none';  // Show the element
+        mulDecimals = false;
       }
     });
 
