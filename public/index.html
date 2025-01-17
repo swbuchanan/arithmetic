@@ -41,66 +41,78 @@
     <script src="arithmetic.js"></script>
   </body>
 
-  <div id="app"; style="width: 40%;">
+  <div id="app"; style="width: 50%;">
     <form id="settings" style="width: 80%">
+      A more customizable zetamac-type drill. Math rendering may not work on all browsers.
+      <br>
+      <br>
       <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
 
       <br>
 
       <div style="margin-left: 20px">
-        <label>Range: <input type="number" id="addition-min-range" /></label>
-        <label>to: <input type="number" id="addition-max-range" /></label>
+        <label>Range: (<input type="number" id="addition-left-min" placeholder=1 /></label>
+        <label> to <input type="number" id="addition-left-max" placeholder=99 />)</label> +
+        (<input type="number" id="addition-right-min" placeholder=1 /> to <input type="number" id="addition-right-max" placeholder=99 />)
         <br>
         <label><input type="checkbox" id="integer-addition-toggle" checked="true"/> Integers</label>
         <br>
         <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
         <br>
-        <label><input type="checkbox" id="fraction-addition-toggle" checked="true"/> Fractions</label>
+        <label><input type="checkbox" id="fraction-addition-toggle"/> Fractions</label>
       </div>
-
+      <label id="decimal-addition-display" style="display:none;">Decimal places </label><input type="number" id="decimal-addition-amount" style="display:none;" placeholder=2 /> 
       <br>
-      <label id="decimal-addition-display" style="display:none;">Decimal places </label><input type="number" id="decimal-addition-amount" style="display:none;"/> 
       <br>
-
-
       <label><input type="checkbox" id="subtraction-toggle" checked="true"/> Subtraction</label>
       <br>
       <div style="margin-left: 20px">
-        <label>Range: <input type="number" id="subtraction-min-range" /></label>
-        <label>to: <input type="number" id="subtraction-max-range" /></label>
+        <label><input type="checkbox" id="subtraction-reverse-toggle" checked="true"/> Addition problems in reverse</label>
         <br>
-        <label><input type="checkbox" id="integer-subtraction-toggle" checked="true"/> Integers</label>
-        <br>
-        <label><input type="checkbox" id="decimal-subtraction-toggle" checked="true"/> Decimals</label>
-        <br>
-        <label><input type="checkbox" id="fraction-subtraction-toggle" checked="true"/> Fractions</label>
+        <div id="subtraction-options" style="display: none">
+          <label>Range: (<input type="number" id="subtraction-left-min" placeholder=1 /></label>
+          <label> to <input type="number" id="subtraction-left-max" placeholder=99 />)</label> −
+          (<input type="number" id="subtraction-right-min" placeholder=1 /> to <input type="number" id="subtraction-right-max" placeholder=99 />)
+          <br>
+          <label><input type="checkbox" id="integer-subtraction-toggle" checked="true"/> Integers</label>
+          <br>
+          <label><input type="checkbox" id="decimal-subtraction-toggle"/> Decimals</label>
+          <br>
+          <label><input type="checkbox" id="fraction-subtraction-toggle"/> Fractions</label>
+        </div>
       </div>
       <br><br>
 
       <label><input type="checkbox" id="multiplication-toggle" checked="true"/> Multiplication</label>
       <br>
       <div style="margin-left: 20px">
-        <label>Range: <input type="number" id="multiplication-min-range" /></label>
-        <label>to: <input type="number" id="multiplication-max-range" /></label>
+        <label>Range: (<input type="number" id="multiplication-left-min" placeholder=2 /></label>
+        <label> to <input type="number" id="multiplication-left-max" placeholder=12 />)</label> ×
+        (<input type="number" id="multiplication-right-min" placeholder=2 /> to <input type="number" id="multiplication-right-max" placeholder=12 />)
         <br>
         <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
         <br>
-        <label><input type="checkbox" id="decimal-multiplication-toggle" checked="true"/> Decimals</label>
+        <label><input type="checkbox" id="decimal-multiplication-toggle"/> Decimals</label>
         <br>
-        <label><input type="checkbox" id="fraction-multiplication-toggle" checked="true"/> Fractions</label>
+        <label><input type="checkbox" id="fraction-multiplication-toggle"/> Fractions</label>
       </div>
       <br><br>
       <label><input type="checkbox" id="division-toggle" checked="true"/> Division</label>
       <br>
       <div style="margin-left: 20px">
-        <label>Range: <input type="number" id="division-min-range" placeholder=100 /></label>
-        <label>to: <input type="number" id="division-max-range" /></label>
+        <label><input type="checkbox" id="division-reverse-toggle" checked="true"/> Multiplication problems in reverse</label>
         <br>
-        <label><input type="checkbox" id="integer-division-toggle" checked="true"/> Integers</label>
-        <br>
-        <label><input type="checkbox" id="decimal-division-toggle" checked="true"/> Decimals</label>
-        <br>
-        <label><input type="checkbox" id="fraction-division-toggle" checked="true"/> Fractions</label>
+        <div id="division-options" style="display: none">
+          <label>Range: (<input type="number" id="division-left-min" placeholder=1 /></label>
+          <label> to <input type="number" id="division-left-max" placeholder= 100 />)</label> ÷
+          (<input type="number" id="division-right-min" placeholder=1 /> to <input type="number" id="division-right-max" placeholder=10 />)
+          <br>
+          <label><input type="checkbox" id="integer-division-toggle" checked="true"/> Integers</label>
+          <br>
+          <label><input type="checkbox" id="decimal-division-toggle"/> Decimals</label>
+          <br>
+          <label><input type="checkbox" id="fraction-division-toggle"/> Fractions</label>
+        </div>
       </div>
       <br><br>
       <label>Time Limit (seconds): <input type="number" id="time-limit" /></label>
@@ -121,6 +133,46 @@
     </div>
 
   </div>
+
+  <span>
+  The infinite sum
+  <math display="block">
+    <mrow>
+      <munderover>
+        <mo>∑</mo>
+        <mrow>
+          <mi>n</mi>
+          <mo>=</mo>
+          <mn>1</mn>
+        </mrow>
+        <mrow>
+          <mo>+</mo>
+          <mn>∞</mn>
+        </mrow>
+      </munderover>
+      <mfrac>
+        <mn>1</mn>
+        <msup>
+          <mi>n</mi>
+          <mn>2</mn>
+        </msup>
+      </mfrac>
+    </mrow>
+  </math>
+  is equal to the real number
+  <math display="inline">
+    <mfrac>
+      <msup>
+        <mi>π</mi>
+        <mn>2</mn>
+      </msup>
+      <mn>6</mn>
+    </mfrac>
+  </math>
+
+  <math display="inline">1 + 3 = 4</math>
+  .
+</span>
 
 
 </html>

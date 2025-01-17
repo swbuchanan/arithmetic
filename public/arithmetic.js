@@ -9,11 +9,23 @@ document.addEventListener("DOMContentLoaded", function () {
     var timerEl = document.getElementById("timer");
     var scoreEl = document.getElementById("score");
     var endScoreEl = document.getElementById("endScore");
-    var additionMinRange = 1;
-    var additionMaxRange = 99;
-    var additionDecimalPlaces = 0;
-    var multiplicationMinRange = 2;
-    var multiplicationMaxRange = 12;
+    // set default values
+    var addLeftMin = 1;
+    var addLeftMax = 99;
+    var addRightMin = 1;
+    var addRightMax = 99;
+    var subLeftMin = 1;
+    var subLeftMax = 99;
+    var subRightMin = 1;
+    var subRightMax = 99;
+    var mulLeftMin = 2;
+    var mulLeftMax = 12;
+    var mulRightMin = 2;
+    var mulRightMax = 12;
+    var divLeftMin = 1;
+    var divLeftMax = 100;
+    var divRightMin = 1;
+    var divRightMax = 10;
     var timeLimit = 120;
     var timer;
     var score = 0;
@@ -22,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var subtractionProblems = true;
     var multiplicationProblems = true;
     var divisionProblems = true;
+    var divisionReversedMultiplication = true;
+    var subtractionReversedMultiplication = true;
     var oper = [];
     var operations = {
         add: function (a, b) { return a + b; },
@@ -50,39 +64,67 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     // Generate a random question
     var generateQuestion = function () {
-        var opernum = Math.floor(Math.random() * oper.length); // chooses a random operator
-        console.log(opernum);
-        var thisoper = oper[opernum];
-        console.log(thisoper);
-        var opername = thisoper[0];
-        var operstr = thisoper[1];
         var num1;
         var num2;
-        if (opername === "add" || opername === "subtract") {
-            num1 = Math.floor(Math.random() * (additionMaxRange - additionMinRange + 1)) + additionMinRange;
-            num2 = Math.floor(Math.random() * (additionMaxRange - additionMinRange + 1)) + additionMinRange;
+        // choose a random operation based on the ones that are enabled
+        var opernum = Math.floor(Math.random() * oper.length);
+        var thisoper = oper[opernum];
+        var opername = thisoper[0];
+        var operstr = thisoper[1];
+        // make a fake dict with the bounds on the numbers
+        if (opername === "add") {
+            num1 = Math.floor(Math.random() * (addLeftMax - addLeftMin + 1)) + addLeftMin[0];
+            num2 = Math.floor(Math.random() * (addRightMax - addRightMin + 1)) + addRightMin[0];
         }
         else {
-            num1 = Math.floor(Math.random() * (multiplicationMaxRange - multiplicationMinRange + 1)) + multiplicationMinRange;
-            num2 = Math.floor(Math.random() * (multiplicationMaxRange - multiplicationMinRange + 1)) + multiplicationMinRange;
+            num1 = Math.floor(Math.random() * (mulLeftMax - mulLeftMin + 1)) + mulLeftMin[0];
+            num2 = Math.floor(Math.random() * (mulRightMax - mulRightMin + 1)) + mulRightMin[0];
         }
         if (opername === 'divide') {
             return { question: num1 * num2 + " \u00F7 " + num1 + " =", answer: num2 };
         }
-        return { question: num1 + " " + operstr + " " + num2 + " =", answer: operations[opername](num1, num2) };
+        //        return { question: `${num1} ${operstr} ${num2} =`, answer: operations[opername](num1,num2) };
+        // Format this into some nice math
+        return {
+            question: "\n          <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n        ", answer: operations[opername](num1, num2)
+        };
     };
     // Start the game
     var startGame = function () {
-        var addMinRangeInput = document.getElementById("addition-min-range").value;
-        var addMaxRangeInput = document.getElementById("addition-max-range").value;
-        var mulMinRangeInput = document.getElementById("multiplication-min-range").value;
-        var mulMaxRangeInput = document.getElementById("multiplication-max-range").value;
+        var addLeftMinInput = document.getElementById("addition-left-min").value;
+        var addLeftMaxInput = document.getElementById("addition-left-max").value;
+        var addRightMinInput = document.getElementById("addition-right-min").value;
+        var addRightMaxInput = document.getElementById("addition-right-max").value;
+        var subLeftMinInput = document.getElementById("subtraction-left-min").value;
+        var subLeftMaxInput = document.getElementById("subtraction-left-max").value;
+        var subRightMinInput = document.getElementById("subtraction-right-min").value;
+        var subRightMaxInput = document.getElementById("subtraction-right-max").value;
+        var mulLeftMinInput = document.getElementById("multiplication-left-min").value;
+        var mulLeftMaxInput = document.getElementById("multiplication-left-max").value;
+        var mulRightMinInput = document.getElementById("multiplication-right-min").value;
+        var mulRightMaxInput = document.getElementById("multiplication-right-max").value;
+        var divLeftMinInput = document.getElementById("division-left-min").value;
+        var divLeftMaxInput = document.getElementById("division-left-max").value;
+        var divRightMinInput = document.getElementById("division-right-min").value;
+        var divRightMaxInput = document.getElementById("division-right-max").value;
         var timeLimitInput = document.getElementById("time-limit").value;
-        setActiveOperations();
-        additionMinRange = parseInt(addMinRangeInput) || additionMinRange;
-        additionMaxRange = parseInt(addMaxRangeInput) || additionMaxRange;
-        multiplicationMinRange = parseInt(mulMinRangeInput) || multiplicationMinRange;
-        multiplicationMaxRange = parseInt(mulMaxRangeInput) || multiplicationMaxRange;
+        setActiveOperations(); // only sets to active the operations that the user selected
+        addLeftMin = parseInt(addLeftMinInput) || addLeftMin;
+        addLeftMax = parseInt(addLeftMaxInput) || addLeftMax;
+        addRightMin = parseInt(addRightMinInput) || addRightMin;
+        addRightMax = parseInt(addRightMaxInput) || addRightMax;
+        subLeftMin = parseInt(subLeftMinInput) || subLeftMin;
+        subLeftMax = parseInt(subLeftMaxInput) || subLeftMax;
+        subRightMin = parseInt(subRightMinInput) || subRightMin;
+        subRightMax = parseInt(subRightMaxInput) || subRightMax;
+        mulLeftMin = parseInt(mulLeftMinInput) || mulLeftMin;
+        mulLeftMax = parseInt(mulLeftMaxInput) || mulLeftMax;
+        mulRightMin = parseInt(mulRightMinInput) || mulRightMin;
+        mulRightMax = parseInt(mulRightMaxInput) || mulRightMax;
+        divLeftMin = parseInt(divLeftMinInput) || divLeftMin;
+        divLeftMax = parseInt(divLeftMaxInput) || divLeftMax;
+        divRightMin = parseInt(divRightMinInput) || divRightMin;
+        divRightMax = parseInt(divRightMaxInput) || divRightMax;
         timeLimit = parseInt(timeLimitInput) || 120;
         score = 0;
         settingsForm.style.display = "none";
@@ -143,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     // Operations
     document.getElementById('addition-toggle').addEventListener('change', function () {
-        console.log("tog1");
         if (this.checked) {
             additionProblems = true;
         }
@@ -153,7 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setActiveOperations();
     });
     document.getElementById('subtraction-toggle').addEventListener('change', function () {
-        console.log("tog2");
         if (this.checked) {
             subtractionProblems = true;
         }
@@ -163,7 +203,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setActiveOperations();
     });
     document.getElementById('multiplication-toggle').addEventListener('change', function () {
-        console.log("tog3");
         if (this.checked) {
             multiplicationProblems = true;
         }
@@ -173,7 +212,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setActiveOperations();
     });
     document.getElementById('division-toggle').addEventListener('change', function () {
-        console.log("tog4");
         if (this.checked) {
             divisionProblems = true;
         }
@@ -194,6 +232,41 @@ document.addEventListener("DOMContentLoaded", function () {
         else {
             element1.style.display = 'none'; // Show the element
             element2.style.display = 'none'; // Show the element
+        }
+    });
+    document.getElementById('decimal-multiplication-toggle').addEventListener('change', function () {
+        var element1 = document.getElementById('decimal-multiplication-amount');
+        var element2 = document.getElementById('decimal-addition-display');
+        if (this.checked) {
+            console.log("click");
+            element1.style.display = 'inline'; // Show the element
+            element2.style.display = 'inline'; // Show the element
+        }
+        else {
+            element1.style.display = 'none'; // Show the element
+            element2.style.display = 'none'; // Show the element
+        }
+    });
+    // Subtraction and division being reversed versions of the addition and multiplication problems
+    document.getElementById('subtraction-reverse-toggle').addEventListener('change', function () {
+        if (this.checked) {
+            subtractionReversedMultiplication = true;
+            document.getElementById('subtraction-options').style.display = "none";
+        }
+        else {
+            subtractionReversedMultiplication = false;
+            document.getElementById('subtraction-options').style.display = "block";
+        }
+    });
+    document.getElementById('division-reverse-toggle').addEventListener('change', function () {
+        if (this.checked) {
+            divisionReversedMultiplication = true;
+            document.getElementById('division-options').style.display = "none";
+        }
+        else {
+            console.log("poop");
+            divisionReversedMultiplication = false;
+            document.getElementById('division-options').style.display = "block";
         }
     });
 });

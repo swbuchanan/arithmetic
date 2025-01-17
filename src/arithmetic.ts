@@ -11,12 +11,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const scoreEl = document.getElementById("score") as HTMLSpanElement;
     const endScoreEl = document.getElementById("endScore") as HTMLSpanElement;
 
-    let additionMinRange = 1;
-    let additionMaxRange = 99;
-    let additionDecimalPlaces = 0;
 
-    let multiplicationMinRange = 2;
-    let multiplicationMaxRange = 12;
+    // set default values
+
+    let addLeftMin = 1;
+    let addLeftMax = 99;
+    let addRightMin = 1;
+    let addRightMax = 99;
+
+    let subLeftMin = 1;
+    let subLeftMax = 99;
+    let subRightMin = 1;
+    let subRightMax = 99;
+
+    let mulLeftMin = 2;
+    let mulLeftMax = 12;
+    let mulRightMin = 2;
+    let mulRightMax = 12;
+
+    let divLeftMin = 1;
+    let divLeftMax = 100;
+    let divRightMin = 1;
+    let divRightMax = 10;
+
 
     let timeLimit = 120;
     let timer: number;
@@ -27,6 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let subtractionProblems = true;
     let multiplicationProblems = true;
     let divisionProblems = true;
+
+    let divisionReversedMultiplication = true;
+    let subtractionReversedMultiplication = true;
 
     let oper = [];
 
@@ -61,41 +81,85 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Generate a random question
     const generateQuestion = (): { question: string; answer: number } => {
-        const opernum = Math.floor(Math.random() * oper.length); // chooses a random operator
-        console.log(opernum);
-        const thisoper = oper[opernum];
-        console.log(thisoper);
-        const opername = thisoper[0];
-        const operstr = thisoper[1];
         let num1: number;
         let num2: number;
-        if (opername === "add" || opername === "subtract"){
-          num1 = Math.floor(Math.random() * (additionMaxRange - additionMinRange + 1)) + additionMinRange;
-          num2 = Math.floor(Math.random() * (additionMaxRange - additionMinRange + 1)) + additionMinRange;
+
+        // choose a random operation based on the ones that are enabled
+        const opernum = Math.floor(Math.random() * oper.length);
+        const thisoper = oper[opernum];
+        const opername = thisoper[0];
+        const operstr = thisoper[1];
+
+        // make a fake dict with the bounds on the numbers
+
+        if (opername === "add"){
+          num1 = Math.floor(Math.random() * (addLeftMax - addLeftMin + 1)) + addLeftMin[0];
+          num2 = Math.floor(Math.random() * (addRightMax - addRightMin + 1)) + addRightMin[0];
         } else {
-          num1 = Math.floor(Math.random() * (multiplicationMaxRange - multiplicationMinRange + 1)) + multiplicationMinRange;
-          num2 = Math.floor(Math.random() * (multiplicationMaxRange - multiplicationMinRange + 1)) + multiplicationMinRange;
+          num1 = Math.floor(Math.random() * (mulLeftMax - mulLeftMin + 1)) + mulLeftMin[0];
+          num2 = Math.floor(Math.random() * (mulRightMax - mulRightMin + 1)) + mulRightMin[0];
         }
         if (opername === 'divide') {
           return { question: `${num1 * num2} ÷ ${num1} =`, answer: num2 };
         }
-        return { question: `${num1} ${operstr} ${num2} =`, answer: operations[opername](num1,num2) };
+//        return { question: `${num1} ${operstr} ${num2} =`, answer: operations[opername](num1,num2) };
+
+        // Format this into some nice math
+
+        return {
+          question:`
+          <math display="inline">${num1} ${operstr} ${num2} =</math>
+        `, answer: operations[opername](num1, num2)
+        };
+
     };
 
     // Start the game
     const startGame = () => {
-        const addMinRangeInput = (document.getElementById("addition-min-range") as HTMLInputElement).value;
-        const addMaxRangeInput = (document.getElementById("addition-max-range") as HTMLInputElement).value;
-        const mulMinRangeInput = (document.getElementById("multiplication-min-range") as HTMLInputElement).value;
-        const mulMaxRangeInput = (document.getElementById("multiplication-max-range") as HTMLInputElement).value;
+        const addLeftMinInput = (document.getElementById("addition-left-min") as HTMLInputElement).value;
+        const addLeftMaxInput = (document.getElementById("addition-left-max") as HTMLInputElement).value;
+        const addRightMinInput = (document.getElementById("addition-right-min") as HTMLInputElement).value;
+        const addRightMaxInput = (document.getElementById("addition-right-max") as HTMLInputElement).value;
+
+        const subLeftMinInput = (document.getElementById("subtraction-left-min") as HTMLInputElement).value;
+        const subLeftMaxInput = (document.getElementById("subtraction-left-max") as HTMLInputElement).value;
+        const subRightMinInput = (document.getElementById("subtraction-right-min") as HTMLInputElement).value;
+        const subRightMaxInput = (document.getElementById("subtraction-right-max") as HTMLInputElement).value;
+
+        const mulLeftMinInput = (document.getElementById("multiplication-left-min") as HTMLInputElement).value;
+        const mulLeftMaxInput = (document.getElementById("multiplication-left-max") as HTMLInputElement).value;
+        const mulRightMinInput = (document.getElementById("multiplication-right-min") as HTMLInputElement).value;
+        const mulRightMaxInput = (document.getElementById("multiplication-right-max") as HTMLInputElement).value;
+
+        const divLeftMinInput = (document.getElementById("division-left-min") as HTMLInputElement).value;
+        const divLeftMaxInput = (document.getElementById("division-left-max") as HTMLInputElement).value;
+        const divRightMinInput = (document.getElementById("division-right-min") as HTMLInputElement).value;
+        const divRightMaxInput = (document.getElementById("division-right-max") as HTMLInputElement).value;
+
         const timeLimitInput = (document.getElementById("time-limit") as HTMLInputElement).value;
 
-        setActiveOperations();
+        setActiveOperations(); // only sets to active the operations that the user selected
 
-        additionMinRange = parseInt(addMinRangeInput) || additionMinRange;
-        additionMaxRange = parseInt(addMaxRangeInput) || additionMaxRange;
-        multiplicationMinRange = parseInt(mulMinRangeInput) || multiplicationMinRange;
-        multiplicationMaxRange = parseInt(mulMaxRangeInput) || multiplicationMaxRange;
+        addLeftMin = parseInt(addLeftMinInput) || addLeftMin;
+        addLeftMax = parseInt(addLeftMaxInput) || addLeftMax;
+        addRightMin = parseInt(addRightMinInput) || addRightMin;
+        addRightMax = parseInt(addRightMaxInput) || addRightMax;
+
+        subLeftMin = parseInt(subLeftMinInput) || subLeftMin;
+        subLeftMax = parseInt(subLeftMaxInput) || subLeftMax;
+        subRightMin = parseInt(subRightMinInput) || subRightMin;
+        subRightMax = parseInt(subRightMaxInput) || subRightMax;
+
+        mulLeftMin = parseInt(mulLeftMinInput) || mulLeftMin;
+        mulLeftMax = parseInt(mulLeftMaxInput) || mulLeftMax;
+        mulRightMin = parseInt(mulRightMinInput) || mulRightMin;
+        mulRightMax = parseInt(mulRightMaxInput) || mulRightMax;
+
+        divLeftMin = parseInt(divLeftMinInput) || divLeftMin;
+        divLeftMax = parseInt(divLeftMaxInput) || divLeftMax;
+        divRightMin = parseInt(divRightMinInput) || divRightMin;
+        divRightMax = parseInt(divRightMaxInput) || divRightMax;
+
         timeLimit = parseInt(timeLimitInput) || 120;
         score = 0;
 
@@ -168,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Operations
 
     document.getElementById('addition-toggle').addEventListener('change', function(this: HTMLInputElement){
-      console.log("tog1");
       if (this.checked) {
         additionProblems = true;
       } else {
@@ -178,7 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('subtraction-toggle').addEventListener('change', function(this: HTMLInputElement){
-      console.log("tog2");
       if (this.checked) {
         subtractionProblems = true;
       } else {
@@ -188,7 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('multiplication-toggle').addEventListener('change', function(this: HTMLInputElement){
-      console.log("tog3");
       if (this.checked) {
         multiplicationProblems = true;
       } else {
@@ -198,7 +259,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('division-toggle').addEventListener('change', function(this: HTMLInputElement){
-      console.log("tog4");
       if (this.checked) {
         divisionProblems = true;
       } else {
@@ -219,6 +279,41 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         element1.style.display = 'none';  // Show the element
         element2.style.display = 'none';  // Show the element
+      }
+    });
+
+    document.getElementById('decimal-multiplication-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      var element1 = document.getElementById('decimal-multiplication-amount');
+      var element2 = document.getElementById('decimal-addition-display');
+      if (this.checked) {
+        console.log("click");
+        element1.style.display = 'inline';  // Show the element
+        element2.style.display = 'inline';  // Show the element
+      } else {
+        element1.style.display = 'none';  // Show the element
+        element2.style.display = 'none';  // Show the element
+      }
+    });
+
+    // Subtraction and division being reversed versions of the addition and multiplication problems
+
+    document.getElementById('subtraction-reverse-toggle').addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        subtractionReversedMultiplication = true;
+        document.getElementById('subtraction-options').style.display="none";
+      } else {
+        subtractionReversedMultiplication = false;
+        document.getElementById('subtraction-options').style.display="block";
+      }
+    });
+
+    document.getElementById('division-reverse-toggle').addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        divisionReversedMultiplication = true;
+        document.getElementById('division-options').style.display="none";
+      } else {
+        divisionReversedMultiplication = false;
+        document.getElementById('division-options').style.display="block";
       }
     });
 
