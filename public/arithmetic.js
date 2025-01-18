@@ -158,8 +158,12 @@ document.addEventListener("DOMContentLoaded", function () {
             else if (myType === "fraction") {
                 var frac1 = generateFrac();
                 var frac2 = generateFrac();
+                num1 = generateInt(addLeftMin, addLeftMax);
+                num2 = generateInt(addRightMin, addRightMax);
+                var offset1 = Math.floor(frac1[0] / frac1[1]);
+                var offset2 = Math.floor(frac2[0] / frac2[1]);
                 //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
-                return { question: "<math display=\"inline\"><mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> + <mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac></math>", questiontype: "fraction", answer: addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
+                return { question: "<math display=\"inline\">" + (num1 !== offset1 ? num1 - offset1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> + " + (num2 !== offset2 ? num2 - offset2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
             }
         }
         else if (opername === "subtract") {
@@ -402,21 +406,22 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(addDecimalPlaces);
     });
     // Multiplication decimal toggle
-    document.getElementById('decimal-multiplication-toggle').addEventListener('change', function () {
-        var element1 = document.getElementById('decimal-multiplication-amount');
-        var element2 = document.getElementById('decimal-multiplication-display');
-        if (this.checked) {
-            console.log("click");
-            element1.style.display = 'inline'; // Show the element
-            element2.style.display = 'inline'; // Show the element
-            mulDecimals = true;
-        }
-        else {
-            element1.style.display = 'none'; // Show the element
-            element2.style.display = 'none'; // Show the element
-            mulDecimals = false;
-        }
+    /*
+    document.getElementById('decimal-multiplication-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      var element1 = document.getElementById('decimal-multiplication-amount');
+      var element2 = document.getElementById('decimal-multiplication-display');
+      if (this.checked) {
+        console.log("click");
+        element1.style.display = 'inline';  // Show the element
+        element2.style.display = 'inline';  // Show the element
+        mulDecimals = true;
+      } else {
+        element1.style.display = 'none';  // Show the element
+        element2.style.display = 'none';  // Show the element
+        mulDecimals = false;
+      }
     });
+   */
     // Fractions
     // Fraction addition toggle
     document.getElementById('fraction-addition-toggle').addEventListener('change', function () {

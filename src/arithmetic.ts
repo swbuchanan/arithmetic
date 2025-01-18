@@ -193,8 +193,12 @@ document.addEventListener("DOMContentLoaded", () => {
           } else if (myType === "fraction") {
             const frac1 = generateFrac();
             const frac2 = generateFrac();
+            num1 = generateInt(addLeftMin, addLeftMax);
+            num2 = generateInt(addRightMin, addRightMax);
+            const offset1 = Math.floor(frac1[0]/frac1[1]);
+            const offset2 = Math.floor(frac2[0]/frac2[1]);
 //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
-            return {question: `<math display="inline"><mfrac><mi>${frac1[0]}</mi><mn>${frac1[1]}</mn></mfrac> + <mfrac><mi>${frac2[0]}</mi><mn>${frac2[1]}</mn></mfrac></math>`, questiontype: "fraction", answer: addFracs(frac1[0], frac1[1], frac2[0], frac2[1])};
+            return {question: `<math display="inline">${num1 !== offset1 ? num1 - offset1 : ''}<mfrac><mi>${frac1[0]}</mi><mn>${frac1[1]}</mn></mfrac> <mphantom>-</mphantom> + ${num2 !== offset2 ? num2 - offset2 : ''}<mfrac><mi>${frac2[0]}</mi><mn>${frac2[1]}</mn></mfrac> <mphantom>-</mphantom> =</math> `, questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1])};
           }
         } else if (opername === "subtract")  {
           num1 = generateInt(subLeftMin, subLeftMax);
@@ -466,6 +470,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // Multiplication decimal toggle
+
+    /*
     document.getElementById('decimal-multiplication-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
       var element1 = document.getElementById('decimal-multiplication-amount');
       var element2 = document.getElementById('decimal-multiplication-display');
@@ -480,6 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mulDecimals = false;
       }
     });
+   */
 
 
     // Fractions

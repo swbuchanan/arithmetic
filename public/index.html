@@ -45,6 +45,10 @@
 <div id="app" ; style="width: 50%; display:flex; align-items:center; justify-content:center;">
     <form id="settings" style="width: 80%">
         A more customizable zetamac-type drill. Math rendering may not work on all browsers.
+        Fraction answers can be input as fractions in the form "a/b" or as mixed numbers with a single space in the form "a b/c".
+
+        Known bugs that I can't be bothered to fix yet:
+        If the upper and lower bounds are too close in fraction mode in gets weird.
         <br>
         <br>
         <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
@@ -95,14 +99,18 @@
         <label> to <input type="number" id="multiplication-left-max" placeholder=12 />)</label> ×
         (<input type="number" id="multiplication-right-min" placeholder=2 /> to <input type="number" id="multiplication-right-max" placeholder=12 />)
         <br>
-        <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
+<!--        <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
         <br>
         <label><input type="checkbox" id="decimal-multiplication-toggle"/> Decimals</label>
             <label id="decimal-multiplication-display" style="display:none;"><br>Decimal places </label><input type="number" id="decimal-multiplication-amount" style="display:none;" placeholder=2 />
         <br>
         <label><input type="checkbox" id="fraction-multiplication-toggle"/> Fractions</label>
+        --!>
       </div>
       <br><br>
+
+
+      <!-- DIVISION --!>
       <label><input type="checkbox" id="division-toggle" checked="true"/> Division</label>
       <br>
       <div style="margin-left: 20px">
