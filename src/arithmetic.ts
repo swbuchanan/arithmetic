@@ -128,14 +128,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return Math.floor(Math.random()*(upperBound - lowerBound)) + lowerBound;
     };
 
-    // generate a random number with the given conditions
+    // generate a random decimal with the given conditions
     const generateDec = (lowerBound: number, upperBound: number, decimalPlaces: number): number => {
       const num = Math.random()*(upperBound - lowerBound) + lowerBound;
       return parseFloat(num.toFixed(decimalPlaces));
     };
 
-
     // generate a random fraction
+    const generateFrac = ()
 
 
     // Generate a random question
@@ -157,9 +157,11 @@ document.addEventListener("DOMContentLoaded", () => {
           if (type === "integer"){
             num1 = generateInt(addLeftMin, addLeftMax);
             num2 = generateInt(addRightMin, addRightMax);
-          } else if (type == "decimal"){
+          } else if (type === "decimal"){
             num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
             num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
+          } else if (type === "fraction") {
+            
           }
         } else if (opername === "subtract")  {
           num1 = generateInt(subLeftMin, subLeftMax);
