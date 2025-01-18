@@ -34,16 +34,19 @@ document.addEventListener("DOMContentLoaded", () => {
     let divRightMin = 1;
     let divRightMax = 10;
 
+    // whether or not to include integers in the addition, (resp. multiplication, div, etc) problems
     let addIntegers = true;
     let mulIntegers = true;
     let subIntegers = true;
     let divIntegers = true;
 
+    // whether or not to include decimals in the addition, (resp. multiplication, div, etc) problems
     let addDecimals = false;
     let mulDecimals = false;
     let subDecimals = false;
     let divDecimals = false;
 
+    // whether or not to include fractions in the addition, (resp. multiplication, div, etc) problems
     let addFractions = false;
     let mulFractions = false;
     let subFractions = false;
@@ -64,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let timer: number;
     let score = 0;
     let correctAnswer = 0;
+    let questionType: string;
 
     let additionProblems = true;
     let subtractionProblems = true;
@@ -123,10 +127,21 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(addTypes);
     };
 
-    // generate a random integer between the bounds
-    const generateInt = (lowerBound: number, upperBound: number): number => {
-      return Math.floor(Math.random()*(upperBound - lowerBound)) + lowerBound;
+    // find gcd using Euclid's algorithm
+
+    const gcd = (a: number, b: number): number => {
+      while (b != 0){
+        const temp = b;
+        b = a % b;
+        a = temp;
+      }
+      return a;
     };
+
+    const addFracs = (num1: number, den1: number, num2: number, den2: number): number => (num1*den2 + num2*den1)/(den1*den2);
+
+    // generate a random integer between the bounds
+    const generateInt = (lowerBound: number, upperBound: number): number => Math.floor(Math.random()*(upperBound - lowerBound)) + lowerBound;
 
     // generate a random decimal with the given conditions
     const generateDec = (lowerBound: number, upperBound: number, decimalPlaces: number): number => {
@@ -135,11 +150,20 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // generate a random fraction
-    const generateFrac = ()
+    // at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
+    const generateFrac = (): number[] => {
+      let numerator: number;
+      let denominator: number;
+      do {
+        numerator = generateInt(1,9);
+        denominator = generateInt(2,9);
+      } while (gcd(numerator, denominator) !== 1);
+      return [numerator, denominator];
+    };
 
 
     // Generate a random question
-    const generateQuestion = (): { question: string; answer: number } => {
+    const generateQuestion = (): { question: string; questiontype: string; answer: number } => {
         let num1: number;
         let num2: number;
 
@@ -148,20 +172,29 @@ document.addEventListener("DOMContentLoaded", () => {
         const thisoper = oper[opernum];
         const opername = thisoper[0];
         const operstr = thisoper[1];
-
+        let myType: string;
 
         if (opername === "add") {
 
           // choose a random number type
-          const type = addTypes[Math.floor(Math.random()*addTypes.length)];
-          if (type === "integer"){
+          myType = addTypes[Math.floor(Math.random()*addTypes.length)];
+          if (myType === "integer"){
             num1 = generateInt(addLeftMin, addLeftMax);
             num2 = generateInt(addRightMin, addRightMax);
-          } else if (type === "decimal"){
+          } else if (myType === "decimal"){
             num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
             num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
-          } else if (type === "fraction") {
-            
+            return {
+              question:`
+              <math display="inline">${num1} ${operstr} ${num2} =</math>
+            `, questiontype: myType,
+              answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
+            };
+          } else if (myType === "fraction") {
+            const frac1 = generateFrac();
+            const frac2 = generateFrac();
+//            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
+            return {question: `<math display="inline"><mfrac><mi>${frac1[0]}</mi><mn>${frac1[1]}</mn></mfrac> + <mfrac><mi>${frac2[0]}</mi><mn>${frac2[1]}</mn></mfrac></math>`, questiontype: "fraction", answer: addFracs(frac1[0], frac1[1], frac2[0], frac2[1])};
           }
         } else if (opername === "subtract")  {
           num1 = generateInt(subLeftMin, subLeftMax);
@@ -181,7 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return {
           question:`
           <math display="inline">${num1} ${operstr} ${num2} =</math>
-        `, answer: operations[opername](num1, num2)
+        `, questiontype: myType,
+          answer: operations[opername](num1, num2)
         };
 
     };
@@ -262,25 +296,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load the next question
     const loadNextQuestion = () => {
-        const { question, answer } = generateQuestion();
+        const { question, questiontype, answer } = generateQuestion();
         questionEl.innerHTML = question;
         correctAnswer = answer;
+        questionType = questiontype;
         answerInput.value = "";
         answerInput.focus();
     };
 
     // Check the answer
     const checkAnswer = () => {
-        const userAnswer = parseFloat(answerInput.value);
-        if (userAnswer === correctAnswer) {
-            score++;
-            scoreEl.textContent = score.toString();
-            endScoreEl.textContent = score.toString();
-            loadNextQuestion();
-        } else {
-            //answerInput.value = "";
-            answerInput.focus();
+      let userAnswer: number;
+      if (questionType === "fraction") {
+        // parse a mixed fraction like 1 1/2 into a decimal
+        let frac = answerInput.value.split(' ');
+        if (frac.length > 2) { // wrong answer, keep trying
+          answerInput.focus()
+        } else if (frac.length === 1) { // just a simple fraction
+          frac = frac[0].split('/');
+          userAnswer = parseInt(frac[0])/parseInt(frac[1]);
+          console.log(`Useranswer: ${userAnswer}`);
+          console.log(`correct answer: ${correctAnswer}`);
+        } else if (frac.length === 2) { // mixed number
+          let fracPart = frac[1].split('/'); // TODO: this needs to be fixed in the case of bad user input
+          userAnswer = parseInt(frac[0]) + parseInt(fracPart[0])/parseInt(fracPart[1]);
         }
+      } else {
+        // if the question is a decimal or an integar
+        userAnswer = parseFloat(answerInput.value);
+      }
+      if (userAnswer === correctAnswer) {
+          score++;
+          scoreEl.textContent = score.toString();
+          endScoreEl.textContent = score.toString();
+          loadNextQuestion();
+      } else {
+          //answerInput.value = "";
+          answerInput.focus();
+      }
+     
     };
 
     // End the game
@@ -299,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // submitButton.addEventListener("click", checkAnswer);
 
     answerInput.addEventListener("input", () => {
+      console.log(answerInput.value);
       checkAnswer();
     });
 
@@ -423,6 +478,21 @@ document.addEventListener("DOMContentLoaded", () => {
         element1.style.display = 'none';  // Show the element
         element2.style.display = 'none';  // Show the element
         mulDecimals = false;
+      }
+    });
+
+
+    // Fractions
+    
+    // Fraction addition toggle
+
+    document.getElementById('fraction-addition-toggle').addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        addFractions = true;
+        console.log('we adding fractions baby');
+      } else {
+        addFractions = false;
+        console.log('frick');
       }
     });
 

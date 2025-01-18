@@ -26,14 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
     var divLeftMax = 100;
     var divRightMin = 1;
     var divRightMax = 10;
+    // whether or not to include integers in the addition, (resp. multiplication, div, etc) problems
     var addIntegers = true;
     var mulIntegers = true;
     var subIntegers = true;
     var divIntegers = true;
+    // whether or not to include decimals in the addition, (resp. multiplication, div, etc) problems
     var addDecimals = false;
     var mulDecimals = false;
     var subDecimals = false;
     var divDecimals = false;
+    // whether or not to include fractions in the addition, (resp. multiplication, div, etc) problems
     var addFractions = false;
     var mulFractions = false;
     var subFractions = false;
@@ -50,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var timer;
     var score = 0;
     var correctAnswer = 0;
+    var questionType;
     var additionProblems = true;
     var subtractionProblems = true;
     var multiplicationProblems = true;
@@ -98,16 +102,34 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         console.log(addTypes);
     };
-    // generate a random integer between the bounds
-    var generateInt = function (lowerBound, upperBound) {
-        return Math.floor(Math.random() * (upperBound - lowerBound)) + lowerBound;
+    // find gcd using Euclid's algorithm
+    var gcd = function (a, b) {
+        while (b != 0) {
+            var temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
     };
-    // generate a random number with the given conditions
+    var addFracs = function (num1, den1, num2, den2) { return (num1 * den2 + num2 * den1) / (den1 * den2); };
+    // generate a random integer between the bounds
+    var generateInt = function (lowerBound, upperBound) { return Math.floor(Math.random() * (upperBound - lowerBound)) + lowerBound; };
+    // generate a random decimal with the given conditions
     var generateDec = function (lowerBound, upperBound, decimalPlaces) {
         var num = Math.random() * (upperBound - lowerBound) + lowerBound;
         return parseFloat(num.toFixed(decimalPlaces));
     };
     // generate a random fraction
+    // at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
+    var generateFrac = function () {
+        var numerator;
+        var denominator;
+        do {
+            numerator = generateInt(1, 9);
+            denominator = generateInt(2, 9);
+        } while (gcd(numerator, denominator) !== 1);
+        return [numerator, denominator];
+    };
     // Generate a random question
     var generateQuestion = function () {
         var num1;
@@ -117,16 +139,27 @@ document.addEventListener("DOMContentLoaded", function () {
         var thisoper = oper[opernum];
         var opername = thisoper[0];
         var operstr = thisoper[1];
+        var myType;
         if (opername === "add") {
             // choose a random number type
-            var type = addTypes[Math.floor(Math.random() * addTypes.length)];
-            if (type === "integer") {
+            myType = addTypes[Math.floor(Math.random() * addTypes.length)];
+            if (myType === "integer") {
                 num1 = generateInt(addLeftMin, addLeftMax);
                 num2 = generateInt(addRightMin, addRightMax);
             }
-            else if (type == "decimal") {
+            else if (myType === "decimal") {
                 num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
                 num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
+                return {
+                    question: "\n              <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n            ", questiontype: myType,
+                    answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
+                };
+            }
+            else if (myType === "fraction") {
+                var frac1 = generateFrac();
+                var frac2 = generateFrac();
+                //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
+                return { question: "<math display=\"inline\"><mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> + <mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac></math>", questiontype: "fraction", answer: addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
             }
         }
         else if (opername === "subtract") {
@@ -145,7 +178,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Format this into some nice math
         console.log(operations[opername](num1, num2));
         return {
-            question: "\n          <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n        ", answer: operations[opername](num1, num2)
+            question: "\n          <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n        ", questiontype: myType,
+            answer: operations[opername](num1, num2)
         };
     };
     // Start the game
@@ -208,15 +242,37 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     // Load the next question
     var loadNextQuestion = function () {
-        var _a = generateQuestion(), question = _a.question, answer = _a.answer;
+        var _a = generateQuestion(), question = _a.question, questiontype = _a.questiontype, answer = _a.answer;
         questionEl.innerHTML = question;
         correctAnswer = answer;
+        questionType = questiontype;
         answerInput.value = "";
         answerInput.focus();
     };
     // Check the answer
     var checkAnswer = function () {
-        var userAnswer = parseFloat(answerInput.value);
+        var userAnswer;
+        if (questionType === "fraction") {
+            // parse a mixed fraction like 1 1/2 into a decimal
+            var frac = answerInput.value.split(' ');
+            if (frac.length > 2) { // wrong answer, keep trying
+                answerInput.focus();
+            }
+            else if (frac.length === 1) { // just a simple fraction
+                frac = frac[0].split('/');
+                userAnswer = parseInt(frac[0]) / parseInt(frac[1]);
+                console.log("Useranswer: " + userAnswer);
+                console.log("correct answer: " + correctAnswer);
+            }
+            else if (frac.length === 2) { // mixed number
+                var fracPart = frac[1].split('/'); // TODO: this needs to be fixed in the case of bad user input
+                userAnswer = parseInt(frac[0]) + parseInt(fracPart[0]) / parseInt(fracPart[1]);
+            }
+        }
+        else {
+            // if the question is a decimal or an integar
+            userAnswer = parseFloat(answerInput.value);
+        }
         if (userAnswer === correctAnswer) {
             score++;
             scoreEl.textContent = score.toString();
@@ -241,6 +297,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     // submitButton.addEventListener("click", checkAnswer);
     answerInput.addEventListener("input", function () {
+        console.log(answerInput.value);
         checkAnswer();
     });
     // Operations
@@ -342,9 +399,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Addition decimal places
     document.getElementById('decimal-addition-amount').addEventListener('input', function () {
         addDecimalPlaces = parseInt(this.value);
-        console.log('hi');
         console.log(addDecimalPlaces);
     });
+    // Multiplication decimal toggle
     document.getElementById('decimal-multiplication-toggle').addEventListener('change', function () {
         var element1 = document.getElementById('decimal-multiplication-amount');
         var element2 = document.getElementById('decimal-multiplication-display');
@@ -358,6 +415,18 @@ document.addEventListener("DOMContentLoaded", function () {
             element1.style.display = 'none'; // Show the element
             element2.style.display = 'none'; // Show the element
             mulDecimals = false;
+        }
+    });
+    // Fractions
+    // Fraction addition toggle
+    document.getElementById('fraction-addition-toggle').addEventListener('change', function () {
+        if (this.checked) {
+            addFractions = true;
+            console.log('we adding fractions baby');
+        }
+        else {
+            addFractions = false;
+            console.log('frick');
         }
     });
     // Subtraction and division being reversed versions of the addition and multiplication problems
