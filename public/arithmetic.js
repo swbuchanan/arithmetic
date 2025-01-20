@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var multiplicationProblems = true;
     var divisionProblems = true;
     var divisionReversedMultiplication = true;
-    var subtractionReversedMultiplication = true;
+    var subtractionReversedAddition = true;
     var oper = [];
     var operations = {
         add: function (a, b) { return a + b; },
@@ -162,13 +162,73 @@ document.addEventListener("DOMContentLoaded", function () {
                 num2 = generateInt(addRightMin, addRightMax);
                 var offset1 = Math.floor(frac1[0] / frac1[1]);
                 var offset2 = Math.floor(frac2[0] / frac2[1]);
+                var mixedNum1 = num1 - offset1;
+                var mixedNum2 = num2 - offset2;
                 //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
-                return { question: "<math display=\"inline\">" + (num1 !== offset1 ? num1 - offset1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> + " + (num2 !== offset2 ? num2 - offset2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
+                return { question: "<math display=\"inline\">" + (mixedNum1 !== 0 ? mixedNum1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> + " + (mixedNum2 !== 0 ? mixedNum2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
             }
         }
         else if (opername === "subtract") {
-            num1 = generateInt(subLeftMin, subLeftMax);
-            num2 = generateInt(subRightMin, subRightMax);
+            if (subtractionReversedAddition) {
+                // the idea is to generate a fraction problem by generating an addition problem with the addition settings and then rearranging it into a subtraction problem
+                console.log(addTypes);
+                myType = addTypes[Math.floor(Math.random() * addTypes.length)];
+                if (myType === "integer") {
+                    num1 = generateInt(addLeftMin, addLeftMax);
+                    num2 = generateInt(addRightMin, addRightMax);
+                    num1 = num1 + num2;
+                }
+                else if (myType === "decimal") {
+                    num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
+                    num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
+                    num1 = parseFloat((num1 + num2).toFixed(addDecimalPlaces));
+                    return {
+                        question: "\n                <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n              ", questiontype: myType,
+                        answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
+                    };
+                }
+                else if (myType === "fraction") {
+                    var frac1 = generateFrac();
+                    var frac2 = generateFrac();
+                    num1 = generateInt(addLeftMin, addLeftMax);
+                    num2 = generateInt(addRightMin, addRightMax);
+                    num1 = num1 + num2;
+                    var offset1 = Math.floor(frac1[0] / frac1[1]);
+                    var offset2 = Math.floor(frac2[0] / frac2[1]);
+                    //              let mixedNum1 = num1 - offset1 + frac1[0]/frac1[1];
+                    //              let mixedNum2 = num2 - offset2 + frac2[0]/frac2[1];
+                    var mixedNum1 = num1 - offset1;
+                    var mixedNum2 = num2 - offset2;
+                    //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
+                    return { question: "<math display=\"inline\">" + (mixedNum1 !== 0 ? mixedNum1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> - " + (mixedNum2 !== 0 ? mixedNum2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 - num2 + offset2 + addFracs(frac1[0], frac1[1], -frac2[0], frac2[1]) };
+                }
+            }
+            else {
+                // choose a random number type
+                myType = addTypes[Math.floor(Math.random() * addTypes.length)];
+                if (myType === "integer") {
+                    num1 = generateInt(addLeftMin, addLeftMax);
+                    num2 = generateInt(addRightMin, addRightMax);
+                }
+                else if (myType === "decimal") {
+                    num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
+                    num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
+                    return {
+                        question: "\n                <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n              ", questiontype: myType,
+                        answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
+                    };
+                }
+                else if (myType === "fraction") {
+                    var frac1 = generateFrac();
+                    var frac2 = generateFrac();
+                    num1 = generateInt(addLeftMin, addLeftMax);
+                    num2 = generateInt(addRightMin, addRightMax);
+                    var offset1 = Math.floor(frac1[0] / frac1[1]);
+                    var offset2 = Math.floor(frac2[0] / frac2[1]);
+                    //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
+                    return { question: "<math display=\"inline\">" + (num1 !== offset1 ? num1 - offset1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> + " + (num2 !== offset2 ? num2 - offset2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
+                }
+            }
         }
         else if (opername === "multiply") {
             num1 = generateInt(mulLeftMin, mulLeftMax);
@@ -363,15 +423,17 @@ document.addEventListener("DOMContentLoaded", function () {
         setActiveProblemTypes();
     });
     // Integers for multiplication
-    document.getElementById('integer-multiplication-toggle').addEventListener('change', function () {
-        if (this.checked) {
-            mulIntegers = true;
-        }
-        else {
-            mulIntegers = false;
-        }
-        setActiveProblemTypes();
+    /* this is commented out because for now because I couldn't be bothered to implement decimal and fraction multiplication because who cares anyway
+    document.getElementById('integer-multiplication-toggle')!.addEventListener('change', function(this: HTMLInputElement) {
+      if (this.checked) {
+        console.log('toggle multiplication integers');
+        mulIntegers = true;
+      } else {
+        mulIntegers = false;
+      }
+      setActiveProblemTypes();
     });
+   */
     // Integers for division
     document.getElementById('integer-division-toggle').addEventListener('change', function () {
         if (this.checked) {
@@ -385,6 +447,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Decimals
     // Addition
     document.getElementById('decimal-addition-toggle').addEventListener('change', function () {
+        console.log('bee booo');
         var element1 = document.getElementById('decimal-addition-amount');
         var element2 = document.getElementById('decimal-addition-display');
         if (this.checked) {
@@ -437,11 +500,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Subtraction and division being reversed versions of the addition and multiplication problems
     document.getElementById('subtraction-reverse-toggle').addEventListener('change', function () {
         if (this.checked) {
-            subtractionReversedMultiplication = true;
+            subtractionReversedAddition = true;
             document.getElementById('subtraction-options').style.display = "none";
         }
         else {
-            subtractionReversedMultiplication = false;
+            subtractionReversedAddition = false;
             document.getElementById('subtraction-options').style.display = "block";
         }
     });
