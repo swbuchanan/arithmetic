@@ -19,21 +19,45 @@
     
           input[type="number"] {
             width: 35px;
+            background-color: #555558;
+            color: #ffffff;
           }
-           body {
-              display: flex;
-              justify-content: center; /* Horizontally center */
-              height: 100vh;          /* Full viewport height */
-              margin: 0;
-              font-family: "Computer Modern", sans-serif;
-              background-color: #f4f4f4;
+          input[type="number"]:focus {
+            width: 35px;
+            outline: none;
+            background-color: #555558;
+            color: #ffffff;
+            box-shadow: 0px 0px 5px 2px #778866;
+          }
+          input[type="checkbox"] {
+            accent-color: #555568;
+            width: 20px;
+            height: 20px;
+          }
+          #answer:focus{
+            outline: none !important;
+/*            outline-color: #FF0000; */
+            border-color: #719ECE;
+            box-shadow: 0 0 10px #719ECE;
+          }
+          body {
+            display: flex;
+            justify-content: center; /* Horizontally center */
+            height: 100vh;          /* Full viewport height */
+            margin: 0;
+            font-family: "Computer Modern", mono;
+            color: #bbbbbb;
+            background-color: #444448;
           }
           form {
-              background: #fff;
-              padding: 20px 60px;
-              border: 1px solid #ccc;
-              border-radius: 10px;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: #393940;
+            padding: 20px 60px;
+            border: 1px solid #505050;
+            border-radius: 10px;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
+          .label {
+            color: #4488dd
           }
     </style>
 </head>
@@ -51,7 +75,7 @@
         If the upper and lower bounds are too close in fraction mode in gets weird.
         <br>
         <br>
-        <label><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
+        <label class="label"><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
 
         <br>
 
@@ -72,7 +96,7 @@
         <br>
 
         <!-- SUBTRACTION --!>
-      <label><input type="checkbox" id="subtraction-toggle" checked="true"/> Subtraction</label>
+      <label class="label"><input type="checkbox" id="subtraction-toggle" checked="true"/> Subtraction</label>
       <br>
       <div style="margin-left: 20px">
         <label><input type="checkbox" id="subtraction-reverse-toggle" checked="true"/> Addition problems in reverse</label>
@@ -92,7 +116,7 @@
       <br><br>
 
       <!-- MULTIPLICATION --!>
-      <label><input type="checkbox" id="multiplication-toggle" checked="true"/> Multiplication</label>
+      <label class="label"><input type="checkbox" id="multiplication-toggle" checked="true"/> Multiplication</label>
       <br>
       <div style="margin-left: 20px">
         <label>Range: (<input type="number" id="multiplication-left-min" placeholder=2 /></label>
@@ -111,7 +135,7 @@
 
 
       <!-- DIVISION --!>
-      <label><input type="checkbox" id="division-toggle" checked="true"/> Division</label>
+      <label class="label"><input type="checkbox" id="division-toggle" checked="true"/> Division</label>
       <br>
       <div style="margin-left: 20px">
         <label><input type="checkbox" id="division-reverse-toggle" checked="true"/> Multiplication problems in reverse</label>
@@ -136,7 +160,7 @@
 
     <div id="game" style="display: none; padding-top: 0%; text-align:center">
       <span id="question"></span>
-      <input id="answer" autocomplete="off"/>
+      <input id="answer" autocomplete="off" style="background-color:#333333; color:#bbbbbb; border:0px"/>
       <p>Time Left: <span id="timer"></span></p>
       <p id="myscore">Score: <span id="score"></span></p>
     </div>
