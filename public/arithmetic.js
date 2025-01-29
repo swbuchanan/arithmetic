@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var timerEl = document.getElementById("timer");
     var scoreEl = document.getElementById("score");
     var endScoreEl = document.getElementById("endScore");
+    // for measuring the response time
+    var time = Date.now();
+    var startTime = Date.now();
+    var cumTime = 0;
     // set default values
     var addLeftMin = 1;
     var addLeftMax = 99;
@@ -81,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (divisionProblems) {
             oper.push(['divide', '÷']);
         }
-        console.log("Active operations: " + oper);
+        console.log("Active operations: ".concat(oper));
     };
     var setActiveProblemTypes = function () {
         addTypes = [];
@@ -151,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
                 num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
                 return {
-                    question: "\n              <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n            ", questiontype: myType,
+                    question: "\n              <math display=\"inline\">".concat(num1, " ").concat(operstr, " ").concat(num2, " =</math>\n            "), questiontype: myType,
                     answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
                 };
             }
@@ -165,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 var mixedNum1 = num1 - offset1;
                 var mixedNum2 = num2 - offset2;
                 //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
-                return { question: "<math display=\"inline\">" + (mixedNum1 !== 0 ? mixedNum1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> + " + (mixedNum2 !== 0 ? mixedNum2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
+                return { question: "<math display=\"inline\">".concat(mixedNum1 !== 0 ? mixedNum1 : '', "<mfrac><mi>").concat(frac1[0], "</mi><mn>").concat(frac1[1], "</mn></mfrac> <mphantom>-</mphantom> + ").concat(mixedNum2 !== 0 ? mixedNum2 : '', "<mfrac><mi>").concat(frac2[0], "</mi><mn>").concat(frac2[1], "</mn></mfrac> <mphantom>-</mphantom> =</math> "), questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
             }
         }
         else if (opername === "subtract") {
@@ -183,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
                     num1 = parseFloat((num1 + num2).toFixed(addDecimalPlaces));
                     return {
-                        question: "\n                <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n              ", questiontype: myType,
+                        question: "\n                <math display=\"inline\">".concat(num1, " ").concat(operstr, " ").concat(num2, " =</math>\n              "), questiontype: myType,
                         answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
                     };
                 }
@@ -200,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     var mixedNum1 = num1 - offset1;
                     var mixedNum2 = num2 - offset2;
                     //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
-                    return { question: "<math display=\"inline\">" + (mixedNum1 !== 0 ? mixedNum1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> - " + (mixedNum2 !== 0 ? mixedNum2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 - num2 + offset2 + addFracs(frac1[0], frac1[1], -frac2[0], frac2[1]) };
+                    return { question: "<math display=\"inline\">".concat(mixedNum1 !== 0 ? mixedNum1 : '', "<mfrac><mi>").concat(frac1[0], "</mi><mn>").concat(frac1[1], "</mn></mfrac> <mphantom>-</mphantom> - ").concat(mixedNum2 !== 0 ? mixedNum2 : '', "<mfrac><mi>").concat(frac2[0], "</mi><mn>").concat(frac2[1], "</mn></mfrac> <mphantom>-</mphantom> =</math> "), questiontype: "fraction", answer: num1 - offset1 - num2 + offset2 + addFracs(frac1[0], frac1[1], -frac2[0], frac2[1]) };
                 }
             }
             else {
@@ -214,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     num1 = generateDec(addLeftMin, addLeftMax, addDecimalPlaces);
                     num2 = generateDec(addRightMin, addRightMax, addDecimalPlaces);
                     return {
-                        question: "\n                <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n              ", questiontype: myType,
+                        question: "\n                <math display=\"inline\">".concat(num1, " ").concat(operstr, " ").concat(num2, " =</math>\n              "), questiontype: myType,
                         answer: parseFloat(operations[opername](num1, num2).toFixed(addDecimalPlaces))
                     };
                 }
@@ -226,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     var offset1 = Math.floor(frac1[0] / frac1[1]);
                     var offset2 = Math.floor(frac2[0] / frac2[1]);
                     //            return {question: `${generateFrac()} ${operstr}  ${generateFrac()}`, answer: 69};
-                    return { question: "<math display=\"inline\">" + (num1 !== offset1 ? num1 - offset1 : '') + "<mfrac><mi>" + frac1[0] + "</mi><mn>" + frac1[1] + "</mn></mfrac> <mphantom>-</mphantom> + " + (num2 !== offset2 ? num2 - offset2 : '') + "<mfrac><mi>" + frac2[0] + "</mi><mn>" + frac2[1] + "</mn></mfrac> <mphantom>-</mphantom> =</math> ", questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
+                    return { question: "<math display=\"inline\">".concat(num1 !== offset1 ? num1 - offset1 : '', "<mfrac><mi>").concat(frac1[0], "</mi><mn>").concat(frac1[1], "</mn></mfrac> <mphantom>-</mphantom> + ").concat(num2 !== offset2 ? num2 - offset2 : '', "<mfrac><mi>").concat(frac2[0], "</mi><mn>").concat(frac2[1], "</mn></mfrac> <mphantom>-</mphantom> =</math> "), questiontype: "fraction", answer: num1 - offset1 + num2 - offset2 + addFracs(frac1[0], frac1[1], frac2[0], frac2[1]) };
                 }
             }
         }
@@ -240,14 +244,15 @@ document.addEventListener("DOMContentLoaded", function () {
             num1 = num1 * num2;
         }
         // Format this into some nice math
-        console.log(operations[opername](num1, num2));
+        console.log("answer: ".concat(operations[opername](num1, num2)));
         return {
-            question: "\n          <math display=\"inline\">" + num1 + " " + operstr + " " + num2 + " =</math>\n        ", questiontype: myType,
+            question: "\n          <math display=\"inline\">".concat(num1, " ").concat(operstr, " ").concat(num2, " =</math>\n        "), questiontype: myType,
             answer: operations[opername](num1, num2)
         };
     };
     // Start the game
     var startGame = function () {
+        startTime = Date.now();
         var addLeftMinInput = document.getElementById("addition-left-min").value;
         var addLeftMaxInput = document.getElementById("addition-left-max").value;
         var addRightMinInput = document.getElementById("addition-right-min").value;
@@ -312,6 +317,9 @@ document.addEventListener("DOMContentLoaded", function () {
         questionType = questiontype;
         answerInput.value = "";
         answerInput.focus();
+        // console.log(Date.now());
+        time = Date.now();
+        console.log("loaded a question in ".concat(time - startTime, " ms"));
     };
     // Check the answer
     var checkAnswer = function () {
@@ -325,8 +333,8 @@ document.addEventListener("DOMContentLoaded", function () {
             else if (frac.length === 1) { // just a simple fraction
                 frac = frac[0].split('/');
                 userAnswer = parseInt(frac[0]) / parseInt(frac[1]);
-                console.log("Useranswer: " + userAnswer);
-                console.log("correct answer: " + correctAnswer);
+                console.log("Useranswer: ".concat(userAnswer));
+                console.log("correct answer: ".concat(correctAnswer));
             }
             else if (frac.length === 2) { // mixed number
                 var fracPart = frac[1].split('/'); // TODO: this needs to be fixed in the case of bad user input
@@ -338,6 +346,11 @@ document.addEventListener("DOMContentLoaded", function () {
             userAnswer = parseFloat(answerInput.value);
         }
         if (userAnswer === correctAnswer) {
+            var temptime = Date.now() - time; // this is the time from when the last question was loaded
+            console.log("time taken: ".concat(temptime));
+            cumTime += temptime;
+            console.log("cumulative time: ".concat(cumTime));
+            console.log("actual elapsed time: ".concat(temptime + time - startTime));
             score++;
             scoreEl.textContent = score.toString();
             endScoreEl.textContent = score.toString();
@@ -447,7 +460,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Decimals
     // Addition
     document.getElementById('decimal-addition-toggle').addEventListener('change', function () {
-        console.log('bee booo');
         var element1 = document.getElementById('decimal-addition-amount');
         var element2 = document.getElementById('decimal-addition-display');
         if (this.checked) {
@@ -490,11 +502,9 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('fraction-addition-toggle').addEventListener('change', function () {
         if (this.checked) {
             addFractions = true;
-            console.log('we adding fractions baby');
         }
         else {
             addFractions = false;
-            console.log('frick');
         }
     });
     // Subtraction and division being reversed versions of the addition and multiplication problems
