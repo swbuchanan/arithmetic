@@ -3,74 +3,15 @@
 
 <head>
     <link rel="stylesheet" href="style.css">
-    <title>Simple Game in TypeScript</title>
-    <style>
-        /* Removing the arrows on the number input boxes */
-          /* For most browsers (Chrome, Edge, etc.) */
-          input[type="number"]::-webkit-inner-spin-button,
-          input[type="number"]::-webkit-outer-spin-button {
-              -webkit-appearance: none;
-              margin: 0;
-          }
-          /* For Firefox */
-          input[type="number"] {
-              -moz-appearance: textfield;
-          }
-    
-          input[type="number"] {
-            width: 35px;
-            background-color: #555558;
-            color: #ffffff;
-            font-family: "Computer Modern", mono;
-            font-size: 14px;
-            border: 0px;
-          }
-          input[type="number"]:focus {
-            width: 35px;
-            outline: none;
-            background-color: #555558;
-            color: #ffffff;
-            box-shadow: 0px 0px 5px 2px #778866;
-          }
-          input[type="checkbox"] {
-            accent-color: #555568;
-            width: 20px;
-            height: 20px;
-          }
-          #answer:focus{
-            outline: none !important;
-/*            outline-color: #FF0000; */
-            border-color: #719ECE;
-            box-shadow: 0 0 10px #719ECE;
-          }
-          body {
-            display: flex;
-            justify-content: center; /* Horizontally center */
-            height: 100vh;          /* Full viewport height */
-            margin: 0;
-            font-family: "Computer Modern", mono;
-            color: #bbbbbb;
-            background-color: #444448;
-          }
-          form {
-            background: #393940;
-            padding: 20px 60px;
-            border: 1px solid #505050;
-            border-radius: 10px;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
-          }
-          .label {
-            color: #4488dd
-          }
-    </style>
+    <title>Arithmetic Game</title>
 </head>
 
 <body>
-    <script src="arithmetic.js"></script>
+    <script type="module" src="arithmetic.js"></script>
 </body>
 
-<div id="app" ; style="width: 50%; display:flex; align-items:center; justify-content:center;">
-    <form id="settings" style="width: 80%">
+<div id="app">
+    <div id="description">
         A more customizable zetamac-type drill.
         <br>
         Fraction answers can be input as fractions in the form "a/b" or as mixed numbers with a single space in the form "a b/c".
@@ -86,53 +27,55 @@
         If you finish a run and refresh the page, the checkboxes (probably) won't be correct. You have to hard refresh.
         <br>
         <br>
+    </div>
+    <form id="settings" style="width: 80%">
         <label class="label"><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
 
         <br>
 
         <div style="margin-left: 20px">
-            <label>Range: (<input type="number" id="addition-left-min" placeholder=1 /></label>
-            <label> to <input type="number" id="addition-left-max" placeholder=99 />)</label> +
-            (<input type="number" id="addition-right-min" placeholder=1 /> to <input type="number" id="addition-right-max" placeholder=99 />)
+            <label>Range: (<input type="number" id="additionLeftMin" placeholder=1 /></label>
+            <label> to <input type="number" id="additionLeftMax" placeholder=99 />)</label> +
+            (<input type="number" id="additionRightMin" placeholder=1 /> to <input type="number" id="additionRightMax" placeholder=99 />)
             <br>
-            <label><input type="checkbox" id="integer-addition-toggle" checked="true"/> Integers</label>
+            <label><input type="checkbox" id="integerAdditionToggle" checked="true"/> Integers</label>
             <br>
-            <label><input type="checkbox" id="decimal-addition-toggle"/> Decimals</label>
-            <label id="decimal-addition-display" style="display:none;"><br>Decimal places </label><input type="number" id="decimal-addition-amount" style="display:none;" placeholder=2 />
+            <label><input type="checkbox" id="decimalAdditionToggle"/> Decimals</label>
+            <label id="decimalAdditionDisplay" style="display:none;"><br>Decimal places </label><input type="number" id="decimalAdditionAmount" style="display:none;" placeholder=2 />
             <br>
-            <label><input type="checkbox" id="fraction-addition-toggle"/> Fractions</label>
+            <label><input type="checkbox" id="fractionAdditionToggle"/> Fractions</label>
         </div>
 
         <br>
         <br>
 
         <!-- SUBTRACTION --!>
-      <label class="label"><input type="checkbox" id="subtraction-toggle" checked="true"/> Subtraction</label>
+      <label class="label"><input type="checkbox" id="subtractionToggle" checked="true"/> Subtraction</label>
       <br>
       <div style="margin-left: 20px">
-        <label><input type="checkbox" id="subtraction-reverse-toggle" checked="true"/> Addition problems in reverse</label>
+        <label><input type="checkbox" id="subtractionReverseToggle" checked="true"/> Addition problems in reverse</label>
         <br>
         <div id="subtraction-options" style="display: none">
-          <label>Range: (<input type="number" id="subtraction-left-min" placeholder=1 /></label>
-          <label> to <input type="number" id="subtraction-left-max" placeholder=99 />)</label> −
-          (<input type="number" id="subtraction-right-min" placeholder=1 /> to <input type="number" id="subtraction-right-max" placeholder=99 />)
+          <label>Range: (<input type="number" id="subtractionLeftMin" placeholder=1 /></label>
+          <label> to <input type="number" id="subtractionLeftMax" placeholder=99 />)</label> −
+          (<input type="number" id="subtractionRightMin" placeholder=1 /> to <input type="number" id="subtractionRightMax" placeholder=99 />)
           <br>
-          <label><input type="checkbox" id="integer-subtraction-toggle" checked="true"/> Integers</label>
+          <label><input type="checkbox" id="integerSubtractionToggle" checked="true"/> Integers</label>
           <br>
-          <label><input type="checkbox" id="decimal-subtraction-toggle"/> Decimals</label>
+          <label><input type="checkbox" id="decimalSubtractionToggle"/> Decimals</label>
           <br>
-          <label><input type="checkbox" id="fraction-subtraction-toggle"/> Fractions</label>
+          <label><input type="checkbox" id="fractionSubtractionToggle"/> Fractions</label>
         </div>
       </div>
       <br><br>
 
       <!-- MULTIPLICATION --!>
-      <label class="label"><input type="checkbox" id="multiplication-toggle" checked="true"/> Multiplication</label>
+      <label class="label"><input type="checkbox" id="multiplicationToggle" checked="true"/> Multiplication</label>
       <br>
       <div style="margin-left: 20px">
-        <label>Range: (<input type="number" id="multiplication-left-min" placeholder=2 /></label>
-        <label> to <input type="number" id="multiplication-left-max" placeholder=12 />)</label> ×
-        (<input type="number" id="multiplication-right-min" placeholder=2 /> to <input type="number" id="multiplication-right-max" placeholder=12 />)
+        <label>Range: (<input type="number" id="multiplicationLeftMin" placeholder=2 /></label>
+        <label> to <input type="number" id="multiplicationLeftMax" placeholder=12 />)</label> ×
+        (<input type="number" id="multiplicationRightMin" placeholde;=2 /> to <input type="number" id="multiplicationRightMax" placeholder=12 />)
         <br>
 <!--        <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
         <br>
@@ -146,21 +89,21 @@
 
 
       <!-- DIVISION --!>
-      <label class="label"><input type="checkbox" id="division-toggle" checked="true"/> Division</label>
+      <label class="label"><input type="checkbox" id="divisionToggle" checked="true"/> Division</label>
       <br>
       <div style="margin-left: 20px">
-        <label><input type="checkbox" id="division-reverse-toggle" checked="true"/> Multiplication problems in reverse</label>
+        <label><input type="checkbox" id="divisionReverseToggle" checked="true"/> Multiplication problems in reverse</label>
         <br>
         <div id="division-options" style="display: none">
-          <label>Range: (<input type="number" id="division-left-min" placeholder=1 /></label>
-          <label> to <input type="number" id="division-left-max" placeholder= 100 />)</label> ÷
-          (<input type="number" id="division-right-min" placeholder=1 /> to <input type="number" id="division-right-max" placeholder=10 />)
+          <label>Range: (<input type="number" id="divisionLeftMin" placeholder=1 /></label>
+          <label> to <input type="number" id="divisionLeftMax" placeholder= 100 />)</label> ÷
+          (<input type="number" id="divisionRightMin" placeholder=1 /> to <input type="number" id="divisionRightMax" placeholder=10 />)
           <br>
-          <label><input type="checkbox" id="integer-division-toggle" checked="true"/> Integers</label>
+          <label><input type="checkbox" id="integerDivisionToggle" checked="true"/> Integers</label>
           <br>
-          <label><input type="checkbox" id="decimal-division-toggle"/> Decimals</label>
+          <label><input type="checkbox" id="decimalDivisionToggle"/> Decimals</label>
           <br>
-          <label><input type="checkbox" id="fraction-division-toggle"/> Fractions</label>
+          <label><input type="checkbox" id="fractionDivisionToggle"/> Fractions</label>
         </div>
       </div>
       <br><br>
