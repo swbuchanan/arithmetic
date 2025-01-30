@@ -5,15 +5,16 @@ export class QuestionGenerator {
 
     */
     constructor() {
+        console.log("Question generator created.");
     }
     /**
      * Generates a math question of any type
-     * @param allowedTypes - What sort of numbers are allowed in the question
+     * @param allowedTypes - What sort of numbers are allowed in the question; should be a set containing some combination of the allowed types listed above
      * @param allowRearrangements - If this is true, the question can look like 'a + ? = b' or '? + a = b', otherwise it will look like 'a + b = ?'.
      * @returns A string that can be inserted into html to display a math question
      */
     generateQuestion(allowedTypes, allowRearrangements) {
-        if (allowedTypes.length === 0) {
+        if (allowedTypes.size === 0) {
             throw new Error("Must have at least one allowed question type");
         }
         let chosenType = false;

@@ -1,11 +1,16 @@
 export class Settings {
     constructor() {
         this.operationBounds = {
-            addition: { leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99 },
-            subtraction: { leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99 },
-            multiplication: { leftMin: 2, leftMax: 12, rightMin: 2, rightMax: 99 },
-            division: { leftMin: 1, leftMax: 100, rightMin: 1, rightMax: 100 }
+            additionLeftMin: 1, additionLeftMax: 99,
+            additionRightMin: 1, additionRightMax: 99,
+            subtractionLeftMin: 1, subtractionLeftMax: 99,
+            subtractionRightMin: 1, subtractionRightMax: 99,
+            multiplicationLeftMin: 2, multiplicationLeftMax: 12,
+            multiplicationRightMin: 2, multiplicationRightMax: 99,
+            divisionLeftMin: 1, divisionLeftMax: 100,
+            divisionRightMin: 1, divisionRightMax: 100
         };
+        console.log("Settings handler created.");
     }
     updateSetting(input) {
         if (input.type === "number") {
