@@ -8,16 +8,43 @@ export class Settings {
             multiplicationLeftMin: 2, multiplicationLeftMax: 12,
             multiplicationRightMin: 2, multiplicationRightMax: 99,
             divisionLeftMin: 1, divisionLeftMax: 100,
-            divisionRightMin: 1, divisionRightMax: 100
+            divisionRightMin: 1, divisionRightMax: 100,
+            timeLimit: 120
+        };
+        this.includeTypes = {
+            integerAdditionToggle: true,
+            decimalAdditionToggle: false,
+            fractionAdditionToggle: false,
+            integerSubtractionToggle: true,
+            decimalSubtractionToggle: false,
+            fractionSubtractionToggle: false,
+            integerMultiplicationToggle: true,
+            decimalMultplicationToggle: false,
+            fractionMultplicationToggle: false,
+            integerDivisionToggle: true,
+            decimalDivisionToggle: false,
+            fractionDivisionToggle: false,
         };
         console.log("Settings handler created.");
     }
-    updateSetting(input) {
-        if (input.type === "number") {
-            if (!input.valueAsNumber)
-                throw new Error("Not a number");
-            console.log(`updating ${input.id} with value ${input.valueAsNumber}`);
-            console.log(this.operationBounds);
+    updateBound(name, value) {
+        if (!value) {
+            throw new Error(`Bad value passed.`);
         }
+        if (!name) {
+            throw new Error(`No such bound exists.`);
+        }
+        console.log(`updating ${name} with value ${value}`);
+        this.operationBounds[name] = value;
+    }
+    getBound(name) {
+        return this.operationBounds[name];
+    }
+    updateToggle(name, value) {
+        if (!name) {
+            throw new Error(`No such toggle exists.`);
+        }
+        console.log(`updating ${name} with value ${value}`);
+        this.includeTypes[name] = value;
     }
 }

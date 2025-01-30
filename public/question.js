@@ -18,9 +18,6 @@ export class QuestionGenerator {
             throw new Error("Must have at least one allowed question type");
         }
         let chosenType = false;
-        //        while (!chosenType) {
-        //            chosenType = allowedTypes[]
-        //        }
         return { question: "2 + 2 = ?", type: "integer", answer: 4 };
     }
 }

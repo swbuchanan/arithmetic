@@ -30,6 +30,14 @@ input[type="checkbox"] {
     width: 20px;
     height: 20px;
 }
+
+#answerInput {
+    background-color: #333333;
+    color: #bbbbbb;
+    border: 0px;
+    font-family: "Computer Modern", mono;
+}
+
 #answer:focus {
     outline: none !important;
     /*            outline-color: #FF0000; */

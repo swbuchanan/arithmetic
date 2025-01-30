@@ -1,6 +1,4 @@
 
-
-
 type Operation = (a: number, b: number) => number;
 
 const operations: Record<string, Operation> = {

@@ -75,7 +75,7 @@
       <div style="margin-left: 20px">
         <label>Range: (<input type="number" id="multiplicationLeftMin" placeholder=2 /></label>
         <label> to <input type="number" id="multiplicationLeftMax" placeholder=12 />)</label> ×
-        (<input type="number" id="multiplicationRightMin" placeholde;=2 /> to <input type="number" id="multiplicationRightMax" placeholder=12 />)
+        (<input type="number" id="multiplicationRightMin" placeholder=2 /> to <input type="number" id="multiplicationRightMax" placeholder=12 />)
         <br>
 <!--        <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
         <br>
@@ -107,14 +107,14 @@
         </div>
       </div>
       <br><br>
-      <label>Time Limit (seconds): <input type="number" id="time-limit" /></label>
+      <label>Time Limit (seconds): <input type="number" id="timeLimit" placeholder=120></label>
       <p></p>
       <button type="button" class="start-game">Start Game</button>
     </form>
 
     <div id="game" style="display: none; padding-top: 0%; text-align:center">
       <span id="question"></span>
-      <input id="answer" autocomplete="off" style="background-color:#333333; color:#bbbbbb; border:0px"/>
+      <input id="answerInput" autocomplete="off"/>
       <p>Time Left: <span id="timer"></span></p>
       <p id="myscore">Score: <span id="score"></span></p>
     </div>
