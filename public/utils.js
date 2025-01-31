@@ -1,8 +1,8 @@
-const operations = {
-    add: (a, b) => a + b,
-    subtract: (a, b) => a - b,
-    multiply: (a, b) => a * b,
-    divide: (a, b) => a / b,
+export const operations = {
+    addition: (a, b) => a + b,
+    subtraction: (a, b) => a - b,
+    multiplication: (a, b) => a * b,
+    division: (a, b) => a / b,
 };
 // find gcd using Euclid's algorithm
 export function gcd(a, b) {

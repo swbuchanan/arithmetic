@@ -30,7 +30,6 @@ export class UI {
         this.questionEl = document.getElementById("question") as HTMLParagraphElement;
         this.answerInput = document.getElementById("answerInput") as HTMLInputElement;
     
-        this.attachListeners();
 
         // create the timer
         this.timerEl = document.getElementById("timer")!;
@@ -40,6 +39,7 @@ export class UI {
         );
 
         // assign data operator types to the input elements
+        // this needs to be done before attaching the listeners (is this bad practice?)
 
         for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
             const parentDiv = document.getElementById(settingType) as HTMLElement;
@@ -50,6 +50,8 @@ export class UI {
                 });
             }
         }
+
+        this.attachListeners();
     } 
 
     private assignDefaults () {
@@ -68,8 +70,6 @@ export class UI {
             
             // this is to get the default values from all the inputs
             this.updateSetting(input);
-//            if (input.type === "number") this.settings.updateBound(input.id, parseInt(input.placeholder));
-//            if (input.type === "checkbox") this.settings.updateToggle(input.id, input.checked);
 
             input.addEventListener("input", () => {
                 this.updateSetting(input);
@@ -93,9 +93,11 @@ export class UI {
         if (input.type === "number") {
             // if there is a valid number in the input, we want to use that, otherwise use the default value
             if (input.valueAsNumber) {
-                this.settings.updateBound(input.id, input.valueAsNumber);
+//                this.settings.updateBound(input.id, input.valueAsNumber);
+                if (input.dataset.operatorType && input.dataset.boundType) this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, input.valueAsNumber);
             } else {
-                this.settings.updateBound(input.id, parseInt(input.placeholder));
+                // this.settings.updateBound(input.id, parseInt(input.placeholder));
+                if (input.dataset.operatorType && input.dataset.boundType) this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
             }
         }
         if (input.type === "checkbox") {
@@ -107,8 +109,8 @@ export class UI {
     startGame = () => { // this has to be an arrow function for context reasons that I don't quite understand
         console.log("Starting the game");
         this.game.startGame();
-        this.timer.start(this.settings.getBound("timeLimit"));
-        this.updateTimerDisplay(this.settings.getBound("timeLimit"));
+        this.timer.start(this.settings.getSetting("timeLimit"));
+        this.updateTimerDisplay(this.settings.getSetting("timeLimit"));
         this.settingsForm.style.display = "none";
         this.endDiv.style.display = "none";
         this.gameDiv.style.display = "block";

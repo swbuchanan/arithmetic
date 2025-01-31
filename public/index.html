@@ -34,9 +34,9 @@
         <br>
 
         <div id="addition-settings" data-operator-type="addition">
-            <label>Range: (<input type="number" id="additionLeftMin" placeholder=1 /></label>
-            <label> to <input type="number" id="additionLeftMax" placeholder=99 />)</label> +
-            (<input type="number" id="additionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="additionRightMax" data-bound-type="rightMin" placeholder=99 />)
+            <label>Range: (<input type="number" id="additionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
+            <label> to <input type="number" id="additionLeftMax" data-bound-type="leftMax" placeholder=99 />)</label> +
+            (<input type="number" id="additionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="additionRightMax" data-bound-type="rightMax" placeholder=99 />)
             <br>
             <label><input type="checkbox" id="integerAdditionToggle" data-number-type="integer" checked="true"/> Integers</label>
             <br>
@@ -56,9 +56,9 @@
         <label><input type="checkbox" id="subtractionReverseToggle" checked="true"/> Addition problems in reverse</label>
         <br>
         <div id="subtraction-options" style="display: none">
-          <label>Range: (<input type="number" id="subtractionLeftMin" placeholder=1 /></label>
-          <label> to <input type="number" id="subtractionLeftMax" placeholder=99 />)</label> −
-          (<input type="number" id="subtractionRightMin" placeholder=1 /> to <input type="number" id="subtractionRightMax" placeholder=99 />)
+          <label>Range: (<input type="number" id="subtractionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
+          <label> to <input type="number" id="subtractionLeftMax" data-bound-type="leftMax" placeholder=99 />)</label> −
+          (<input type="number" id="subtractionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="subtractionRightMax" data-bound-type="rightMax" placeholder=99 />)
           <br>
           <label><input type="checkbox" id="integerSubtractionToggle" data-number-type="integer" checked="true"/> Integers</label>
           <br>
@@ -73,9 +73,9 @@
       <label class="label"><input type="checkbox" id="multiplicationToggle" checked="true"/> Multiplication</label>
       <br>
       <div id="multiplication-settings" data-operator-type="multiplication">
-        <label>Range: (<input type="number" id="multiplicationLeftMin" placeholder=2 /></label>
-        <label> to <input type="number" id="multiplicationLeftMax" placeholder=12 />)</label> ×
-        (<input type="number" id="multiplicationRightMin" placeholder=2 /> to <input type="number" id="multiplicationRightMax" placeholder=12 />)
+        <label>Range: (<input type="number" id="multiplicationLeftMin" data-bound-type="leftMin" placeholder=2 /></label>
+        <label> to <input type="number" id="multiplicationLeftMax" data-bound-type="leftMax" placeholder=12 />)</label> ×
+        (<input type="number" id="multiplicationRightMin" data-bound-type="rightMin" placeholder=2 /> to <input type="number" id="multiplicationRightMax" data-bound-type="rightMax" placeholder=12 />)
         <br>
         <label><input type="checkbox" id="integerMultiplicationToggle" data-number-type="integer" checked="true"/> Integers</label>
         <br>
@@ -94,9 +94,9 @@
         <label><input type="checkbox" id="divisionReverseToggle" checked="true"/> Multiplication problems in reverse</label>
         <br>
         <div id="division-options" style="display: none">
-          <label>Range: (<input type="number" id="divisionLeftMin" placeholder=1 /></label>
-          <label> to <input type="number" id="divisionLeftMax" placeholder= 100 />)</label> ÷
-          (<input type="number" id="divisionRightMin" placeholder=1 /> to <input type="number" id="divisionRightMax" placeholder=10 />)
+          <label>Range: (<input type="number" id="divisionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
+          <label> to <input type="number" id="divisionLeftMax" data-bound-type="leftMax" placeholder= 100 />)</label> ÷
+          (<input type="number" id="divisionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="divisionRightMax" data-bound-type="rightMax" placeholder=10 />)
           <br>
           <label><input type="checkbox" id="integerDivisionToggle" data-number-type="integer" checked="true"/> Integers</label>
           <br>

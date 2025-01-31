@@ -1,11 +1,11 @@
 
 type Operation = (a: number, b: number) => number;
 
-const operations: Record<string, Operation> = {
-  add: (a, b) => a + b,
-  subtract: (a, b) => a - b,
-  multiply: (a, b) => a * b,
-  divide: (a, b) => a / b,
+export const operations: Record<string, Operation> = {
+  addition: (a, b) => a + b,
+  subtraction: (a, b) => a - b,
+  multiplication: (a, b) => a * b,
+  division: (a, b) => a / b,
 }
 
 // find gcd using Euclid's algorithm

@@ -8,9 +8,10 @@ export type QuestionType = { numberType: NumberType, operatorType: OperatorType 
 
 export class QuestionGenerator {
 
-    private operationBounds: Record<string, number>; 
+    private operationBounds: Record<string, Record<string, number>>; 
+    private readonly operationStrings = {addition: "+", subtraction: "-", multiplication: "x", division: "/"};
 
-    constructor(operationBounds: Record<string, number>) {
+    constructor(operationBounds: Record<string, Record<string, number>>) {
         this.operationBounds = operationBounds;
         console.log("Question generator created.");
     }
@@ -27,13 +28,10 @@ export class QuestionGenerator {
         }
         let chosenType = allowedTypes[Utils.generateInt(0, allowedTypes.length)];
 
-        console.log(`I could generate a question from ${allowedTypes}`);
-        console.log(`i would like to generate a question of type ${chosenType.numberType} ${chosenType.operatorType} but alas`);
+        let leftNum = Utils.generateInt(this.operationBounds[chosenType.operatorType].leftMin, this.operationBounds[chosenType.operatorType].leftMax);
+        let rightNum = Utils.generateInt(this.operationBounds[chosenType.operatorType].rightMin, this.operationBounds[chosenType.operatorType].rightMax);
 
-        let num1 = Utils.generateInt(this.operationBounds.additionLeftMin, this.operationBounds.additionLeftMax);
-        let num2 = Utils.generateInt(this.operationBounds.additionRightMin, this.operationBounds.additionRightMax);
-        return {question: `${num1} + ${num2} = `, type: 'integer', answer: num1 + num2};
-//        return {question: "2 + 2 = ?", type: "integer", answer: 4};
+        return {question: `${leftNum} ${this.operationStrings[chosenType.operatorType]} ${rightNum} = `, type: 'integer', answer: Utils.operations[chosenType.operatorType](leftNum,rightNum)};
     }
 
 }

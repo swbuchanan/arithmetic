@@ -6,8 +6,8 @@ export class UI {
         this.startGame = () => {
             console.log("Starting the game");
             this.game.startGame();
-            this.timer.start(this.settings.getBound("timeLimit"));
-            this.updateTimerDisplay(this.settings.getBound("timeLimit"));
+            this.timer.start(this.settings.getSetting("timeLimit"));
+            this.updateTimerDisplay(this.settings.getSetting("timeLimit"));
             this.settingsForm.style.display = "none";
             this.endDiv.style.display = "none";
             this.gameDiv.style.display = "block";
@@ -24,13 +24,13 @@ export class UI {
         this.timerEl = document.getElementById("timer");
         this.questionEl = document.getElementById("question");
         this.answerInput = document.getElementById("answerInput");
-        this.attachListeners();
         // create the timer
         this.timerEl = document.getElementById("timer");
         this.timer = new Timer((timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
         () => this.endGame() // Handle game end
         );
         // assign data operator types to the input elements
+        // this needs to be done before attaching the listeners (is this bad practice?)
         for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
             const parentDiv = document.getElementById(settingType);
             if (parentDiv) {
@@ -39,6 +39,7 @@ export class UI {
                 });
             }
         }
+        this.attachListeners();
     }
     assignDefaults() {
         const form = document.getElementById("settings");
@@ -73,10 +74,14 @@ export class UI {
         if (input.type === "number") {
             // if there is a valid number in the input, we want to use that, otherwise use the default value
             if (input.valueAsNumber) {
-                this.settings.updateBound(input.id, input.valueAsNumber);
+                //                this.settings.updateBound(input.id, input.valueAsNumber);
+                if (input.dataset.operatorType && input.dataset.boundType)
+                    this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, input.valueAsNumber);
             }
             else {
-                this.settings.updateBound(input.id, parseInt(input.placeholder));
+                // this.settings.updateBound(input.id, parseInt(input.placeholder));
+                if (input.dataset.operatorType && input.dataset.boundType)
+                    this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
             }
         }
         if (input.type === "checkbox") {
