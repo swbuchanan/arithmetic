@@ -36,9 +36,12 @@ input[type="checkbox"] {
     color: #bbbbbb;
     border: 0px;
     font-family: "Computer Modern", mono;
+    font-size: 36px;
+    height: 50px;
+    width: 80px;
 }
 
-#answer:focus {
+#answerInput:focus {
     outline: none !important;
     /*            outline-color: #FF0000; */
     border-color: #719ECE;
@@ -49,6 +52,16 @@ input[type="checkbox"] {
     width: 50%;
     align-items: center;
     justify-content: center;
+}
+
+#game {
+    display: none;
+    padding-top: 40%;
+    text-align: center;
+}
+
+#question {
+    font-size: 36px;
 }
 
 #description {

@@ -4,11 +4,13 @@ import { QuestionGenerator } from "./question.js";
 
 export class Game {
 
-    private QG: QuestionGenerator;
+    private QG!: QuestionGenerator;
     private question: { question: string, type: string, answer: number };
+    private settings: Settings;
 
-    constructor() { // I think maybe this class should have a settings object
-        this.QG = new QuestionGenerator();
+    constructor(settings: Settings) { // I think maybe this class should have a settings object
+        this.settings = settings;
+        // this.QG = new QuestionGenerator(this.settings.getOperationBounds());
         this.question = { question: "", type: "", answer: 0 };
         console.log("Game object created.");
     }
@@ -28,6 +30,10 @@ export class Game {
             return true;
         }
         return false;
+    }
+
+    startGame(){
+        this.QG = new QuestionGenerator(this.settings.getOperationBounds());
     }
 
     endGame () {

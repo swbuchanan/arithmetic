@@ -1,9 +1,11 @@
+import { Game } from "./game.js";
 import { Timer } from "./timer.js";
 import { Settings } from "./settings.js";
 export class UI {
-    constructor(game) {
+    constructor() {
         this.startGame = () => {
             console.log("Starting the game");
+            this.game.startGame();
             this.timer.start(this.settings.getBound("timeLimit"));
             this.updateTimerDisplay(this.settings.getBound("timeLimit"));
             this.settingsForm.style.display = "none";
@@ -13,7 +15,7 @@ export class UI {
             this.updateQuestionDisplay();
         };
         this.settings = new Settings();
-        this.game = game;
+        this.game = new Game(this.settings);
         this.gameDiv = document.getElementById("game");
         this.startButtons = document.querySelectorAll(".start-game");
         this.endDiv = document.getElementById("ending");
@@ -67,11 +69,13 @@ export class UI {
         this.answerInput.addEventListener("input", () => {
             console.log(this.answerInput.value);
             if (this.game.checkAnswer(this.answerInput.value))
-                this.updateQuestionDisplay();
+                this.processCorrectAnswer();
         });
     }
     updateQuestionDisplay() {
         this.questionEl.innerHTML = this.game.loadNextQuestion();
+        console.log(this.answerInput);
+        this.answerInput.focus();
     }
     endGame() {
         console.log("Ending the game");
@@ -81,5 +85,10 @@ export class UI {
     updateTimerDisplay(timeLeft) {
         console.log(timeLeft);
         this.timerEl.textContent = timeLeft.toString();
+    }
+    processCorrectAnswer() {
+        this.updateQuestionDisplay(); // load the next question
+        this.answerInput.value = ""; // clear the input box
+        this.answerInput.focus();
     }
 }

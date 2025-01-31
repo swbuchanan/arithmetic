@@ -16,10 +16,10 @@ export class UI {
     private settingsForm:HTMLFormElement;
     private description:HTMLDivElement;
 
-    constructor(game: Game) {
+    constructor() {
 
         this.settings = new Settings();
-        this.game = new Game;
+        this.game = new Game(this.settings);
         this.gameDiv = document.getElementById("game") as HTMLDivElement;
         this.startButtons = document.querySelectorAll<HTMLButtonElement>(".start-game");
         this.endDiv = document.getElementById("ending") as HTMLDivElement;
@@ -77,13 +77,14 @@ export class UI {
         // listen for user answer
         this.answerInput.addEventListener("input", () => {
             console.log(this.answerInput.value);
-            if (this.game.checkAnswer(this.answerInput.value)) this.updateQuestionDisplay();
+            if (this.game.checkAnswer(this.answerInput.value)) this.processCorrectAnswer();
         });
 
     }
 
     startGame = () => { // this has to be an arrow function for context reasons that I don't quite understand
         console.log("Starting the game");
+        this.game.startGame();
         this.timer.start(this.settings.getBound("timeLimit"));
         this.updateTimerDisplay(this.settings.getBound("timeLimit"));
         this.settingsForm.style.display = "none";
@@ -95,6 +96,7 @@ export class UI {
 
     updateQuestionDisplay() {
         this.questionEl.innerHTML = this.game.loadNextQuestion();
+        this.answerInput.focus();
     }
 
     endGame() {
@@ -106,6 +108,12 @@ export class UI {
     updateTimerDisplay(timeLeft: number): void {
         console.log(timeLeft);
         this.timerEl.textContent = timeLeft.toString();
+    }
+
+    processCorrectAnswer() {
+        this.updateQuestionDisplay();   // load the next question
+        this.answerInput.value = "";    // clear the input box
+        this.answerInput.focus();
     }
 
 

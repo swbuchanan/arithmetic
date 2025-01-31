@@ -27,6 +27,9 @@ export class Settings {
         };
         console.log("Settings handler created.");
     }
+    getOperationBounds() {
+        return this.operationBounds;
+    }
     updateBound(name, value) {
         if (!value) {
             throw new Error(`Bad value passed.`);

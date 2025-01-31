@@ -1,8 +1,9 @@
 import { QuestionGenerator } from "./question.js";
 // import { Timer } from "./timer";
 export class Game {
-    constructor() {
-        this.QG = new QuestionGenerator();
+    constructor(settings) {
+        this.settings = settings;
+        // this.QG = new QuestionGenerator(this.settings.getOperationBounds());
         this.question = { question: "", type: "", answer: 0 };
         console.log("Game object created.");
     }
@@ -18,6 +19,9 @@ export class Game {
             return true;
         }
         return false;
+    }
+    startGame() {
+        this.QG = new QuestionGenerator(this.settings.getOperationBounds());
     }
     endGame() {
     }

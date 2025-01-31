@@ -34,6 +34,9 @@ export class Settings {
         console.log("Settings handler created.");
     }
 
+    public getOperationBounds(): Record<string, number> {
+        return this.operationBounds;
+    }
 
 
     public updateBound(name: string, value: number) {
