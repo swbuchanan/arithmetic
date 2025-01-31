@@ -1,5 +1,9 @@
-export class Settings {
-    constructor() {
+"use strict";
+// manages the user-determined settings
+exports.__esModule = true;
+exports.Settings = void 0;
+var Settings = /** @class */ (function () {
+    function Settings() {
         this.operationBounds = {
             additionLeftMin: 1, additionLeftMax: 99,
             additionRightMin: 1, additionRightMax: 99,
@@ -23,31 +27,33 @@ export class Settings {
             fractionMultplicationToggle: false,
             integerDivisionToggle: true,
             decimalDivisionToggle: false,
-            fractionDivisionToggle: false,
+            fractionDivisionToggle: false
         };
         console.log("Settings handler created.");
     }
-    getOperationBounds() {
+    Settings.prototype.getOperationBounds = function () {
         return this.operationBounds;
-    }
-    updateBound(name, value) {
+    };
+    Settings.prototype.updateBound = function (name, value) {
         if (!value) {
-            throw new Error(`Bad value passed.`);
+            throw new Error("Bad value passed.");
         }
         if (!name) {
-            throw new Error(`No such bound exists.`);
+            throw new Error("No such bound exists.");
         }
-        console.log(`updating ${name} with value ${value}`);
+        console.log("updating ".concat(name, " with value ").concat(value));
         this.operationBounds[name] = value;
-    }
-    getBound(name) {
+    };
+    Settings.prototype.getBound = function (name) {
         return this.operationBounds[name];
-    }
-    updateToggle(name, value) {
+    };
+    Settings.prototype.updateToggle = function (name, value) {
         if (!name) {
-            throw new Error(`No such toggle exists.`);
+            throw new Error("No such toggle exists.");
         }
-        console.log(`updating ${name} with value ${value}`);
+        console.log("updating ".concat(name, " with value ").concat(value));
         this.includeTypes[name] = value;
-    }
-}
+    };
+    return Settings;
+}());
+exports.Settings = Settings;

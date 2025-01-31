@@ -1,6 +1,8 @@
+// handles miscellaneous game logic
+
 import { Settings } from "./settings.js";
+// import { QuestionGenerator, QuestionType, OperatorType, NumberType } from "./question.js";
 import { QuestionGenerator } from "./question.js";
-// import { Timer } from "./timer";
 
 export class Game {
 
@@ -16,10 +18,9 @@ export class Game {
     }
 
     loadNextQuestion(): string {
-        this.question = this.QG.generateQuestion(new Set(["integers"]), false);
+        this.question = this.QG.generateQuestion([{numberType: "integers", operatorType: "addition"}], false);
         console.log(`Loaded question: ${this.question.question}`);
         return this.question.question;
-
     }
 
     checkAnswer(userAnswer: string): boolean {

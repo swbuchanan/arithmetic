@@ -1,5 +1,7 @@
-import { UI } from "./ui.js";
-document.addEventListener("DOMContentLoaded", () => {
+"use strict";
+exports.__esModule = true;
+var ui_js_1 = require("./ui.js");
+document.addEventListener("DOMContentLoaded", function () {
     // this is the main game file
-    let ui = new UI();
+    var ui = new ui_js_1.UI();
 });

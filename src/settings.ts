@@ -1,3 +1,4 @@
+// manages the user-determined settings
 
 export class Settings {
 

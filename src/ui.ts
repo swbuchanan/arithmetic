@@ -63,7 +63,11 @@ export class UI {
 
             input.addEventListener("input", () => {
                 if (input.type === "number") this.settings.updateBound(input.id, input.valueAsNumber);
-                if (input.type === "checkbox") this.settings.updateToggle(input.id, input.checked);
+                if (input.type === "checkbox") {
+                    this.settings.updateToggle(input.id, input.checked);
+                    console.log("checkbox");
+                    console.log(input.dataset);
+                }
 
                 // this.settings.updateSetting(input.id, input.value | input.valueAsNumber);
             });

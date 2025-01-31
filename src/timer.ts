@@ -1,3 +1,4 @@
+// timer
 
 export class Timer {
     private timerId: ReturnType<typeof setInterval> | null = null;

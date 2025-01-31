@@ -1,6 +1,10 @@
+// generates questions to display
+
 import * as Utils from "./utils.js"
 
-type QuestionType = "integers" | "decimals" | "fractions";
+type OperatorType = "addition" | "subtraction" | "multiplication" | "division";
+type NumberType = "integers" | "decimals" | "fractions";
+type QuestionType = { numberType: NumberType, operatorType: OperatorType };
 
 export class QuestionGenerator {
     /*
@@ -21,11 +25,11 @@ export class QuestionGenerator {
      * @param allowRearrangements - If this is true, the question can look like 'a + ? = b' or '? + a = b', otherwise it will look like 'a + b = ?'.
      * @returns A string that can be inserted into html to display a math question
      */
-    generateQuestion(allowedTypes: Set<QuestionType>, allowRearrangements: boolean): { question: string; type: string; answer: number } {
-        if (allowedTypes.size === 0) {
-            throw new Error("Must have at least one allowed question type");
+    generateQuestion(allowedTypes: QuestionType[], allowRearrangements: boolean): { question: string; type: string; answer: number } {
+        if (allowedTypes.length === 0) {
+            throw new Error("Must have at least one allowed question type.");
         }
-        let chosenType = false;
+        let chosenType = allowedTypes[Utils.generateInt(0, allowedTypes.length)];
         let num1 = Utils.generateInt(this.operationBounds.additionLeftMin, this.operationBounds.additionLeftMax);
         let num2 = Utils.generateInt(this.operationBounds.additionRightMin, this.operationBounds.additionRightMax);
         return {question: `${num1} + ${num2} = `, type: 'integer', answer: num1 + num2};

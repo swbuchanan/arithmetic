@@ -1,21 +1,25 @@
-import { Game } from "./game.js";
-import { Timer } from "./timer.js";
-import { Settings } from "./settings.js";
-export class UI {
-    constructor() {
-        this.startGame = () => {
+"use strict";
+exports.__esModule = true;
+exports.UI = void 0;
+var game_js_1 = require("./game.js");
+var timer_js_1 = require("./timer.js");
+var settings_js_1 = require("./settings.js");
+var UI = /** @class */ (function () {
+    function UI() {
+        var _this = this;
+        this.startGame = function () {
             console.log("Starting the game");
-            this.game.startGame();
-            this.timer.start(this.settings.getBound("timeLimit"));
-            this.updateTimerDisplay(this.settings.getBound("timeLimit"));
-            this.settingsForm.style.display = "none";
-            this.endDiv.style.display = "none";
-            this.gameDiv.style.display = "block";
-            this.description.style.display = "none";
-            this.updateQuestionDisplay();
+            _this.game.startGame();
+            _this.timer.start(_this.settings.getBound("timeLimit"));
+            _this.updateTimerDisplay(_this.settings.getBound("timeLimit"));
+            _this.settingsForm.style.display = "none";
+            _this.endDiv.style.display = "none";
+            _this.gameDiv.style.display = "block";
+            _this.description.style.display = "none";
+            _this.updateQuestionDisplay();
         };
-        this.settings = new Settings();
-        this.game = new Game(this.settings);
+        this.settings = new settings_js_1.Settings();
+        this.game = new game_js_1.Game(this.settings);
         this.gameDiv = document.getElementById("game");
         this.startButtons = document.querySelectorAll(".start-game");
         this.endDiv = document.getElementById("ending");
@@ -29,66 +33,72 @@ export class UI {
         this.attachListeners();
         // create the timer
         this.timerEl = document.getElementById("timer");
-        this.timer = new Timer(
+        this.timer = new timer_js_1.Timer(
         //    this.settings.getBound('timeLimit'), // Initial duration
-        (timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
-        () => this.endGame() // Handle game end
+        function (timeLeft) { return _this.updateTimerDisplay(timeLeft); }, // Update UI
+        function () { return _this.endGame(); } // Handle game end
         );
         console.log("UI activated");
     }
-    assignDefaults() {
-        const form = document.getElementById("settings");
-        form.querySelectorAll("input").forEach((input) => {
+    UI.prototype.assignDefaults = function () {
+        var _this = this;
+        var form = document.getElementById("settings");
+        form.querySelectorAll("input").forEach(function (input) {
             if (input.type === "number")
-                this.settings.updateBound(input.id, parseInt(input.placeholder));
+                _this.settings.updateBound(input.id, parseInt(input.placeholder));
             if (input.type === "checkbox")
-                this.settings.updateToggle(input.id, input.checked);
+                _this.settings.updateToggle(input.id, input.checked);
         });
-    }
-    attachListeners() {
+    };
+    UI.prototype.attachListeners = function () {
+        var _this = this;
         // attach listeners to all input elements in the settings form
         console.log("attaching listeners to input elements...");
-        const form = document.getElementById("settings");
+        var form = document.getElementById("settings");
         if (!form)
             return;
-        form.querySelectorAll("input").forEach((input) => {
-            const settingKey = input.dataset.setting;
-            input.addEventListener("input", () => {
+        form.querySelectorAll("input").forEach(function (input) {
+            var settingKey = input.dataset.setting;
+            input.addEventListener("input", function () {
                 if (input.type === "number")
-                    this.settings.updateBound(input.id, input.valueAsNumber);
-                if (input.type === "checkbox")
-                    this.settings.updateToggle(input.id, input.checked);
+                    _this.settings.updateBound(input.id, input.valueAsNumber);
+                if (input.type === "checkbox") {
+                    _this.settings.updateToggle(input.id, input.checked);
+                    console.log("checkbox");
+                    console.log(input.dataset);
+                }
                 // this.settings.updateSetting(input.id, input.value | input.valueAsNumber);
             });
         });
         // start game buttons
-        this.startButtons.forEach((button) => {
-            button.addEventListener("click", this.startGame);
+        this.startButtons.forEach(function (button) {
+            button.addEventListener("click", _this.startGame);
         });
         // listen for user answer
-        this.answerInput.addEventListener("input", () => {
-            console.log(this.answerInput.value);
-            if (this.game.checkAnswer(this.answerInput.value))
-                this.processCorrectAnswer();
+        this.answerInput.addEventListener("input", function () {
+            console.log(_this.answerInput.value);
+            if (_this.game.checkAnswer(_this.answerInput.value))
+                _this.processCorrectAnswer();
         });
-    }
-    updateQuestionDisplay() {
+    };
+    UI.prototype.updateQuestionDisplay = function () {
         this.questionEl.innerHTML = this.game.loadNextQuestion();
-        console.log(this.answerInput);
         this.answerInput.focus();
-    }
-    endGame() {
+    };
+    UI.prototype.endGame = function () {
         console.log("Ending the game");
         this.gameDiv.style.display = "none";
         this.endDiv.style.display = "block";
-    }
-    updateTimerDisplay(timeLeft) {
+    };
+    UI.prototype.updateTimerDisplay = function (timeLeft) {
         console.log(timeLeft);
         this.timerEl.textContent = timeLeft.toString();
-    }
-    processCorrectAnswer() {
+    };
+    UI.prototype.processCorrectAnswer = function () {
         this.updateQuestionDisplay(); // load the next question
         this.answerInput.value = ""; // clear the input box
         this.answerInput.focus();
-    }
-}
+    };
+    return UI;
+}());
+exports.UI = UI;
