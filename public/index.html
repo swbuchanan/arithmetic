@@ -33,17 +33,17 @@
 
         <br>
 
-        <div style="margin-left: 20px">
+        <div id="addition-settings" data-operator-type="addition">
             <label>Range: (<input type="number" id="additionLeftMin" placeholder=1 /></label>
             <label> to <input type="number" id="additionLeftMax" placeholder=99 />)</label> +
-            (<input type="number" id="additionRightMin" placeholder=1 /> to <input type="number" id="additionRightMax" placeholder=99 />)
+            (<input type="number" id="additionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="additionRightMax" data-bound-type="rightMin" placeholder=99 />)
             <br>
-            <label><input type="checkbox" id="integerAdditionToggle" data-number-type="integer" data-operator-type="addition" checked="true"/> Integers</label>
+            <label><input type="checkbox" id="integerAdditionToggle" data-number-type="integer" checked="true"/> Integers</label>
             <br>
-            <label><input type="checkbox" id="decimalAdditionToggle"/> Decimals</label>
+            <label><input type="checkbox" id="decimalAdditionToggle" data-number-type="decimal" /> Decimals</label>
             <label id="decimalAdditionDisplay" style="display:none;"><br>Decimal places </label><input type="number" id="decimalAdditionAmount" style="display:none;" placeholder=2 />
             <br>
-            <label><input type="checkbox" id="fractionAdditionToggle"/> Fractions</label>
+            <label><input type="checkbox" id="fractionAdditionToggle" data-number-type="fraction" /> Fractions</label>
         </div>
 
         <br>
@@ -52,7 +52,7 @@
         <!-- SUBTRACTION --!>
       <label class="label"><input type="checkbox" id="subtractionToggle" checked="true"/> Subtraction</label>
       <br>
-      <div style="margin-left: 20px">
+      <div id="subtraction-settings" data-operator-type="subtraction">
         <label><input type="checkbox" id="subtractionReverseToggle" checked="true"/> Addition problems in reverse</label>
         <br>
         <div id="subtraction-options" style="display: none">
@@ -60,11 +60,11 @@
           <label> to <input type="number" id="subtractionLeftMax" placeholder=99 />)</label> −
           (<input type="number" id="subtractionRightMin" placeholder=1 /> to <input type="number" id="subtractionRightMax" placeholder=99 />)
           <br>
-          <label><input type="checkbox" id="integerSubtractionToggle" checked="true"/> Integers</label>
+          <label><input type="checkbox" id="integerSubtractionToggle" data-number-type="integer" checked="true"/> Integers</label>
           <br>
-          <label><input type="checkbox" id="decimalSubtractionToggle"/> Decimals</label>
+          <label><input type="checkbox" id="decimalSubtractionToggle" data-number-type="decimal" /> Decimals</label>
           <br>
-          <label><input type="checkbox" id="fractionSubtractionToggle"/> Fractions</label>
+          <label><input type="checkbox" id="fractionSubtractionToggle" data-number-type="fraction" /> Fractions</label>
         </div>
       </div>
       <br><br>
@@ -72,18 +72,17 @@
       <!-- MULTIPLICATION --!>
       <label class="label"><input type="checkbox" id="multiplicationToggle" checked="true"/> Multiplication</label>
       <br>
-      <div style="margin-left: 20px">
+      <div id="multiplication-settings" data-operator-type="multiplication">
         <label>Range: (<input type="number" id="multiplicationLeftMin" placeholder=2 /></label>
         <label> to <input type="number" id="multiplicationLeftMax" placeholder=12 />)</label> ×
         (<input type="number" id="multiplicationRightMin" placeholder=2 /> to <input type="number" id="multiplicationRightMax" placeholder=12 />)
         <br>
-<!--        <label><input type="checkbox" id="integer-multiplication-toggle" checked="true"/> Integers</label>
+        <label><input type="checkbox" id="integerMultiplicationToggle" data-number-type="integer" checked="true"/> Integers</label>
         <br>
-        <label><input type="checkbox" id="decimal-multiplication-toggle"/> Decimals</label>
+        <label><input type="checkbox" id="decimalMultiplicationToggle" data-number-type="decimal" /> Decimals</label>
             <label id="decimal-multiplication-display" style="display:none;"><br>Decimal places </label><input type="number" id="decimal-multiplication-amount" style="display:none;" placeholder=2 />
         <br>
-        <label><input type="checkbox" id="fraction-multiplication-toggle"/> Fractions</label>
-        --!>
+        <label><input type="checkbox" id="fractionMultiplicationToggle" data-number-type="fraction" /> Fractions</label>
       </div>
       <br><br>
 
@@ -91,7 +90,7 @@
       <!-- DIVISION --!>
       <label class="label"><input type="checkbox" id="divisionToggle" checked="true"/> Division</label>
       <br>
-      <div style="margin-left: 20px">
+      <div id="division-settings" data-operator-type="division">
         <label><input type="checkbox" id="divisionReverseToggle" checked="true"/> Multiplication problems in reverse</label>
         <br>
         <div id="division-options" style="display: none">
@@ -99,11 +98,11 @@
           <label> to <input type="number" id="divisionLeftMax" placeholder= 100 />)</label> ÷
           (<input type="number" id="divisionRightMin" placeholder=1 /> to <input type="number" id="divisionRightMax" placeholder=10 />)
           <br>
-          <label><input type="checkbox" id="integerDivisionToggle" checked="true"/> Integers</label>
+          <label><input type="checkbox" id="integerDivisionToggle" data-number-type="integer" checked="true"/> Integers</label>
           <br>
-          <label><input type="checkbox" id="decimalDivisionToggle"/> Decimals</label>
+          <label><input type="checkbox" id="decimalDivisionToggle" data-number-type="decimal" /> Decimals</label>
           <br>
-          <label><input type="checkbox" id="fractionDivisionToggle"/> Fractions</label>
+          <label><input type="checkbox" id="fractionDivisionToggle" data-number-type="fraction" /> Fractions</label>
         </div>
       </div>
       <br><br>

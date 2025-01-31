@@ -3,22 +3,25 @@
 import { Settings } from "./settings.js";
 // import { QuestionGenerator, QuestionType, OperatorType, NumberType } from "./question.js";
 import { QuestionGenerator } from "./question.js";
+//type OperatorType = "addition" | "subtraction" | "multiplication" | "division";
+//type NumberType = "integers" | "decimals" | "fractions";
+//type QuestionType = { numberType: NumberType, operatorType: OperatorType };
 
 export class Game {
 
-    private QG!: QuestionGenerator;
+    private QG!: QuestionGenerator; // this is created when the game is started
     private question: { question: string, type: string, answer: number };
     private settings: Settings;
 
-    constructor(settings: Settings) { // I think maybe this class should have a settings object
+    constructor(settings: Settings) {
         this.settings = settings;
-        // this.QG = new QuestionGenerator(this.settings.getOperationBounds());
         this.question = { question: "", type: "", answer: 0 };
         console.log("Game object created.");
     }
 
     loadNextQuestion(): string {
-        this.question = this.QG.generateQuestion([{numberType: "integers", operatorType: "addition"}], false);
+        // this.question = this.QG.generateQuestion([{numberType: "integers", operatorType: "addition"}], false);
+        this.question = this.QG.generateQuestion(this.settings.validQuestionTypes, false);
         console.log(`Loaded question: ${this.question.question}`);
         return this.question.question;
     }

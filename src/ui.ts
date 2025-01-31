@@ -1,6 +1,7 @@
 import { Game } from "./game.js";
 import { Timer } from "./timer.js";
 import { Settings } from "./settings.js";
+import { NumberType, OperatorType } from "./question.js";
 
 export class UI {
 
@@ -29,47 +30,49 @@ export class UI {
         this.questionEl = document.getElementById("question") as HTMLParagraphElement;
         this.answerInput = document.getElementById("answerInput") as HTMLInputElement;
     
-        console.log(this.settingsForm);
-        this.assignDefaults();
         this.attachListeners();
 
         // create the timer
         this.timerEl = document.getElementById("timer")!;
         this.timer = new Timer(
-        //    this.settings.getBound('timeLimit'), // Initial duration
             (timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
             () => this.endGame() // Handle game end
         );
-        console.log("UI activated");
 
+        // assign data operator types to the input elements
+
+        for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
+            const parentDiv = document.getElementById(settingType) as HTMLElement;
+            
+            if (parentDiv) {
+                parentDiv.querySelectorAll<HTMLInputElement>("input").forEach(button => {
+                    button.dataset.operatorType = parentDiv.dataset.operatorType;
+                });
+            }
+        }
     } 
 
     private assignDefaults () {
         const form = document.getElementById("settings") as HTMLFormElement;
-        form.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
-            if (input.type === "number") this.settings.updateBound(input.id, parseInt(input.placeholder));
-            if (input.type === "checkbox") this.settings.updateToggle(input.id, input.checked);
-        });
     }
 
     private attachListeners() {
         // attach listeners to all input elements in the settings form
-        console.log("attaching listeners to input elements...");
         const form = document.getElementById("settings") as HTMLFormElement;
         if (!form) return;
+
 
         form.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
             const settingKey = input.dataset.setting;
 
-            input.addEventListener("input", () => {
-                if (input.type === "number") this.settings.updateBound(input.id, input.valueAsNumber);
-                if (input.type === "checkbox") {
-                    this.settings.updateToggle(input.id, input.checked);
-                    console.log("checkbox");
-                    console.log(input.dataset);
-                }
+            
+            // this is to get the default values from all the inputs
+            this.updateSetting(input);
+//            if (input.type === "number") this.settings.updateBound(input.id, parseInt(input.placeholder));
+//            if (input.type === "checkbox") this.settings.updateToggle(input.id, input.checked);
 
-                // this.settings.updateSetting(input.id, input.value | input.valueAsNumber);
+            input.addEventListener("input", () => {
+                this.updateSetting(input);
             });
         });
 
@@ -84,6 +87,21 @@ export class UI {
             if (this.game.checkAnswer(this.answerInput.value)) this.processCorrectAnswer();
         });
 
+    }
+
+    updateSetting(input: HTMLInputElement) {
+        if (input.type === "number") {
+            // if there is a valid number in the input, we want to use that, otherwise use the default value
+            if (input.valueAsNumber) {
+                this.settings.updateBound(input.id, input.valueAsNumber);
+            } else {
+                this.settings.updateBound(input.id, parseInt(input.placeholder));
+            }
+        }
+        if (input.type === "checkbox") {
+            // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
+            if (input.dataset.numberType && input.dataset.operatorType) this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, input.checked);
+        }
     }
 
     startGame = () => { // this has to be an arrow function for context reasons that I don't quite understand
@@ -110,7 +128,6 @@ export class UI {
     }
 
     updateTimerDisplay(timeLeft: number): void {
-        console.log(timeLeft);
         this.timerEl.textContent = timeLeft.toString();
     }
 

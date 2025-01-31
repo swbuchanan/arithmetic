@@ -1,9 +1,12 @@
-"use strict";
 // manages the user-determined settings
-exports.__esModule = true;
-exports.Settings = void 0;
-var Settings = /** @class */ (function () {
-    function Settings() {
+export class Settings {
+    constructor() {
+        this.operationBoundsNew = {
+            addition: { leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99 },
+            subtraction: { leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99 },
+            multiplication: { leftMin: 2, leftMax: 99, rightMin: 2, rightMax: 99 },
+            division: { leftMin: 1, leftMax: 100, rightMin: 1, rightMax: 100 }
+        };
         this.operationBounds = {
             additionLeftMin: 1, additionLeftMax: 99,
             additionRightMin: 1, additionRightMax: 99,
@@ -15,6 +18,7 @@ var Settings = /** @class */ (function () {
             divisionRightMin: 1, divisionRightMax: 100,
             timeLimit: 120
         };
+        this.validQuestionTypes = [];
         this.includeTypes = {
             integerAdditionToggle: true,
             decimalAdditionToggle: false,
@@ -27,33 +31,39 @@ var Settings = /** @class */ (function () {
             fractionMultplicationToggle: false,
             integerDivisionToggle: true,
             decimalDivisionToggle: false,
-            fractionDivisionToggle: false
+            fractionDivisionToggle: false,
         };
         console.log("Settings handler created.");
     }
-    Settings.prototype.getOperationBounds = function () {
+    getOperationBounds() {
         return this.operationBounds;
-    };
-    Settings.prototype.updateBound = function (name, value) {
+    }
+    updateBound(name, value) {
         if (!value) {
-            throw new Error("Bad value passed.");
+            throw new Error(`Bad value passed.`);
         }
         if (!name) {
-            throw new Error("No such bound exists.");
+            throw new Error(`No such bound exists.`);
         }
-        console.log("updating ".concat(name, " with value ").concat(value));
+        console.log(`updating ${name} with value ${value}`);
         this.operationBounds[name] = value;
-    };
-    Settings.prototype.getBound = function (name) {
+    }
+    getBound(name) {
         return this.operationBounds[name];
-    };
-    Settings.prototype.updateToggle = function (name, value) {
+    }
+    updateToggle(name, value) {
         if (!name) {
-            throw new Error("No such toggle exists.");
+            throw new Error(`No such toggle exists.`);
         }
-        console.log("updating ".concat(name, " with value ").concat(value));
-        this.includeTypes[name] = value;
-    };
-    return Settings;
-}());
-exports.Settings = Settings;
+        console.log(`updating ${name} with value ${value}`);
+        //        this.includeTypes[name] = value;
+    }
+    updateQuestionType(numberType, operatorType, include) {
+        console.log(`updating question type ${numberType} ${operatorType} to ${include}`);
+        if (include)
+            this.validQuestionTypes.push({ numberType, operatorType });
+        else
+            this.validQuestionTypes = this.validQuestionTypes.filter(type => (type.numberType !== numberType || type.operatorType !== operatorType));
+        console.log(this.validQuestionTypes);
+    }
+}

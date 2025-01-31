@@ -31,6 +31,14 @@ input[type="checkbox"] {
     height: 20px;
 }
 
+#addition-settings,
+#multiplication-settings,
+#subtraction-settings,
+#division-settings
+{
+    margin-left: 20px
+}
+
 #answerInput {
     background-color: #333333;
     color: #bbbbbb;

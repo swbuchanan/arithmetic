@@ -1,10 +1,7 @@
-"use strict";
 // generates questions to display
-exports.__esModule = true;
-exports.QuestionGenerator = void 0;
-var Utils = require("./utils.js");
-var QuestionGenerator = /** @class */ (function () {
-    function QuestionGenerator(operationBounds) {
+import * as Utils from "./utils.js";
+export class QuestionGenerator {
+    constructor(operationBounds) {
         this.operationBounds = operationBounds;
         console.log("Question generator created.");
     }
@@ -14,16 +11,16 @@ var QuestionGenerator = /** @class */ (function () {
      * @param allowRearrangements - If this is true, the question can look like 'a + ? = b' or '? + a = b', otherwise it will look like 'a + b = ?'.
      * @returns A string that can be inserted into html to display a math question
      */
-    QuestionGenerator.prototype.generateQuestion = function (allowedTypes, allowRearrangements) {
+    generateQuestion(allowedTypes, allowRearrangements) {
         if (allowedTypes.length === 0) {
             throw new Error("Must have at least one allowed question type.");
         }
-        var chosenType = allowedTypes[Utils.generateInt(0, allowedTypes.length)];
-        var num1 = Utils.generateInt(this.operationBounds.additionLeftMin, this.operationBounds.additionLeftMax);
-        var num2 = Utils.generateInt(this.operationBounds.additionRightMin, this.operationBounds.additionRightMax);
-        return { question: "".concat(num1, " + ").concat(num2, " = "), type: 'integer', answer: num1 + num2 };
+        let chosenType = allowedTypes[Utils.generateInt(0, allowedTypes.length)];
+        console.log(`I could generate a question from ${allowedTypes}`);
+        console.log(`i would like to generate a question of type ${chosenType.numberType} ${chosenType.operatorType} but alas`);
+        let num1 = Utils.generateInt(this.operationBounds.additionLeftMin, this.operationBounds.additionLeftMax);
+        let num2 = Utils.generateInt(this.operationBounds.additionRightMin, this.operationBounds.additionRightMax);
+        return { question: `${num1} + ${num2} = `, type: 'integer', answer: num1 + num2 };
         //        return {question: "2 + 2 = ?", type: "integer", answer: 4};
-    };
-    return QuestionGenerator;
-}());
-exports.QuestionGenerator = QuestionGenerator;
+    }
+}

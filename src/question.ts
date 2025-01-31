@@ -2,16 +2,12 @@
 
 import * as Utils from "./utils.js"
 
-type OperatorType = "addition" | "subtraction" | "multiplication" | "division";
-type NumberType = "integers" | "decimals" | "fractions";
-type QuestionType = { numberType: NumberType, operatorType: OperatorType };
+export type OperatorType = "addition" | "subtraction" | "multiplication" | "division";
+export type NumberType = "integers" | "decimals" | "fractions";
+export type QuestionType = { numberType: NumberType, operatorType: OperatorType };
 
 export class QuestionGenerator {
-    /*
-    questionString is what's put into the html
-    questionType is addition,
 
-    */
     private operationBounds: Record<string, number>; 
 
     constructor(operationBounds: Record<string, number>) {
@@ -30,6 +26,10 @@ export class QuestionGenerator {
             throw new Error("Must have at least one allowed question type.");
         }
         let chosenType = allowedTypes[Utils.generateInt(0, allowedTypes.length)];
+
+        console.log(`I could generate a question from ${allowedTypes}`);
+        console.log(`i would like to generate a question of type ${chosenType.numberType} ${chosenType.operatorType} but alas`);
+
         let num1 = Utils.generateInt(this.operationBounds.additionLeftMin, this.operationBounds.additionLeftMax);
         let num2 = Utils.generateInt(this.operationBounds.additionRightMin, this.operationBounds.additionRightMax);
         return {question: `${num1} + ${num2} = `, type: 'integer', answer: num1 + num2};
