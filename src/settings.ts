@@ -17,7 +17,10 @@ export class Settings {
             division: {leftMin: 1, leftMax: 100, rightMin: 1, rightMax: 100}
         }
         this.miscSettings = {
-            timeLimit: 120
+            timeLimit: 120,
+            allowRearrangements: false,
+            divisionReversedMultiplication: true,
+            subtractionReversedAddition: true
         }
         this.validQuestionTypes = [];
     }
@@ -26,6 +29,15 @@ export class Settings {
         return this.operationBounds;
     }
 
+    public getOperationBoundsByName(name: string): Record<string, number> {
+        if (name === "subtraction" && this.miscSettings.subtractionReversedAddition) return this.operationBounds.addition;
+        if (name === "division" && this.miscSettings.divisionReversedMultiplication) return this.operationBounds.multiplication;
+        return this.operationBounds[name];
+    }
+
+    public updateSetting(setting: string, value: number | boolean) {
+        this.miscSettings[setting] = value;
+    }
 
     public updateBound(operationName: string, boundName: string, value: number) {
         if (!value) {
