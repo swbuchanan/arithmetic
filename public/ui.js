@@ -50,11 +50,9 @@ export class UI {
         if (!form)
             return;
         form.querySelectorAll("input").forEach((input) => {
-            const settingKey = input.dataset.setting;
+            // const settingKey = input.dataset.setting; Next time I see this I can remove it
             // this is to get the default values from all the inputs
             this.updateSetting(input);
-            //            if (input.type === "number") this.settings.updateBound(input.id, parseInt(input.placeholder));
-            //            if (input.type === "checkbox") this.settings.updateToggle(input.id, input.checked);
             input.addEventListener("input", () => {
                 this.updateSetting(input);
             });
@@ -85,6 +83,7 @@ export class UI {
             }
         }
         if (input.type === "checkbox") {
+            console.log(input.id);
             // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
             if (input.dataset.numberType && input.dataset.operatorType)
                 this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, input.checked);

@@ -8,20 +8,30 @@ export class Settings {
             division: { leftMin: 1, leftMax: 100, rightMin: 1, rightMax: 100 }
         };
         this.miscSettings = {
-            timeLimit: 120
+            timeLimit: 120,
+            allowRearrangements: false,
+            divisionReversedMultiplication: true,
+            subtractionReversedAddition: true
         };
         this.validQuestionTypes = [];
-        /*        this.includeTypes = {
-                    addition: {integer: true, decimal: false, fraction: false},
-                    subtraction: {integer: true, decimal: false, fraction: false},
-                    multiplication: {integer: true, decimal: false, fraction: false},
-                    division: {integer: true, decimal: false, fraction: false}
-                }
-               */
-        console.log("Settings handler created.");
     }
     getOperationBounds() {
         return this.operationBounds;
+    }
+    /**
+     * Returns the bound for the given operation, but if the requested operation is subtraction (division), and the setting is selected to treat subtraction (division) problems as reversed addition (multiplication) problems, we instead return the bounds for addition (multiplication).
+     * @param name - the operation whose bounds we wish to return
+     * @returns a Record<string, number> containing the name of the operation and the 4 bounds for that operation
+     */
+    getOperationBoundsByName(name) {
+        if (name === "subtraction" && this.miscSettings.subtractionReversedAddition)
+            return this.operationBounds.addition;
+        if (name === "division" && this.miscSettings.divisionReversedMultiplication)
+            return this.operationBounds.multiplication;
+        return this.operationBounds[name];
+    }
+    updateSetting(setting, value) {
+        this.miscSettings[setting] = value;
     }
     updateBound(operationName, boundName, value) {
         if (!value) {
@@ -31,7 +41,6 @@ export class Settings {
             throw new Error(`No such bound exists.`);
         }
         console.log(`updating ${operationName} ${boundName} with value ${value}`);
-        //        this.operationBounds[name] = value;
         this.operationBounds[operationName][boundName] = value;
         console.log(this.operationBounds);
     }

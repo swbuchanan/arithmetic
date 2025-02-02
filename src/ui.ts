@@ -65,7 +65,7 @@ export class UI {
 
 
         form.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
-            const settingKey = input.dataset.setting;
+            // const settingKey = input.dataset.setting; Next time I see this I can remove it
 
             
             // this is to get the default values from all the inputs
@@ -101,6 +101,13 @@ export class UI {
             }
         }
         if (input.type === "checkbox") {
+            console.log(input.id);
+            // handle these 4 as special cases (this is bad)
+            if (input.id === "additionToggle") this.settings.toggleAddition;
+            if (input.id === "subtractionToggle") this.settings.toggleSubtraction;
+            if (input.id === "multiplicationToggle") this.settings.toggleMultiplication;
+            if (input.id === "divisionToggle") this.settings.toggleDivision;
+
             // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
             if (input.dataset.numberType && input.dataset.operatorType) this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, input.checked);
         }
@@ -109,8 +116,8 @@ export class UI {
     startGame = () => { // this has to be an arrow function for context reasons that I don't quite understand
         console.log("Starting the game");
         this.game.startGame();
-        this.timer.start(this.settings.getSetting("timeLimit"));
-        this.updateTimerDisplay(this.settings.getSetting("timeLimit"));
+        this.timer.start(this.settings.getSetting("timeLimit") as number);
+        this.updateTimerDisplay(this.settings.getSetting("timeLimit") as number);
         this.settingsForm.style.display = "none";
         this.endDiv.style.display = "none";
         this.gameDiv.style.display = "block";

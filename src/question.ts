@@ -1,6 +1,7 @@
 // generates questions to display
 
-import * as Utils from "./utils.js"
+import * as Utils from "./utils.js";
+import { Settings } from "./settings.js";
 
 export type OperatorType = "addition" | "subtraction" | "multiplication" | "division";
 export type NumberType = "integers" | "decimals" | "fractions";
@@ -24,8 +25,8 @@ export class QuestionGenerator {
      */
 //    generateQuestion(allowedTypes: QuestionType[], allowRearrangements: boolean): { question: string; type: string; answer: number } {
     generateQuestion(settings: Settings): { question: string; type: string; answer: number } {
-        const allowedType = settings.validQuestionTypes;
-        const allowRearrangements = settings.allowRearrangements;
+        const allowedTypes = settings.validQuestionTypes;
+        const allowRearrangements = settings.getSetting("allowRearrangements");
         if (allowedTypes.length === 0) {
             throw new Error("Must have at least one allowed question type.");
         }
@@ -33,14 +34,17 @@ export class QuestionGenerator {
 
         
 
-        let leftNum = Utils.generateInt(settings.getOperationBoundsByName[chosenType.operatorType].leftMin, this.operationBounds[chosenType.operatorType].leftMax);
-        let rightNum = Utils.generateInt(settings.getOperationBoundsByName[chosenType.operatorType].rightMin, this.operationBounds[chosenType.operatorType].rightMax);
+        let leftNum = Utils.generateInt(settings.getOperationBoundsByName(chosenType.operatorType).leftMin, settings.getOperationBoundsByName(chosenType.operatorType).leftMax);
+        let rightNum = Utils.generateInt(settings.getOperationBoundsByName(chosenType.operatorType).rightMin, settings.getOperationBoundsByName(chosenType.operatorType).rightMax);
+        let answer = Utils.operations[chosenType.operatorType](leftNum, rightNum);
+        let operationString = this.operationStrings[chosenType.operatorType];
 
-        if (chosenType.operatorType === "subtraction" and settings.subtractionReversedAddition) {
-            leftNum = Utils.generateInt(this.operationBounds["addition"].leftMin, this.operationBounds[chosenType.operator
+        if (chosenType.operatorType === "subtraction" && settings.getSetting("subtractionReversedAddition")) {
+//            leftNum = Utils.generateInt(this.operationBounds["addition"].leftMin, this.operationBounds[chosenType.operator
+            answer = leftNum;
+            leftNum = leftNum + rightNum;
         }
-
-        return {question: `${leftNum} ${this.operationStrings[chosenType.operatorType]} ${rightNum} = `, type: 'integer', answer: Utils.operations[chosenType.operatorType](leftNum,rightNum)};
+        return {question: `${leftNum} ${operationString} ${rightNum} = `, type: 'integer', answer: answer};
     }
 
 }

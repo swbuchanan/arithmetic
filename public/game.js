@@ -12,7 +12,7 @@ export class Game {
     }
     loadNextQuestion() {
         // this.question = this.QG.generateQuestion([{numberType: "integers", operatorType: "addition"}], false);
-        this.question = this.QG.generateQuestion(this.settings.validQuestionTypes, false);
+        this.question = this.QG.generateQuestion(this.settings);
         console.log(`Loaded question: ${this.question.question}`);
         return this.question.question;
     }
