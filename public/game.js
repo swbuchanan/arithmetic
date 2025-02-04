@@ -1,4 +1,5 @@
 // handles miscellaneous game logic
+import * as Utils from "./utils.js";
 // import { QuestionGenerator, QuestionType, OperatorType, NumberType } from "./question.js";
 import { QuestionGenerator } from "./question.js";
 //type OperatorType = "addition" | "subtraction" | "multiplication" | "division";
@@ -7,7 +8,7 @@ import { QuestionGenerator } from "./question.js";
 export class Game {
     constructor(settings) {
         this.settings = settings;
-        this.question = { question: "", type: "", answer: 0 };
+        this.question = { question: "", type: "", answer: "" };
         console.log("Game object created.");
     }
     loadNextQuestion() {
@@ -17,8 +18,8 @@ export class Game {
         return this.question.question;
     }
     checkAnswer(userAnswer) {
-        console.log(`the user answer is ${userAnswer} and the correct answer is ${this.question["answer"]}`);
-        if (parseInt(userAnswer) === this.question["answer"]) {
+        console.log(`the user answer is ${Utils.parseNumber(userAnswer)} and the correct answer is ${this.question["answer"]}`);
+        if (Utils.parseNumber(userAnswer) === Utils.parseNumber(this.question["answer"])) {
             console.log("you are right");
             return true;
         }

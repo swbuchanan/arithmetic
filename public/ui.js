@@ -5,13 +5,19 @@ export class UI {
     constructor() {
         this.startGame = () => {
             console.log("Starting the game");
+            // check to see which question types are enabled and update the settings
+            this.readSettings();
+            // start the game logic
             this.game.startGame();
+            // start the timer and update its display
             this.timer.start(this.settings.getSetting("timeLimit"));
             this.updateTimerDisplay(this.settings.getSetting("timeLimit"));
+            // make sure only the game is showing
             this.settingsForm.style.display = "none";
             this.endDiv.style.display = "none";
-            this.gameDiv.style.display = "block";
             this.description.style.display = "none";
+            this.gameDiv.style.display = "block";
+            // load the next question and make sure the answer box is in focus
             this.updateQuestionDisplay();
         };
         this.settings = new Settings();
@@ -39,6 +45,8 @@ export class UI {
                 });
             }
         }
+        // attach listeners to all the input elements on the page
+        // actually I think there's no reason why they need to have listeners; when the start game button is pressed we can just scan through to check the settings...
         this.attachListeners();
     }
     assignDefaults() {
@@ -46,16 +54,16 @@ export class UI {
     }
     attachListeners() {
         // attach listeners to all input elements in the settings form
-        const form = document.getElementById("settings");
-        if (!form)
-            return;
-        form.querySelectorAll("input").forEach((input) => {
+        //        const form = document.getElementById("settings") as HTMLFormElement;
+        //        if (!form) return;
+        this.settingsForm.querySelectorAll("input").forEach((input) => {
             // const settingKey = input.dataset.setting; Next time I see this I can remove it
             // this is to get the default values from all the inputs
             this.updateSetting(input);
-            input.addEventListener("input", () => {
-                this.updateSetting(input);
-            });
+            //    Currently I'm trying to remove this feature
+            //            input.addEventListener("input", () => {
+            //                this.updateSetting(input);
+            //            });
         });
         // start game buttons
         this.startButtons.forEach((button) => {
@@ -63,11 +71,21 @@ export class UI {
         });
         // listen for user answer
         this.answerInput.addEventListener("input", () => {
-            console.log(this.answerInput.value);
             if (this.game.checkAnswer(this.answerInput.value))
                 this.processCorrectAnswer();
         });
     }
+    // Go through all the user-changeable settings on the page and update the settings accordingly
+    readSettings() {
+        this.settingsForm.querySelectorAll("input").forEach((input) => {
+            this.updateSetting(input);
+        });
+    }
+    /**
+     * Given an input element, which should be either a text/number box or a checkbox, processes it in the appropriate way
+     *
+     *
+     */
     updateSetting(input) {
         if (input.type === "number") {
             // if there is a valid number in the input, we want to use that, otherwise use the default value
@@ -83,10 +101,11 @@ export class UI {
             }
         }
         if (input.type === "checkbox") {
-            console.log(input.id);
             // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
-            if (input.dataset.numberType && input.dataset.operatorType)
-                this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, input.checked);
+            if (input.dataset.numberType && input.dataset.operatorType) {
+                let masterNumberTypeEnabled = document.getElementById(input.dataset.operatorType + "Toggle").checked;
+                this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, input.checked && masterNumberTypeEnabled);
+            }
         }
     }
     updateQuestionDisplay() {

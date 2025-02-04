@@ -24,25 +24,23 @@ export class QuestionGenerator {
      * @returns A string that can be inserted into html to display a math question
      */
 //    generateQuestion(allowedTypes: QuestionType[], allowRearrangements: boolean): { question: string; type: string; answer: number } {
-    generateQuestion(settings: Settings): { question: string; type: string; answer: number } {
+    generateQuestion(settings: Settings): { question: string; type: string; answer: string } {
         const allowedTypes = settings.validQuestionTypes;
         const allowRearrangements = settings.getSetting("allowRearrangements");
         if (allowedTypes.length === 0) {
             throw new Error("Must have at least one allowed question type.");
         }
-        let chosenType = allowedTypes[Utils.generateInt(0, allowedTypes.length)];
+        let chosenType = allowedTypes[parseInt(Utils.generateInt(0, allowedTypes.length))];
 
-        
-
-        let leftNum = Utils.generateInt(settings.getOperationBoundsByName(chosenType.operatorType).leftMin, settings.getOperationBoundsByName(chosenType.operatorType).leftMax);
-        let rightNum = Utils.generateInt(settings.getOperationBoundsByName(chosenType.operatorType).rightMin, settings.getOperationBoundsByName(chosenType.operatorType).rightMax);
-        let answer = Utils.operations[chosenType.operatorType](leftNum, rightNum);
+        let leftNum = Utils.generateNum(chosenType.numberType, settings.getOperationBoundsByName(chosenType.operatorType).leftMin, settings.getOperationBoundsByName(chosenType.operatorType).leftMax);
+        let rightNum = Utils.generateNum(chosenType.numberType, settings.getOperationBoundsByName(chosenType.operatorType).rightMin, settings.getOperationBoundsByName(chosenType.operatorType).rightMax);
+        let answer = String(Utils.operations[chosenType.operatorType](Utils.parseNumber(leftNum), Utils.parseNumber(rightNum)));
         let operationString = this.operationStrings[chosenType.operatorType];
 
         if (chosenType.operatorType === "subtraction" && settings.getSetting("subtractionReversedAddition")) {
 //            leftNum = Utils.generateInt(this.operationBounds["addition"].leftMin, this.operationBounds[chosenType.operator
             answer = leftNum;
-            leftNum = leftNum + rightNum;
+            leftNum = String(parseInt(leftNum) + parseInt(rightNum));
         }
         return {question: `${leftNum} ${operationString} ${rightNum} = `, type: 'integer', answer: answer};
     }

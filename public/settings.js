@@ -40,9 +40,7 @@ export class Settings {
         if (!operationName || !boundName) {
             throw new Error(`No such bound exists.`);
         }
-        console.log(`updating ${operationName} ${boundName} with value ${value}`);
         this.operationBounds[operationName][boundName] = value;
-        console.log(this.operationBounds);
     }
     getSetting(name) {
         return this.miscSettings[name];
@@ -53,6 +51,5 @@ export class Settings {
             this.validQuestionTypes.push({ numberType, operatorType });
         else
             this.validQuestionTypes = this.validQuestionTypes.filter(type => (type.numberType !== numberType || type.operatorType !== operatorType));
-        console.log(this.validQuestionTypes);
     }
 }

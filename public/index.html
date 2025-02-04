@@ -20,16 +20,12 @@
         Known bugs that I can't be bothered to fix yet:
         If the upper and lower bounds are too close in fraction mode in gets weird.
         <br>
-        Math rendering may not work on all browsers.
-        <br>
-        There's probably something wrong with parsing fraction input if you try hard to break it.
-        <br>
         If you finish a run and refresh the page, the checkboxes (probably) won't be correct. You have to hard refresh.
         <br>
         <br>
     </div>
     <form id="settings" style="width: 80%">
-        <label class="label"><input type="checkbox" id="addition-toggle" checked="true"/> Addition</label>
+        <label class="label"><input type="checkbox" id="additionToggle" data-operator-type="addition" checked="true"/> Addition</label>
 
         <br>
 
@@ -74,7 +70,7 @@
       <br>
       <div id="multiplication-settings" data-operator-type="multiplication">
         <label>Range: (<input type="number" id="multiplicationLeftMin" data-bound-type="leftMin" placeholder=2 /></label>
-        <label> to <input type="number" id="multiplicationLeftMax" data-bound-type="leftMax" placeholder=12 />)</label> ×
+        <label> to <input type="number" id="multiplicationLeftMax" data-bound-type="leftMax" placeholder=12 />)</label> x
         (<input type="number" id="multiplicationRightMin" data-bound-type="rightMin" placeholder=2 /> to <input type="number" id="multiplicationRightMax" data-bound-type="rightMax" placeholder=12 />)
         <br>
         <label><input type="checkbox" id="integerMultiplicationToggle" data-number-type="integer" checked="true"/> Integers</label>

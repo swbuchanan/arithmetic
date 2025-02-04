@@ -30,7 +30,6 @@ export class UI {
         this.questionEl = document.getElementById("question") as HTMLParagraphElement;
         this.answerInput = document.getElementById("answerInput") as HTMLInputElement;
     
-
         // create the timer
         this.timerEl = document.getElementById("timer")!;
         this.timer = new Timer(
@@ -39,8 +38,6 @@ export class UI {
         );
 
         // assign data operator types to the input elements
-        // this needs to be done before attaching the listeners (is this bad practice?)
-
         for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
             const parentDiv = document.getElementById(settingType) as HTMLElement;
             
@@ -51,45 +48,54 @@ export class UI {
             }
         }
 
+        // get the default values determined by the html
+        this.assignDefaults();
+
+        // attach listeners to the start buttons and the answer input box
         this.attachListeners();
     } 
 
     private assignDefaults () {
-        const form = document.getElementById("settings") as HTMLFormElement;
+        this.settingsForm.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
+            this.updateSetting(input);
+        });
     }
 
     private attachListeners() {
-        // attach listeners to all input elements in the settings form
-        const form = document.getElementById("settings") as HTMLFormElement;
-        if (!form) return;
-
-
-        form.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
-            // const settingKey = input.dataset.setting; Next time I see this I can remove it
-
-            
-            // this is to get the default values from all the inputs
-            this.updateSetting(input);
-
-            input.addEventListener("input", () => {
-                this.updateSetting(input);
-            });
-        });
-
         // start game buttons
         this.startButtons.forEach((button) => {
             button.addEventListener("click", this.startGame);
         });
 
-        // listen for user answer
+        // user's answer box
         this.answerInput.addEventListener("input", () => {
-            console.log(this.answerInput.value);
             if (this.game.checkAnswer(this.answerInput.value)) this.processCorrectAnswer();
+        });
+
+        // we also need listeners on all the checkboxes that change the display of other elements
+        // I guess for now I'll just handle these one at a time but there should be a better way
+        this.
+
+    }
+
+    // Go through all the user-changeable settings on the page and update the settings accordingly
+    private readSettings() {
+    
+        this.settingsForm.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
+
+            this.updateSetting(input);
+
         });
 
     }
 
+    /**
+     * Given an input element, which should be either a text/number box or a checkbox, processes it in the appropriate way
+     *
+     *
+     */
     updateSetting(input: HTMLInputElement) {
+
         if (input.type === "number") {
             // if there is a valid number in the input, we want to use that, otherwise use the default value
             if (input.valueAsNumber) {
@@ -100,28 +106,37 @@ export class UI {
                 if (input.dataset.operatorType && input.dataset.boundType) this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
             }
         }
+
         if (input.type === "checkbox") {
-            console.log(input.id);
-            // handle these 4 as special cases (this is bad)
-            if (input.id === "additionToggle") this.settings.toggleAddition;
-            if (input.id === "subtractionToggle") this.settings.toggleSubtraction;
-            if (input.id === "multiplicationToggle") this.settings.toggleMultiplication;
-            if (input.id === "divisionToggle") this.settings.toggleDivision;
 
             // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
-            if (input.dataset.numberType && input.dataset.operatorType) this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, input.checked);
+            if (input.dataset.numberType && input.dataset.operatorType) {
+
+                let masterNumberTypeEnabled = (document.getElementById(input.dataset.operatorType as string + "Toggle") as HTMLInputElement).checked;
+                this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, input.checked && masterNumberTypeEnabled );
+            }
         }
     }
 
     startGame = () => { // this has to be an arrow function for context reasons that I don't quite understand
         console.log("Starting the game");
+        // check to see which question types are enabled and update the settings
+        this.readSettings();
+
+        // start the game logic
         this.game.startGame();
+
+        // start the timer and update its display
         this.timer.start(this.settings.getSetting("timeLimit") as number);
         this.updateTimerDisplay(this.settings.getSetting("timeLimit") as number);
+
+        // make sure only the game is showing
         this.settingsForm.style.display = "none";
         this.endDiv.style.display = "none";
-        this.gameDiv.style.display = "block";
         this.description.style.display = "none";
+        this.gameDiv.style.display = "block";
+
+        // load the next question and make sure the answer box is in focus
         this.updateQuestionDisplay();
     };
 

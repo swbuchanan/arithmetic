@@ -51,36 +51,16 @@ export class Settings {
         if (!operationName || !boundName) {
             throw new Error(`No such bound exists.`);
         }
-        console.log(`updating ${operationName} ${boundName} with value ${value}`); 
         this.operationBounds[operationName][boundName] = value;
-        console.log(this.operationBounds);
     }
 
     public getSetting(name: string): number | boolean {
         return this.miscSettings[name];
     }
 
-    public toggleAddition() {
-        // I think a better way to handle this sort of thing is, when the game is started, just look through and see which checkboxes are checked....
-      // honestly though maybe not
-    }
-
-    public toggleSubtraction() {
-
-    }
-
-    public toggleMultiplication() {
-
-    }
-
-    public toggleDivision() {
-
-    }
-
     public updateQuestionType(numberType: NumberType, operatorType: OperatorType, include: boolean) {
         console.log(`updating question type ${numberType} ${operatorType} to ${include}`);
         if (include) this.validQuestionTypes.push({numberType, operatorType});
         else this.validQuestionTypes = this.validQuestionTypes.filter(type => (type.numberType !== numberType || type.operatorType !== operatorType));
-        console.log(this.validQuestionTypes);
     }
 }
