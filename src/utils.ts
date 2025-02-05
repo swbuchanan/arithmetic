@@ -1,11 +1,12 @@
 
-type Operation = (a: number, b: number) => number;
+// type Operation = (a: number, b: number) => number;
+type Operation = (a: string, b: string) => number;
 
 export const operations: Record<string, Operation> = {
-  addition: (a, b) => a + b,
-  subtraction: (a, b) => a - b,
-  multiplication: (a, b) => a * b,
-  division: (a, b) => a / b,
+  addition: (a, b) => parseNumber(a) + parseNumber(b),
+  subtraction: (a, b) => parseNumber(a) - parseNumber(b),
+  multiplication: (a, b) => parseNumber(a) * parseNumber(b),
+  division: (a, b) => parseNumber(a) / parseNumber(b),
 }
 
 // find gcd using Euclid's algorithm
@@ -20,11 +21,11 @@ export function gcd(a: number, b: number): number {
 
 /**
  * Adds two fractions together and returns the result in the form of a fraction
- * @param frac1 - an array of strings of length 2, where the first element is the numerator and the second is the denominator
+ * @param frac1 - a string of the form A B/C representing a mixed number
  * @param frac2 - same as frac1
  * @returns a fraction of the form a/b
  */
-export function addFracs(frac1: string[], frac2: string[]): string {
+export function addFracs(frac1: string, frac2: string): string {
     if (frac1.length !== 2 || frac2.length !== 2) throw new Error("Bad input; an array representing a fraction must have length 2.");
     let num1 = parseInt(frac1[0]);
     let num2 = parseInt(frac1[1]);
@@ -41,21 +42,28 @@ export function addFracs(frac1: string[], frac2: string[]): string {
 }
 
 // given a string, returns a number
-// the important thing is that it can deal with fractions
+// the important thing is that it can deal with mixed numbers
 export function parseNumber(number: string): number {
+    let base = 0;
     if (number.includes("/")) {
+        if (number.includes(" ")) {
+            if (number.split(" ").length > 2) return NaN;
+            base = parseFloat(number.split(" ")[0]);
+            console.log(`found a base ${base}`);
+            number = number.split(" ")[1];
+        }
         let numberArr = number.split("/");
-        if (numberArr.length > 2) return parseFloat(number);
-        return parseFloat(numberArr[0])/parseFloat(numberArr[1]);
+        if (numberArr.length > 2) return NaN;
+        return base + parseFloat(numberArr[0])/parseFloat(numberArr[1]);
     };
-    return parseFloat(number);
+    return base + parseFloat(number);
 }
 
 // generates a number of the given type
 export function generateNum(numberType: string, lowerBound: number, upperBound: number): string {
     if (numberType === "integer") return generateInt(lowerBound, upperBound);
     if (numberType === "decimal") return generateDec(lowerBound, upperBound);
-    if (numberType === "fraction") return generateFrac();
+    if (numberType === "fraction") return generateFrac(lowerBound, upperBound);
     throw new Error("Invalid number type.");
 }
 
@@ -64,20 +72,29 @@ export function generateInt(lowerBound: number, upperBound: number): string {
     return String(Math.floor(Math.random()*(upperBound - lowerBound)) + lowerBound);
 }
 
-  // generate a random decimal with the given conditions
+// generate a random decimal with the given conditions
 export function generateDec(lowerBound: number, upperBound: number, decimalPlaces?: number): string {
   const num = Math.random()*(upperBound - lowerBound) + lowerBound;
   return String(parseFloat(num.toFixed(decimalPlaces)));
 }
 
-  // generate a random fraction
-  // at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
-export function generateFrac(): string {
-  let numerator: number;
-  let denominator: number;
-  do {
-    numerator = parseInt(generateInt(1,9));
-    denominator = parseInt(generateInt(2,9));
-  } while (gcd(numerator, denominator) !== 1);
-  return String(numerator) + "/" + String(denominator);
+// generate a random mixed number between the bounds
+// at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
+// TODO: add optional arguments that specify how large or small the numerator and denominator can be
+export function generateFrac(lowerBound: number, upperBound: number): string {
+    if (lowerBound == upperBound) return String(lowerBound);
+    let base = parseInt(generateInt(lowerBound, upperBound));
+
+    let numerator: number;
+    let denominator: number;
+    do {
+        numerator = parseInt(generateInt(1,20));
+        denominator = parseInt(generateInt(2,10));
+    } while (gcd(numerator, denominator) !== 1 || numerator/denominator > base);
+    let baseStr = String(Math.floor(base - numerator/denominator));
+    if (baseStr === "0") baseStr = "";
+    return baseStr + " " + String(numerator) + "/" + String(denominator);
 }
+
+
+

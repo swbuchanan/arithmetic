@@ -16,6 +16,9 @@ export class UI {
     private startButtons:NodeListOf<HTMLButtonElement>;
     private settingsForm:HTMLFormElement;
     private description:HTMLDivElement;
+    private scoreEl:HTMLSpanElement;
+    private endScoreEl:HTMLSpanElement;
+    private score:number;
 
     constructor() {
 
@@ -29,6 +32,9 @@ export class UI {
         this.timerEl = document.getElementById("timer") as HTMLSpanElement;
         this.questionEl = document.getElementById("question") as HTMLParagraphElement;
         this.answerInput = document.getElementById("answerInput") as HTMLInputElement;
+        this.scoreEl = document.getElementById("score") as HTMLSpanElement;
+        this.endScoreEl = document.getElementById("endScore") as HTMLSpanElement;
+        this.score = 0;
     
         // create the timer
         this.timerEl = document.getElementById("timer")!;
@@ -74,7 +80,7 @@ export class UI {
 
         // we also need listeners on all the checkboxes that change the display of other elements
         // I guess for now I'll just handle these one at a time but there should be a better way
-        this.
+        // this.
 
     }
 
@@ -99,11 +105,12 @@ export class UI {
         if (input.type === "number") {
             // if there is a valid number in the input, we want to use that, otherwise use the default value
             if (input.valueAsNumber) {
-//                this.settings.updateBound(input.id, input.valueAsNumber);
+                // the settings that involve a number box are all either bounds or miscellaneous settings
                 if (input.dataset.operatorType && input.dataset.boundType) this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, input.valueAsNumber);
+                else this.settings.updateSetting(input.id, input.valueAsNumber);
             } else {
-                // this.settings.updateBound(input.id, parseInt(input.placeholder));
                 if (input.dataset.operatorType && input.dataset.boundType) this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
+                else this.settings.updateSetting(input.id, parseInt(input.placeholder));
             }
         }
 
@@ -155,7 +162,14 @@ export class UI {
         this.timerEl.textContent = timeLeft.toString();
     }
 
+    updateScoreDisplay() {
+        this.scoreEl.textContent = this.score.toString();
+        this.endScoreEl.textContent = this.score.toString();
+    }
+
     processCorrectAnswer() {
+        this.score++;
+        this.updateScoreDisplay();
         this.updateQuestionDisplay();   // load the next question
         this.answerInput.value = "";    // clear the input box
         this.answerInput.focus();

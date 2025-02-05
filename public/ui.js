@@ -30,13 +30,15 @@ export class UI {
         this.timerEl = document.getElementById("timer");
         this.questionEl = document.getElementById("question");
         this.answerInput = document.getElementById("answerInput");
+        this.scoreEl = document.getElementById("score");
+        this.endScoreEl = document.getElementById("endScore");
+        this.score = 0;
         // create the timer
         this.timerEl = document.getElementById("timer");
         this.timer = new Timer((timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
         () => this.endGame() // Handle game end
         );
         // assign data operator types to the input elements
-        // this needs to be done before attaching the listeners (is this bad practice?)
         for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
             const parentDiv = document.getElementById(settingType);
             if (parentDiv) {
@@ -45,35 +47,29 @@ export class UI {
                 });
             }
         }
-        // attach listeners to all the input elements on the page
-        // actually I think there's no reason why they need to have listeners; when the start game button is pressed we can just scan through to check the settings...
+        // get the default values determined by the html
+        this.assignDefaults();
+        // attach listeners to the start buttons and the answer input box
         this.attachListeners();
     }
     assignDefaults() {
-        const form = document.getElementById("settings");
+        this.settingsForm.querySelectorAll("input").forEach((input) => {
+            this.updateSetting(input);
+        });
     }
     attachListeners() {
-        // attach listeners to all input elements in the settings form
-        //        const form = document.getElementById("settings") as HTMLFormElement;
-        //        if (!form) return;
-        this.settingsForm.querySelectorAll("input").forEach((input) => {
-            // const settingKey = input.dataset.setting; Next time I see this I can remove it
-            // this is to get the default values from all the inputs
-            this.updateSetting(input);
-            //    Currently I'm trying to remove this feature
-            //            input.addEventListener("input", () => {
-            //                this.updateSetting(input);
-            //            });
-        });
         // start game buttons
         this.startButtons.forEach((button) => {
             button.addEventListener("click", this.startGame);
         });
-        // listen for user answer
+        // user's answer box
         this.answerInput.addEventListener("input", () => {
             if (this.game.checkAnswer(this.answerInput.value))
                 this.processCorrectAnswer();
         });
+        // we also need listeners on all the checkboxes that change the display of other elements
+        // I guess for now I'll just handle these one at a time but there should be a better way
+        // this.
     }
     // Go through all the user-changeable settings on the page and update the settings accordingly
     readSettings() {
@@ -90,14 +86,17 @@ export class UI {
         if (input.type === "number") {
             // if there is a valid number in the input, we want to use that, otherwise use the default value
             if (input.valueAsNumber) {
-                //                this.settings.updateBound(input.id, input.valueAsNumber);
+                // the settings that involve a number box are all either bounds or miscellaneous settings
                 if (input.dataset.operatorType && input.dataset.boundType)
                     this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, input.valueAsNumber);
+                else
+                    this.settings.updateSetting(input.id, input.valueAsNumber);
             }
             else {
-                // this.settings.updateBound(input.id, parseInt(input.placeholder));
                 if (input.dataset.operatorType && input.dataset.boundType)
                     this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
+                else
+                    this.settings.updateSetting(input.id, parseInt(input.placeholder));
             }
         }
         if (input.type === "checkbox") {
@@ -120,7 +119,13 @@ export class UI {
     updateTimerDisplay(timeLeft) {
         this.timerEl.textContent = timeLeft.toString();
     }
+    updateScoreDisplay() {
+        this.scoreEl.textContent = this.score.toString();
+        this.endScoreEl.textContent = this.score.toString();
+    }
     processCorrectAnswer() {
+        this.score++;
+        this.updateScoreDisplay();
         this.updateQuestionDisplay(); // load the next question
         this.answerInput.value = ""; // clear the input box
         this.answerInput.focus();
