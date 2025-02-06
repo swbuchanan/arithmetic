@@ -19,6 +19,8 @@ export class UI {
     private scoreEl:HTMLSpanElement;
     private endScoreEl:HTMLSpanElement;
     private score:number;
+    private fractionToggles:Record<string, HTMLInputElement>;
+    private fractionOptions:Record<string, HTMLDivElement>;
 
     constructor() {
 
@@ -35,6 +37,9 @@ export class UI {
         this.scoreEl = document.getElementById("score") as HTMLSpanElement;
         this.endScoreEl = document.getElementById("endScore") as HTMLSpanElement;
         this.score = 0;
+        this.fractionToggles = {fractionAdditionToggle: document.getElementById("fractionAdditionToggle") as HTMLInputElement,
+                                fractionSubtractionToggle: document.getElementById("fractionSubtractionToggle") as HTMLInputElement};
+        this.fractionOptions = {addition: document.getElementById("additionFractionOptions") as HTMLDivElement};
     
         // create the timer
         this.timerEl = document.getElementById("timer")!;
@@ -67,6 +72,7 @@ export class UI {
         });
     }
 
+
     private attachListeners() {
         // start game buttons
         this.startButtons.forEach((button) => {
@@ -81,6 +87,11 @@ export class UI {
         // we also need listeners on all the checkboxes that change the display of other elements
         // I guess for now I'll just handle these one at a time but there should be a better way
         // this.
+
+        this.fractionToggles.fractionAdditionToggle.addEventListener("click", () => {
+            this.fractionOptions.addition.classList.toggle("hidden", !this.fractionToggles.fractionAdditionToggle.checked);
+        });
+        
 
     }
 
