@@ -20,7 +20,9 @@ export class Settings {
             timeLimit: 120,
             allowRearrangements: false,
             divisionReversedMultiplication: true,
-            subtractionReversedAddition: true
+            subtractionReversedAddition: true,
+            additionFractionDenominatorBound: 9,
+            additionFractionNumeratorBound: 9,
         }
         this.validQuestionTypes = [];
     }
@@ -41,6 +43,7 @@ export class Settings {
     }
 
     public updateSetting(setting: string, value: number | boolean) {
+        console.log(`updating ${setting} to ${value}`);
         this.miscSettings[setting] = value;
     }
 

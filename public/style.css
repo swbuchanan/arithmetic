@@ -97,3 +97,7 @@ form {
 .label {
     color: #4488dd;
 }
+
+.hidden {
+    display: none
+}

@@ -33,6 +33,9 @@ export class UI {
         this.scoreEl = document.getElementById("score");
         this.endScoreEl = document.getElementById("endScore");
         this.score = 0;
+        this.fractionToggles = { fractionAdditionToggle: document.getElementById("fractionAdditionToggle"),
+            fractionSubtractionToggle: document.getElementById("fractionSubtractionToggle") };
+        this.fractionOptions = { addition: document.getElementById("additionFractionOptions") };
         // create the timer
         this.timerEl = document.getElementById("timer");
         this.timer = new Timer((timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
@@ -70,6 +73,9 @@ export class UI {
         // we also need listeners on all the checkboxes that change the display of other elements
         // I guess for now I'll just handle these one at a time but there should be a better way
         // this.
+        this.fractionToggles.fractionAdditionToggle.addEventListener("click", () => {
+            this.fractionOptions.addition.classList.toggle("hidden", !this.fractionToggles.fractionAdditionToggle.checked);
+        });
     }
     // Go through all the user-changeable settings on the page and update the settings accordingly
     readSettings() {

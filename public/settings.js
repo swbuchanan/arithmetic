@@ -11,7 +11,8 @@ export class Settings {
             timeLimit: 120,
             allowRearrangements: false,
             divisionReversedMultiplication: true,
-            subtractionReversedAddition: true
+            subtractionReversedAddition: true,
+            additionFractionDenominatorBound: 9,
         };
         this.validQuestionTypes = [];
     }
@@ -31,6 +32,7 @@ export class Settings {
         return this.operationBounds[name];
     }
     updateSetting(setting, value) {
+        console.log(`updating ${setting} to ${value}`);
         this.miscSettings[setting] = value;
     }
     updateBound(operationName, boundName, value) {
