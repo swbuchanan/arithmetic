@@ -13,6 +13,7 @@ export class Settings {
             divisionReversedMultiplication: true,
             subtractionReversedAddition: true,
             additionFractionDenominatorBound: 9,
+            additionFractionNumeratorBound: 9,
         };
         this.validQuestionTypes = [];
     }

@@ -1,3 +1,40 @@
+// I'm not using these two functions at the moment but it might be nice to have them in at some point to make the fractions pretty
+function toSubscript(input) {
+    const subscriptMap = {
+        "0": "₀",
+        "1": "₁",
+        "2": "₂",
+        "3": "₃",
+        "4": "₄",
+        "5": "₅",
+        "6": "₆",
+        "7": "₇",
+        "8": "₈",
+        "9": "₉"
+    };
+    return input
+        .split("") // Split the string into individual characters
+        .map(char => subscriptMap[char] || char) // Replace numbers with subscripts, leave other characters unchanged
+        .join(""); // Join the characters back into a string
+}
+export function toSuperscript(input) {
+    const superscriptMap = {
+        "0": "⁰",
+        "1": "¹",
+        "2": "²",
+        "3": "³",
+        "4": "⁴",
+        "5": "⁵",
+        "6": "⁶",
+        "7": "⁷",
+        "8": "⁸",
+        "9": "⁹"
+    };
+    return input
+        .split("") // Split the string into individual characters
+        .map(char => superscriptMap[char] || char) // Replace numbers with superscripts, leave other characters unchanged
+        .join(""); // Join the characters back into a string
+}
 export const operations = {
     addition: (a, b) => parseNumber(a) + parseNumber(b),
     subtraction: (a, b) => parseNumber(a) - parseNumber(b),

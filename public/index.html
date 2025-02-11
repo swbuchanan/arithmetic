@@ -37,13 +37,16 @@
             <label><input type="checkbox" id="integerAdditionToggle" data-number-type="integer" checked="true"/> Integers</label>
             <br>
             <label><input type="checkbox" id="decimalAdditionToggle" data-number-type="decimal" /> Decimals</label>
-            <label id="decimalAdditionDisplay" style="display:none;"><br>Decimal places </label><input type="number" id="decimalAdditionAmount" style="display:none;" placeholder=2 />
+            <div id="additionDecimalOptions" class="hidden" style="margin-left: 20px">
+            <!-- <label id="decimalAdditionDisplay" class="hidden"><br>Decimal places </label><input type="number" id="decimalAdditionAmount" placeholder=2 /> --!>
+                <label>Decimal places: <input type="number" id="decimalAdditionAmount" data-number-type="decimal" placeholder=2 /> </label>
+            </div>
             <br>
             <label><input type="checkbox" id="fractionAdditionToggle" data-number-type="fraction" /> Fractions</label>
             <div id="additionFractionOptions" class="hidden" style="margin-left: 20px">
-              <label>Denominator bound: <input type="number" id="additionFractionDenominatorBound" data-number-type="fraction" placeholder=9 /> </label>
-              <br>
-              <label>Numerator bound: <input type="number" id="additionFractionNumeratorBound" data-number-type="fraction" placeholder=9 /> </label>
+                <label>Denominator bound: <input type="number" id="additionFractionDenominatorBound" data-number-type="fraction" placeholder=9 /> </label>
+                <br>
+                <label>Numerator bound: <input type="number" id="additionFractionNumeratorBound" data-number-type="fraction" placeholder=9 /> </label>
             </div>
         </div>
 
@@ -56,16 +59,25 @@
       <div id="subtraction-settings" data-operator-type="subtraction">
         <label><input type="checkbox" id="subtractionReverseToggle" checked="true"/> Addition problems in reverse</label>
         <br>
-        <div id="subtraction-options" style="display: none">
+        <div id="subtraction-options" class="hidden">
           <label>Range: (<input type="number" id="subtractionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
-          <label> to <input type="number" id="subtractionLeftMax" data-bound-type="leftMax" placeholder=99 />)</label> −
+          <label> to <input type="number" id="subtractionLeftMax" data-bound-type="leftMax" placeholder=99 />)</label> -
           (<input type="number" id="subtractionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="subtractionRightMax" data-bound-type="rightMax" placeholder=99 />)
           <br>
           <label><input type="checkbox" id="integerSubtractionToggle" data-number-type="integer" checked="true"/> Integers</label>
           <br>
           <label><input type="checkbox" id="decimalSubtractionToggle" data-number-type="decimal" /> Decimals</label>
+            <div id="subtractionDecimalOptions" class="hidden" style="margin-left: 20px">
+            <!-- <label id="decimalAdditionDisplay" class="hidden"><br>Decimal places </label><input type="number" id="decimalAdditionAmount" placeholder=2 /> --!>
+                <label>Decimal places: <input type="number" id="decimalSubtractionAmount" data-number-type="decimal" placeholder=2 /> </label>
+            </div>
           <br>
           <label><input type="checkbox" id="fractionSubtractionToggle" data-number-type="fraction" /> Fractions</label>
+            <div id="subtractionFractionOptions" class="hidden" style="margin-left: 20px">
+                <label>Denominator bound: <input type="number" id="subtractionFractionDenominatorBound" data-number-type="fraction" placeholder=9 /> </label>
+                <br>
+                <label>Numerator bound: <input type="number" id="subtractionFractionNumeratorBound" data-number-type="fraction" placeholder=9 /> </label>
+            </div>
         </div>
       </div>
       <br><br>

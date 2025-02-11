@@ -99,5 +99,7 @@ form {
 }
 
 .hidden {
-    display: none
+    /* some day I will add support for hideable settings, but for now just show all settings */
+    /* display: none */
+    display: block 
 }
