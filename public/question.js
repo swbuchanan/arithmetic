@@ -1,5 +1,7 @@
 // generates questions to display
 import * as Utils from "./utils.js";
+export class Question {
+}
 export class QuestionGenerator {
     constructor(operationBounds) {
         this.operationStrings = { addition: "+", subtraction: "-", multiplication: "x", division: "/" };
@@ -33,6 +35,10 @@ export class QuestionGenerator {
             answer = leftNum;
             leftNum = String(parseInt(leftNum) * parseInt(rightNum));
         }
-        return { question: `${leftNum} ${operationString} ${rightNum} = `, type: 'integer', answer: answer };
+        return {
+            question: `${leftNum} ${operationString} ${rightNum} = `,
+            type: 'integer',
+            answer: answer
+        };
     }
 }

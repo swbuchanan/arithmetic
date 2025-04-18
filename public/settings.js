@@ -33,9 +33,16 @@ export class Settings {
         return this.operationBounds[name];
     }
     updateSetting(setting, value) {
-        console.log(`updating ${setting} to ${value}`);
+        console.log(`${setting} -> ${value}`);
         this.miscSettings[setting] = value;
     }
+    /**
+     *
+     * @param operationName - The name of the operation whose bounds we want to update
+     * @param boundName - The name of the bound we want to update
+     * @param value - The new value for the bound
+     * @throws Error if the value is not a number or if the operation name or bound name is not valid
+     */
     updateBound(operationName, boundName, value) {
         if (!value) {
             throw new Error(`Bad value passed.`);
@@ -49,7 +56,7 @@ export class Settings {
         return this.miscSettings[name];
     }
     updateQuestionType(numberType, operatorType, include) {
-        console.log(`updating question type ${numberType} ${operatorType} to ${include}`);
+        console.log(`Q-TYPE ${numberType} ${operatorType} = ${include}`);
         if (include)
             this.validQuestionTypes.push({ numberType, operatorType });
         else

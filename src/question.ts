@@ -7,6 +7,10 @@ export type OperatorType = "addition" | "subtraction" | "multiplication" | "divi
 export type NumberType = "integers" | "decimals" | "fractions";
 export type QuestionType = { numberType: NumberType, operatorType: OperatorType };
 
+export class Question {
+
+}
+
 export class QuestionGenerator {
 
     private operationBounds: Record<string, Record<string, number>>; 
@@ -48,8 +52,10 @@ export class QuestionGenerator {
             leftNum = String(parseInt(leftNum) * parseInt(rightNum));
         }
 
-
-        return {question: `${leftNum} ${operationString} ${rightNum} = `, type: 'integer', answer: answer};
+        return {
+            question: `${leftNum} ${operationString} ${rightNum} = `,
+            type: 'integer',
+            answer: answer
+        };
     }
-
 }

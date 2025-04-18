@@ -100,6 +100,7 @@ form {
 
 .hidden {
     /* some day I will add support for hideable settings, but for now just show all settings */
-    /* display: none */
-    display: block 
+    /* I am currently trying to add support for hideable settings */
+    display: none
+    /* display: block  */
 }

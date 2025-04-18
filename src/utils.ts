@@ -85,6 +85,69 @@ export function addFracs(frac1: string, frac2: string): string {
     return String(num) + "/" + String(dec);
 }
 
+/**
+ * 
+ * @param string 
+ * @returns a dictionary containing the numerical value of the fraction,
+ * the numerator and the denominator in reduced form, and a boolean
+ * indicating whether the fraction part of the original input is in reduced form
+ * 
+ * TODO: copilot wrote this; i better check it
+ */
+export function parseFraction(input: string): { 
+    value: number, 
+    numerator: number, 
+    denominator: number, 
+    reduced: boolean,
+    improperNumerator: number,
+    improperDenominator: number
+} {
+    let value = parseNumber(input);
+    let whole = 0;
+    let num = 0;
+    let den = 1;
+    let reduced = true;
+
+    if (input.includes("/")) {
+        // Determine if a whole part exists
+        const parts = input.split(" ");
+        let fracPart: string;
+        if (parts.length > 1) {
+            whole = parseInt(parts[0]);
+            fracPart = parts[1];
+        } else {
+            fracPart = parts[0];
+        }
+        const fracParts = fracPart.split("/");
+        num = parseInt(fracParts[0]);
+        den = parseInt(fracParts[1]);
+        if (gcd(num, den) !== 1) reduced = false;
+    } else {
+        // No fraction part, treat as whole number
+        whole = parseInt(input);
+    }
+
+    // Reduce the fraction part (if any)
+    const commonGcd = gcd(num, den);
+    const reducedNum = num / commonGcd;
+    const reducedDen = den / commonGcd;
+
+    // Convert to an improper fraction
+    const improper = whole * den + num;
+    const improperGcd = gcd(improper, den);
+    const improperNumerator = improper / improperGcd;
+    const improperDenominator = den / improperGcd;
+
+    return { 
+        value, 
+        numerator: reducedNum, 
+        denominator: reducedDen,
+        reduced,
+        improperNumerator,
+        improperDenominator
+    };
+}
+
 // given a string, returns a number
 // the important thing is that it can deal with mixed numbers
 export function parseNumber(number: string): number {
@@ -93,12 +156,14 @@ export function parseNumber(number: string): number {
         if (number.includes(" ")) {
             if (number.split(" ").length > 2) return NaN;
             base = parseFloat(number.split(" ")[0]);
-            console.log(`found a base ${base}`);
+            // Removed unnecessary logging
             number = number.split(" ")[1];
         }
         let numberArr = number.split("/");
         if (numberArr.length > 2) return NaN;
-        return base + parseFloat(numberArr[0])/parseFloat(numberArr[1]);
+        const denominator = parseFloat(numberArr[1]);
+        if (denominator === 0) throw new Error("Division by zero error in parseNumber.");
+        return base + parseFloat(numberArr[0]) / denominator;
     };
     return base + parseFloat(number);
 }

@@ -18,8 +18,8 @@ export class Game {
         return this.question.question;
     }
     checkAnswer(userAnswer) {
-        console.log(`the user answer is ${Utils.parseNumber(userAnswer)} and the correct answer is ${this.question["answer"]}`);
-        if (Utils.parseNumber(userAnswer) === Utils.parseNumber(this.question["answer"])) {
+        console.log(`the user answer is ${Utils.parseNumber(userAnswer)} and the correct answer is ${this.question.answer}`);
+        if (Utils.parseNumber(userAnswer) === Utils.parseNumber(this.question.answer)) {
             console.log("you are right");
             return true;
         }

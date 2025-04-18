@@ -4,9 +4,10 @@ import { Settings } from "./settings.js";
 export class UI {
     constructor() {
         this.startGame = () => {
-            console.log("Starting the game");
+            console.log("Starting the game!");
             // check to see which question types are enabled and update the settings
             this.readSettings();
+            console.log(this.settings.validQuestionTypes);
             // start the game logic
             this.game.startGame();
             // start the timer and update its display
@@ -37,7 +38,6 @@ export class UI {
             fractionSubtractionToggle: document.getElementById("fractionSubtractionToggle") };
         this.fractionOptions = { addition: document.getElementById("additionFractionOptions") };
         // create the timer
-        this.timerEl = document.getElementById("timer");
         this.timer = new Timer((timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
         () => this.endGame() // Handle game end
         );
@@ -55,6 +55,9 @@ export class UI {
         // attach listeners to the start buttons and the answer input box
         this.attachListeners();
     }
+    /**
+     * Assigns default values to the settings based on the HTML
+     */
     assignDefaults() {
         this.settingsForm.querySelectorAll("input").forEach((input) => {
             this.updateSetting(input);
@@ -70,11 +73,22 @@ export class UI {
             if (this.game.checkAnswer(this.answerInput.value))
                 this.processCorrectAnswer();
         });
-        // we also need listeners on all the checkboxes that change the display of other elements
-        // I guess for now I'll just handle these one at a time but there should be a better way
-        // this.
-        this.fractionToggles.fractionAdditionToggle.addEventListener("click", () => {
-            this.fractionOptions.addition.classList.toggle("hidden", !this.fractionToggles.fractionAdditionToggle.checked);
+        // Find all elements with a "data-dependent-on" attribute
+        const dependentElements = this.settingsForm.querySelectorAll("[data-dependent-on]");
+        dependentElements.forEach((element) => {
+            const parentId = element.dataset.dependentOn;
+            const parentInput = document.getElementById(parentId);
+            const isReversed = element.dataset.reverse === "true";
+            if (parentInput) {
+                // Add an event listener to the parent input
+                parentInput.addEventListener("change", () => {
+                    const shouldHide = isReversed ? parentInput.checked : !parentInput.checked;
+                    element.classList.toggle("hidden", shouldHide);
+                });
+                // Set the initial visibility based on the parent's state
+                const initialHide = isReversed ? parentInput.checked : !parentInput.checked;
+                element.classList.toggle("hidden", initialHide);
+            }
         });
     }
     // Go through all the user-changeable settings on the page and update the settings accordingly
@@ -85,20 +99,18 @@ export class UI {
     }
     /**
      * Given an input element, which should be either a text/number box or a checkbox, processes it in the appropriate way
-     *
-     *
+     * @param input - the input element to process
      */
     updateSetting(input) {
         if (input.type === "number") {
-            // if there is a valid number in the input, we want to use that, otherwise use the default value
-            if (input.valueAsNumber) {
+            if (input.valueAsNumber) { // if there is a valid number in the input, we want to use that
                 // the settings that involve a number box are all either bounds or miscellaneous settings
                 if (input.dataset.operatorType && input.dataset.boundType)
                     this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, input.valueAsNumber);
                 else
                     this.settings.updateSetting(input.id, input.valueAsNumber);
             }
-            else {
+            else { // if there is no valid number in the input, we want to use the default value
                 if (input.dataset.operatorType && input.dataset.boundType)
                     this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
                 else
@@ -106,10 +118,10 @@ export class UI {
             }
         }
         if (input.type === "checkbox") {
-            // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
-            if (input.dataset.numberType && input.dataset.operatorType) {
-                let masterNumberTypeEnabled = document.getElementById(input.dataset.operatorType + "Toggle").checked;
-                this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, input.checked && masterNumberTypeEnabled);
+            if (input.dataset.numberType && input.dataset.operatorType) { // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
+                // make sure that the given operator type is enabled at the highest level
+                let masterOperatorTypeEnabled = document.getElementById(input.dataset.operatorType + "Toggle").checked;
+                this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, input.checked && masterOperatorTypeEnabled);
             }
         }
     }
