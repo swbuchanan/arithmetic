@@ -6,4 +6,3 @@ document.addEventListener("DOMContentLoaded", () => {
     let ui = new UI();
 
 });
-

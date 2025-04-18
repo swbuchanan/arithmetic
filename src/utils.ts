@@ -204,6 +204,3 @@ export function generateFrac(lowerBound: number, upperBound: number): string {
     if (baseStr === "0") baseStr = "";
     return baseStr + " " + String(numerator) + "/" + String(denominator);
 }
-
-
-

@@ -87,6 +87,7 @@ body {
     color: #bbbbbb;
     background-color: #444448;
 }
+
 form {
     background: #393940;
     padding: 20px 60px;
@@ -99,8 +100,5 @@ form {
 }
 
 .hidden {
-    /* some day I will add support for hideable settings, but for now just show all settings */
-    /* I am currently trying to add support for hideable settings */
     display: none
-    /* display: block  */
 }

@@ -32,7 +32,9 @@ export class Settings {
     }
 
     /**
-     * Returns the bound for the given operation, but if the requested operation is subtraction (division), and the setting is selected to treat subtraction (division) problems as reversed addition (multiplication) problems, we instead return the bounds for addition (multiplication).
+     * Returns the bound for the given operation, but if the requested operation is subtraction (division),
+     * and the setting is selected to treat subtraction (division) problems as reversed addition (multiplication) problems,
+     * we instead return the bounds for addition (multiplication).
      * @param name - the operation whose bounds we wish to return
      * @returns a Record<string, number> containing the name of the operation and the 4 bounds for that operation
      */
@@ -48,7 +50,6 @@ export class Settings {
     }
 
     /**
-     * 
      * @param operationName - The name of the operation whose bounds we want to update
      * @param boundName - The name of the bound we want to update
      * @param value - The new value for the bound
