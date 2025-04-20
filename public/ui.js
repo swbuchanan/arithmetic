@@ -7,12 +7,14 @@ export class UI {
             console.log("Starting the game!");
             // check to see which question types are enabled and update the settings
             this.readSettings();
-            console.log(this.settings.validQuestionTypes);
+            this.score = 0;
+            this.settings.printValidQuestionTypes();
             // start the game logic
             this.game.startGame();
             // start the timer and update its display
             this.timer.start(this.settings.getSetting("timeLimit"));
             this.updateTimerDisplay(this.settings.getSetting("timeLimit"));
+            this.updateScoreDisplay();
             // make sure only the game is showing
             this.settingsForm.style.display = "none";
             this.endDiv.style.display = "none";
@@ -25,6 +27,7 @@ export class UI {
         this.game = new Game(this.settings);
         this.gameDiv = document.getElementById("game");
         this.startButtons = document.querySelectorAll(".start-game");
+        this.endScreenHomeButton = document.getElementById("end-screen-home-button");
         this.endDiv = document.getElementById("ending");
         this.settingsForm = document.getElementById("settings");
         this.description = document.getElementById("description");
@@ -67,6 +70,14 @@ export class UI {
         // start game buttons
         this.startButtons.forEach((button) => {
             button.addEventListener("click", this.startGame);
+        });
+        // home button
+        this.endScreenHomeButton.addEventListener("click", () => {
+            this.gameDiv.style.display = "none";
+            this.endDiv.style.display = "none";
+            this.settingsForm.style.display = "block";
+            this.description.style.display = "block";
+            this.timer.stop();
         });
         // user's answer box
         this.answerInput.addEventListener("input", () => {
@@ -120,8 +131,12 @@ export class UI {
         if (input.type === "checkbox") {
             if (input.dataset.numberType && input.dataset.operatorType) { // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
                 // make sure that the given operator type is enabled at the highest level
+                console.log(input);
                 let masterOperatorTypeEnabled = document.getElementById(input.dataset.operatorType + "Toggle").checked;
                 this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, input.checked && masterOperatorTypeEnabled);
+                //                if (input.checked && masterOperatorTypeEnabled) {
+                //                    console.log(`enabled ${input.dataset.numberType} ${input.dataset.operatorType}`);
+                //                }
             }
         }
     }
@@ -130,7 +145,6 @@ export class UI {
         this.answerInput.focus();
     }
     endGame() {
-        console.log("Ending the game");
         this.gameDiv.style.display = "none";
         this.endDiv.style.display = "block";
     }
@@ -139,7 +153,8 @@ export class UI {
     }
     updateScoreDisplay() {
         this.scoreEl.textContent = this.score.toString();
-        this.endScoreEl.textContent = this.score.toString();
+        let displayedScore = this.score;
+        this.endScoreEl.textContent = displayedScore.toString();
     }
     processCorrectAnswer() {
         this.score++;

@@ -1,1 +1,14 @@
 tsc && mv *.js ../public
+
+start_python_server_if_not_running() {
+    local port=${1:-8000}
+    
+    if lsof -i :$port >/dev/null 2>&1; then
+        echo "Python server already running on port $port"
+    else
+        echo "Starting Python server on port $port..."
+        (cd "../public" && python3 -m http.server "$port") &
+    fi
+}
+
+start_python_server_if_not_running

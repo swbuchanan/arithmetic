@@ -27,6 +27,13 @@ export class Settings {
         this.validQuestionTypes = [];
     }
 
+    public printValidQuestionTypes() {
+        console.log("Valid question types:");
+        for (const type of this.validQuestionTypes) {
+            console.log(`Number type: ${type.numberType}, Operator type: ${type.operatorType}`);
+        }
+    }
+
     public getOperationBounds(): Record<string, Record<string, number>> {
         return this.operationBounds;
     }
@@ -70,8 +77,16 @@ export class Settings {
     }
 
     public updateQuestionType(numberType: NumberType, operatorType: OperatorType, include: boolean) {
-        console.log(`Q-TYPE ${numberType} ${operatorType} = ${include}`);
-        if (include) this.validQuestionTypes.push({numberType, operatorType});
-        else this.validQuestionTypes = this.validQuestionTypes.filter(type => (type.numberType !== numberType || type.operatorType !== operatorType));
+        if (include && !this.validQuestionTypes.some(type => (type.numberType === numberType && type.operatorType === operatorType))) {
+            this.validQuestionTypes.push({numberType, operatorType});
+            console.log(`Added ${numberType} ${operatorType} to valid question types.`);
+        }
+        else if (include && this.validQuestionTypes.some(type => (type.numberType === numberType && type.operatorType === operatorType))) {
+            console.log("Doing nothing");
+        }
+        else {
+            this.validQuestionTypes = this.validQuestionTypes.filter(type => (type.numberType !== numberType || type.operatorType !== operatorType));
+            console.log(`Removed ${numberType} ${operatorType} from valid question types.`);
+        }
     }
 }
