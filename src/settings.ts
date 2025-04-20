@@ -3,18 +3,49 @@
 import { NumberType } from "./question.js" 
 import { OperatorType, QuestionType } from "./question.js" 
 
+type Bounds = {
+    leftMin: number;
+    leftMax: number;
+    rightMin: number;
+    rightMax: number;
+}
+
+export type OperationSettings = {
+    bounds: Bounds;
+    decimalPlaces: number;
+    onlyReducedFractions: boolean;
+    improperFractions: boolean;
+};
+
 export class Settings {
 
-    private operationBounds: Record<string, Record<string, number>>;
-    public validQuestionTypes: QuestionType[];
+    operationSettings: Record<OperatorType, OperationSettings>;
+//    private operationBounds: Record<string, Record<string, number>>;
+    validQuestionTypes: QuestionType[];
     private miscSettings: Record<string, number | boolean>;
 
     constructor() {
-        this.operationBounds = {
+        const defaultSettings = {
+//            bounds: {leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99},
+            decimalPlaces: 2,
+            onlyReducedFractions: true,
+            improperFractions: true,
+        }
+        const operationBounds = {
             addition: {leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99},
             subtraction: {leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99},
             multiplication: {leftMin: 2, leftMax: 99, rightMin: 2, rightMax: 99},
             division: {leftMin: 1, leftMax: 100, rightMin: 1, rightMax: 100}
+        }
+        
+        // create settings for each of the different operations
+        // copy most of the settings from the default, and set the bounds from the operationBounds object
+        this.operationSettings = {} as Record<OperatorType, OperationSettings>;
+        for (const op of Object.keys(operationBounds) as OperatorType[]) {
+            this.operationSettings[op] = {
+                bounds: operationBounds[op],
+                ...defaultSettings,
+            };
         }
         this.miscSettings = {
             timeLimit: 120,
@@ -34,8 +65,17 @@ export class Settings {
         }
     }
 
-    public getOperationBounds(): Record<string, Record<string, number>> {
-        return this.operationBounds;
+    public getOperationBounds(): Record<OperatorType, Bounds> {
+        const boundsMap: Partial<Record<OperatorType, Bounds>> = {};
+
+        for (const op of Object.keys(this.operationSettings) as OperatorType[]) {
+            boundsMap[op] = this.operationSettings[op].bounds;
+        }
+        return boundsMap as Record<OperatorType, Bounds>;
+    }
+
+    public getOperationSettings(opName: OperatorType): OperationSettings {
+        return this.operationSettings[opName];
     }
 
     /**
@@ -46,9 +86,9 @@ export class Settings {
      * @returns a Record<string, number> containing the name of the operation and the 4 bounds for that operation
      */
     public getOperationBoundsByName(name: OperatorType): Record<string, number> {
-        if (name === "subtraction" && this.miscSettings.subtractionReversedAddition) return this.operationBounds.addition;
-        if (name === "division" && this.miscSettings.divisionReversedMultiplication) return this.operationBounds.multiplication;
-        return this.operationBounds[name];
+        if (name === "subtraction" && this.miscSettings.subtractionReversedAddition) return this.operationSettings['addition'].bounds;
+        if (name === "division" && this.miscSettings.divisionReversedMultiplication) return this.operationSettings['multiplication'].bounds;
+        return this.operationSettings[name].bounds;
     }
 
     public updateSetting(setting: string, value: number | boolean) {
@@ -62,14 +102,18 @@ export class Settings {
      * @param value - The new value for the bound
      * @throws Error if the value is not a number or if the operation name or bound name is not valid
      */
-    public updateBound(operationName: string, boundName: string, value: number) {
+    public updateBound(operationName: OperatorType, boundName: string, value: number) {
         if (!value) {
             throw new Error(`Bad value passed.`);
         }
         if (!operationName || !boundName) {
             throw new Error(`No such bound exists.`);
         }
-        this.operationBounds[operationName][boundName] = value;
+//        this.operationBounds[operationName][boundName] = value;
+        this.operationSettings[operationName].bounds = {
+            ...this.operationSettings[operationName].bounds,
+            [boundName]: value
+        };
     }
 
     public getSetting(name: string): number | boolean {

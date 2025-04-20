@@ -1,4 +1,6 @@
 
+import { OperationSettings } from "./settings.js";
+
 // type Operation = (a: number, b: number) => number;
 type Operation = (a: string, b: string) => number;
 
@@ -169,9 +171,9 @@ export function parseNumber(number: string): number {
 }
 
 // generates a number of the given type
-export function generateNum(numberType: string, lowerBound: number, upperBound: number): string {
+export function generateNum(numberType: string, lowerBound: number, upperBound: number, operationSettings: OperationSettings): string {
     if (numberType === "integer") return generateInt(lowerBound, upperBound);
-    if (numberType === "decimal") return generateDec(lowerBound, upperBound);
+    if (numberType === "decimal") return generateDec(lowerBound, upperBound, operationSettings.decimalPlaces);
     if (numberType === "fraction") return generateFrac(lowerBound, upperBound);
     throw new Error("Invalid number type.");
 }

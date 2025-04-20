@@ -1,12 +1,24 @@
 // manages the user-determined settings
 export class Settings {
     constructor() {
-        this.operationBounds = {
+        const defaultSettings = {
+            //            bounds: {leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99},
+            decimalPlaces: 2,
+            onlyReducedFractions: true,
+            improperFractions: true,
+        };
+        const operationBounds = {
             addition: { leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99 },
             subtraction: { leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99 },
             multiplication: { leftMin: 2, leftMax: 99, rightMin: 2, rightMax: 99 },
             division: { leftMin: 1, leftMax: 100, rightMin: 1, rightMax: 100 }
         };
+        // create settings for each of the different operations
+        // copy most of the settings from the default, and set the bounds from the operationBounds object
+        this.operationSettings = {};
+        for (const op of Object.keys(operationBounds)) {
+            this.operationSettings[op] = Object.assign({ bounds: operationBounds[op] }, defaultSettings);
+        }
         this.miscSettings = {
             timeLimit: 120,
             allowRearrangements: false,
@@ -24,7 +36,14 @@ export class Settings {
         }
     }
     getOperationBounds() {
-        return this.operationBounds;
+        const boundsMap = {};
+        for (const op of Object.keys(this.operationSettings)) {
+            boundsMap[op] = this.operationSettings[op].bounds;
+        }
+        return boundsMap;
+    }
+    getOperationSettings(opName) {
+        return this.operationSettings[opName];
     }
     /**
      * Returns the bound for the given operation, but if the requested operation is subtraction (division),
@@ -35,10 +54,10 @@ export class Settings {
      */
     getOperationBoundsByName(name) {
         if (name === "subtraction" && this.miscSettings.subtractionReversedAddition)
-            return this.operationBounds.addition;
+            return this.operationSettings['addition'].bounds;
         if (name === "division" && this.miscSettings.divisionReversedMultiplication)
-            return this.operationBounds.multiplication;
-        return this.operationBounds[name];
+            return this.operationSettings['multiplication'].bounds;
+        return this.operationSettings[name].bounds;
     }
     updateSetting(setting, value) {
         console.log(`${setting} -> ${value}`);
@@ -57,7 +76,8 @@ export class Settings {
         if (!operationName || !boundName) {
             throw new Error(`No such bound exists.`);
         }
-        this.operationBounds[operationName][boundName] = value;
+        //        this.operationBounds[operationName][boundName] = value;
+        this.operationSettings[operationName].bounds = Object.assign(Object.assign({}, this.operationSettings[operationName].bounds), { [boundName]: value });
     }
     getSetting(name) {
         return this.miscSettings[name];

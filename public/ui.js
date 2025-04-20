@@ -4,9 +4,13 @@ import { Settings } from "./settings.js";
 export class UI {
     constructor() {
         this.startGame = () => {
-            console.log("Starting the game!");
             // check to see which question types are enabled and update the settings
             this.readSettings();
+            if (this.settings.validQuestionTypes.length === 0) {
+                alert("Please select at least one question type.");
+                return;
+            }
+            console.log("Starting the game!");
             this.score = 0;
             this.settings.printValidQuestionTypes();
             // start the game logic
@@ -116,14 +120,16 @@ export class UI {
         if (input.type === "number") {
             if (input.valueAsNumber) { // if there is a valid number in the input, we want to use that
                 // the settings that involve a number box are all either bounds or miscellaneous settings
-                if (input.dataset.operatorType && input.dataset.boundType)
+                if (input.dataset.operatorType && input.dataset.boundType) {
                     this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, input.valueAsNumber);
+                }
                 else
                     this.settings.updateSetting(input.id, input.valueAsNumber);
             }
             else { // if there is no valid number in the input, we want to use the default value
-                if (input.dataset.operatorType && input.dataset.boundType)
+                if (input.dataset.operatorType && input.dataset.boundType) {
                     this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(input.placeholder));
+                }
                 else
                     this.settings.updateSetting(input.id, parseInt(input.placeholder));
             }

@@ -149,11 +149,11 @@ export function parseNumber(number) {
     return base + parseFloat(number);
 }
 // generates a number of the given type
-export function generateNum(numberType, lowerBound, upperBound) {
+export function generateNum(numberType, lowerBound, upperBound, operationSettings) {
     if (numberType === "integer")
         return generateInt(lowerBound, upperBound);
     if (numberType === "decimal")
-        return generateDec(lowerBound, upperBound);
+        return generateDec(lowerBound, upperBound, operationSettings.decimalPlaces);
     if (numberType === "fraction")
         return generateFrac(lowerBound, upperBound);
     throw new Error("Invalid number type.");
