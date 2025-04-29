@@ -172,6 +172,7 @@ export function generateDec(lowerBound, upperBound, decimalPlaces) {
 // generate a random mixed number between the bounds
 // at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
 // TODO: add optional arguments that specify how large or small the numerator and denominator can be
+// or think of another way to do it; maybe just a difficulty score for the fractions or some such
 export function generateFrac(lowerBound, upperBound) {
     if (lowerBound > upperBound) {
         console.log("WARNING: for some reason the lower bound is above the upper bound. For now I'm just going to switch them, but this should be avoided.");
@@ -184,6 +185,7 @@ export function generateFrac(lowerBound, upperBound) {
     let base;
     let numerator;
     let denominator;
+    // TODO: it's hard to write a stupider method to generate a good fraction than this. FIX
     do {
         base = parseInt(generateInt(lowerBound, upperBound));
         numerator = parseInt(generateInt(1, 20));

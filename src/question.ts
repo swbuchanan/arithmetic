@@ -32,6 +32,7 @@ export class QuestionGenerator {
         // a question type comprises a number type (integer, decimal, fraction) and an operator type (addition, subtraction, multiplication, division)
         const allowedTypes = settings.validQuestionTypes;
         // if allowRearrangements is true, we may need to rearrange the numbers so that the unknown may be on the left hand side
+        // TODO: implement rearrangements
         const allowRearrangements = settings.getSetting("allowRearrangements");
 
         // debug: this state should never be reached
@@ -40,7 +41,7 @@ export class QuestionGenerator {
         }
 
         // pick a random question type from the allowed types
-        let chosenType = allowedTypes[parseInt(Utils.generateInt(0, allowedTypes.length))];
+        let chosenType = allowedTypes[parseInt(Utils.generateInt(0, allowedTypes.length-1))];
 
         let leftNum = Utils.generateNum(chosenType.numberType,
                                         settings.getOperationBoundsByName(chosenType.operatorType).leftMin,

@@ -178,7 +178,7 @@ export function generateNum(numberType: string, lowerBound: number, upperBound: 
     throw new Error("Invalid number type.");
 }
 
-// generate a random integer between the bounds
+// generate a random integer between the bounds, inclusive
 export function generateInt(lowerBound: number, upperBound: number): string {
     let randy = Math.round(Math.random()*(upperBound - lowerBound)) + lowerBound;
     console.log(`generated ${randy}`);
@@ -194,6 +194,7 @@ export function generateDec(lowerBound: number, upperBound: number, decimalPlace
 // generate a random mixed number between the bounds
 // at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
 // TODO: add optional arguments that specify how large or small the numerator and denominator can be
+// or think of another way to do it; maybe just a difficulty score for the fractions or some such
 export function generateFrac(lowerBound: number, upperBound: number): string {
     if (lowerBound > upperBound) {
         console.log("WARNING: for some reason the lower bound is above the upper bound. For now I'm just going to switch them, but this should be avoided.")

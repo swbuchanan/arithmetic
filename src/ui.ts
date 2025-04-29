@@ -125,9 +125,11 @@ export class UI {
 
     /**
      * Given an input element, which should be either a text/number box or a checkbox, processes it in the appropriate way
-     * @param input - the input element to process
+     * @param input - the HTMLInputElement to process
      */
     updateSetting(input: HTMLInputElement) {
+        // TODO: the divisionreversedmultiplication and subtractionreversedaddition cases are not handled correctly
+        if (input.dataset.operatorType === 'subtraction');
 
         if (input.type === "number") {
             if (input.valueAsNumber) { // if there is a valid number in the input, we want to use that

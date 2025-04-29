@@ -19,13 +19,14 @@ export class QuestionGenerator {
         // a question type comprises a number type (integer, decimal, fraction) and an operator type (addition, subtraction, multiplication, division)
         const allowedTypes = settings.validQuestionTypes;
         // if allowRearrangements is true, we may need to rearrange the numbers so that the unknown may be on the left hand side
+        // TODO: implement rearrangements
         const allowRearrangements = settings.getSetting("allowRearrangements");
         // debug: this state should never be reached
         if (allowedTypes.length === 0) {
             throw new Error("ERROR: Must have at least one allowed question type.");
         }
         // pick a random question type from the allowed types
-        let chosenType = allowedTypes[parseInt(Utils.generateInt(0, allowedTypes.length))];
+        let chosenType = allowedTypes[parseInt(Utils.generateInt(0, allowedTypes.length - 1))];
         let leftNum = Utils.generateNum(chosenType.numberType, settings.getOperationBoundsByName(chosenType.operatorType).leftMin, settings.getOperationBoundsByName(chosenType.operatorType).leftMax, settings.getOperationSettings(chosenType.operatorType));
         let rightNum = Utils.generateNum(chosenType.numberType, settings.getOperationBoundsByName(chosenType.operatorType).rightMin, settings.getOperationBoundsByName(chosenType.operatorType).rightMax, settings.getOperationSettings(chosenType.operatorType));
         let answer = String(Utils.operations[chosenType.operatorType](leftNum, rightNum));
