@@ -129,7 +129,14 @@ export class UI {
      */
     updateSetting(input: HTMLInputElement) {
         // TODO: the divisionreversedmultiplication and subtractionreversedaddition cases are not handled correctly
-        if (input.dataset.operatorType === 'subtraction');
+
+        let read_input = input; // this is the input that we want to read from to update the setting
+        // usually this is the same as the one that we want to change, but in some cases we want to read from a different one
+
+        // first check if we should be getting the settings from another input element
+        if (['subtraction', 'multiplication'].indexOf(input.dataset.operatorType!) > -1 && input.dataset.alternate && (document.getElementById(`${input.dataset.operatorType}ReverseToggle`) as HTMLInputElement).checked) {
+            read_input = document.getElementById(input.dataset.alternate) as HTMLInputElement;
+        }
 
         if (input.type === "number") {
             if (input.valueAsNumber) { // if there is a valid number in the input, we want to use that
@@ -137,14 +144,14 @@ export class UI {
                 if (input.dataset.operatorType && input.dataset.boundType) {
                     this.settings.updateBound(input.dataset.operatorType as OperatorType,
                                               input.dataset.boundType,
-                                              input.valueAsNumber);
+                                              read_input.valueAsNumber);
                 } else this.settings.updateSetting(input.id, input.valueAsNumber);
             } else { // if there is no valid number in the input, we want to use the default value
                 if (input.dataset.operatorType && input.dataset.boundType) {
                     this.settings.updateBound(input.dataset.operatorType as OperatorType,
                                               input.dataset.boundType,
-                                              parseInt(input.placeholder));
-                } else this.settings.updateSetting(input.id, parseInt(input.placeholder));
+                                              parseInt(read_input.placeholder));
+                } else this.settings.updateSetting(input.id, parseInt(read_input.placeholder));
             }
         }
 
@@ -153,7 +160,7 @@ export class UI {
                 // make sure that the given operator type is enabled at the highest level
                 console.log(input);
                 let masterOperatorTypeEnabled = (document.getElementById(input.dataset.operatorType as string + "Toggle") as HTMLInputElement).checked;
-                this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, input.checked && masterOperatorTypeEnabled);
+                this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, read_input.checked && masterOperatorTypeEnabled);
 //                if (input.checked && masterOperatorTypeEnabled) {
 //                    console.log(`enabled ${input.dataset.numberType} ${input.dataset.operatorType}`);
 //                }

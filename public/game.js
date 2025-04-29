@@ -19,7 +19,9 @@ export class Game {
     }
     checkAnswer(userAnswer) {
         console.log(`the user answer is ${Utils.parseNumber(userAnswer)} and the correct answer is ${this.question.answer}`);
-        if (Utils.parseNumber(userAnswer) === Utils.parseNumber(this.question.answer)) {
+        // TODO: because of rounding errors, answers input as fractions can be misread in some cases
+        // I don't think using toFixed is an ideal solution - I'd prefer to use the fractions directly
+        if (Utils.parseNumber(userAnswer).toFixed(10) === Utils.parseNumber(this.question.answer).toFixed(10)) {
             console.log("you are right");
             return true;
         }

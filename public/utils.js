@@ -158,7 +158,7 @@ export function generateNum(numberType, lowerBound, upperBound, operationSetting
         return generateFrac(lowerBound, upperBound);
     throw new Error("Invalid number type.");
 }
-// generate a random integer between the bounds
+// generate a random integer between the bounds, inclusive
 export function generateInt(lowerBound, upperBound) {
     let randy = Math.round(Math.random() * (upperBound - lowerBound)) + lowerBound;
     console.log(`generated ${randy}`);
