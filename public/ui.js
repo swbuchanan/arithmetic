@@ -5,6 +5,7 @@ export class UI {
     constructor() {
         this.startGame = () => {
             // check to see which question types are enabled and update the settings
+            // TODO: there should also be some check to make sure that no lower bounds are higher than any upper bounds
             this.readSettings();
             if (this.settings.validQuestionTypes.length === 0) {
                 alert("Please select at least one question type.");

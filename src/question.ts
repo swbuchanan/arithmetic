@@ -36,7 +36,7 @@ export class QuestionGenerator {
 
         // debug: this state should never be reached
         if (allowedTypes.length === 0) {
-            throw new Error("FATAL: Must have at least one allowed question type.");
+            throw new Error("ERROR: Must have at least one allowed question type.");
         }
 
         // pick a random question type from the allowed types

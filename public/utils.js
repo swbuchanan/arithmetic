@@ -160,7 +160,9 @@ export function generateNum(numberType, lowerBound, upperBound, operationSetting
 }
 // generate a random integer between the bounds
 export function generateInt(lowerBound, upperBound) {
-    return String(Math.floor(Math.random() * (upperBound - lowerBound)) + lowerBound);
+    let randy = Math.round(Math.random() * (upperBound - lowerBound)) + lowerBound;
+    console.log(`generated ${randy}`);
+    return String(randy);
 }
 // generate a random decimal with the given conditions
 export function generateDec(lowerBound, upperBound, decimalPlaces) {
@@ -171,17 +173,25 @@ export function generateDec(lowerBound, upperBound, decimalPlaces) {
 // at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
 // TODO: add optional arguments that specify how large or small the numerator and denominator can be
 export function generateFrac(lowerBound, upperBound) {
+    if (lowerBound > upperBound) {
+        console.log("WARNING: for some reason the lower bound is above the upper bound. For now I'm just going to switch them, but this should be avoided.");
+        const temp = lowerBound;
+        lowerBound = upperBound;
+        upperBound = temp;
+    }
     if (lowerBound == upperBound)
         return String(lowerBound);
-    let base = parseInt(generateInt(lowerBound, upperBound));
+    let base;
     let numerator;
     let denominator;
     do {
+        base = parseInt(generateInt(lowerBound, upperBound));
         numerator = parseInt(generateInt(1, 20));
         denominator = parseInt(generateInt(2, 10));
-    } while (gcd(numerator, denominator) !== 1 || numerator / denominator > base);
+    } while (gcd(numerator, denominator) !== 1 || base - numerator / denominator < lowerBound);
     let baseStr = String(Math.floor(base - numerator / denominator));
+    console.log(`The bounds are ${lowerBound} and ${upperBound}; the base I generated is ${base}, which after offsetting by ${numerator / denominator} becomes ${baseStr}`);
     if (baseStr === "0")
-        baseStr = "";
+        return String(numerator) + "/" + String(denominator);
     return baseStr + " " + String(numerator) + "/" + String(denominator);
 }
