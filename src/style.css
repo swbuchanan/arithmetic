@@ -42,6 +42,14 @@ body {
     font-size: 1rem;
 }
 
+body.game-active {
+    align-items: center;
+}
+
+body.game-active #game {
+    padding-top: 0;
+}
+
 button,
 input,
 select,
@@ -174,9 +182,11 @@ input[type="checkbox"] {
     text-align: center;
 }
 
-#answerInput:focus {
-    border-color: var(--focus-color);
-    box-shadow: 0 0 0.35rem 0.15rem rgba(154, 181, 125, 0.45);
+#answerInput:focus,
+#answerInput:focus-visible {
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
 }
 
 @media (max-width: 40rem) {

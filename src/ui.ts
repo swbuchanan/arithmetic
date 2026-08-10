@@ -216,6 +216,7 @@ export class UI {
     }
 
     endGame() {
+        document.body.classList.remove("game-active");
         this.gameDiv.hidden = true;
         this.endDiv.hidden = false;
     }
@@ -243,6 +244,7 @@ export class UI {
     }
 
     private showGameScreen() {
+        document.body.classList.add("game-active");
         this.settingsForm.hidden = true;
         this.description.hidden = true;
         this.endDiv.hidden = true;
@@ -250,6 +252,7 @@ export class UI {
     }
 
     private showSettingsScreen() {
+        document.body.classList.remove("game-active");
         this.gameDiv.hidden = true;
         this.endDiv.hidden = true;
         this.settingsForm.hidden = false;
