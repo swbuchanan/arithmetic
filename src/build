@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+project_dir="$(cd -- "$script_dir/.." && pwd)"
+public_dir="$project_dir/public"
+port="${1:-8000}"
+
+tsc --project "$script_dir/tsconfig.json" --outDir "$public_dir"
+cp "$script_dir/style.css" "$public_dir/style.css"
+
+echo "Serving $public_dir at http://localhost:$port"
+exec python3 -m http.server "$port" --bind 127.0.0.1 --directory "$public_dir"
