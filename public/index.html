@@ -17,6 +17,23 @@
         </section>
 
         <form id="settings" autocomplete="off">
+            <section class="preset-controls" aria-labelledby="presetControlsTitle">
+                <h2 id="presetControlsTitle">Saved settings</h2>
+                <div class="preset-row">
+                    <label for="presetName">Name</label>
+                    <input type="text" id="presetName" maxlength="60" placeholder="Preset name">
+                    <button type="button" id="savePresetButton">Save</button>
+                </div>
+                <div class="preset-row">
+                    <label for="presetSelect">Preset</label>
+                    <select id="presetSelect">
+                        <option value="">Choose saved settings</option>
+                    </select>
+                    <button type="button" id="loadPresetButton" disabled>Load</button>
+                    <button type="button" id="deletePresetButton" disabled>Delete</button>
+                </div>
+            </section>
+
             <!-- ADDITION -->
             <label class="operator-label"><input type="checkbox" id="additionToggle" checked> Addition</label>
             <div id="addition-settings" class="operator-settings" data-operator-type="addition">
@@ -106,7 +123,7 @@
             </div>
 
             <hr>
-            <label>Time limit (seconds): <input type="number" id="timeLimit" placeholder="120" min="1"></label>
+            <label>Time limit (seconds): <input type="number" id="timeLimit" placeholder="120" min="1" step="1"></label>
             <p><button type="button" class="start-game">Start game</button></p>
         </form>
 
@@ -124,6 +141,14 @@
             <p>Final score: <span id="endScore"></span></p>
             <button type="button" class="start-game">Try again</button>
             <button type="button" id="end-screen-home-button">Home</button>
+        </section>
+
+        <p id="storageStatus" class="storage-status" aria-live="polite" aria-atomic="true"></p>
+
+        <section id="history" aria-labelledby="historyTitle">
+            <h2 id="historyTitle">Attempt history</h2>
+            <p id="historyEmpty" class="history-empty">No completed attempts for these settings yet.</p>
+            <svg id="historyGraph" viewBox="0 0 640 240" role="img" aria-label="Attempt scores over time" hidden></svg>
         </section>
     </main>
 </body>

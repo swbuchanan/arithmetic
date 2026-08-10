@@ -14,6 +14,7 @@
     --text-color: #d0d0d0;
     --accent-color: #6ca6ef;
     --focus-color: #9ab57d;
+    --error-color: #f0a3a3;
 }
 
 * {
@@ -72,9 +73,24 @@ button:hover {
 }
 
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
     outline: 2px solid var(--focus-color);
     outline-offset: 2px;
+}
+
+input[type="text"],
+select {
+    min-width: 0;
+    padding: 0.4rem 0.5rem;
+    color: #ffffff;
+    background: var(--input-background);
+    border: 1px solid #62626d;
+    border-radius: 0.3rem;
+}
+
+input[type="text"]::placeholder {
+    color: #aaaab0;
 }
 
 input[type="number"] {
@@ -124,6 +140,69 @@ input[type="checkbox"] {
     line-height: 1.8;
 }
 
+.preset-controls {
+    margin: 0 0 1.25rem;
+    padding: 0.85rem;
+    background: #34343a;
+    border: 1px solid #50505a;
+    border-radius: 0.45rem;
+}
+
+.preset-controls h2 {
+    margin: 0 0 0.55rem;
+    color: var(--accent-color);
+    font-size: 1rem;
+}
+
+.preset-row {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(8rem, 1fr) auto auto;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.preset-row:first-of-type {
+    grid-template-columns: 4.5rem minmax(8rem, 1fr) auto;
+    margin-top: 0;
+}
+
+.preset-row label {
+    line-height: 1.25;
+}
+
+.preset-row input,
+.preset-row select {
+    width: 100%;
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    background: #50505a;
+}
+
+.storage-status {
+    min-height: 1.4em;
+    margin: 0.75rem 0 0;
+    color: #b9c9ac;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.storage-status:empty {
+    min-height: 0;
+    margin: 0;
+}
+
+.storage-status.error,
+.storage-status[data-status="error"] {
+    color: var(--error-color);
+}
+
 .operator-label {
     display: block;
     margin-top: 0.75rem;
@@ -156,6 +235,66 @@ input[type="checkbox"] {
 #ending {
     padding-top: clamp(3rem, 15vh, 8rem);
     text-align: center;
+}
+
+#history {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    background: var(--panel-background);
+    border: 1px solid #505050;
+    border-radius: 0.65rem;
+}
+
+#history h2 {
+    margin: 0 0 0.75rem;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.history-empty {
+    margin: 0;
+    color: #aaaab0;
+    font-size: 0.9rem;
+}
+
+#historyGraph {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 10rem;
+    overflow: visible;
+}
+
+#historyGraph .history-axis {
+    stroke: #777782;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+#historyGraph .history-axis-label {
+    fill: #aaaab0;
+    font-size: 0.75rem;
+}
+
+#historyGraph .history-line {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+#historyGraph .history-point {
+    fill: var(--panel-background);
+    stroke: var(--accent-color);
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+#historyGraph .history-point:focus,
+#historyGraph .history-point:hover {
+    fill: var(--focus-color);
 }
 
 #question {
@@ -200,5 +339,20 @@ input[type="checkbox"] {
 
     .operator-settings {
         margin-left: 0.75rem;
+    }
+
+    .preset-row,
+    .preset-row:first-of-type {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .preset-row label,
+    .preset-row input,
+    .preset-row select {
+        grid-column: 1 / -1;
+    }
+
+    #history {
+        padding: 0.8rem;
     }
 }

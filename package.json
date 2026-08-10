@@ -1,0 +1,9 @@
+{
+  "name": "arithmetic-speed-drill",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/storage.test.mjs",
+    "typecheck": "tsc --noEmit --project src/tsconfig.json"
+  }
+}
