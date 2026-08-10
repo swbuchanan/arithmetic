@@ -1,62 +1,65 @@
 import { Game } from "./game.js";
 import { Timer } from "./timer.js";
 import { Settings } from "./settings.js";
+function getRequiredElement(id) {
+    const element = document.getElementById(id);
+    if (element === null) {
+        throw new Error(`Required element #${id} was not found. Check that the deployed HTML and JavaScript versions match.`);
+    }
+    return element;
+}
 export class UI {
     constructor() {
         this.startGame = () => {
             // check to see which question types are enabled and update the settings
-            // TODO: there should also be some check to make sure that no lower bounds are higher than any upper bounds
-            this.readSettings();
-            if (this.settings.validQuestionTypes.length === 0) {
-                alert("Please select at least one question type.");
-                return;
+            try {
+                this.readSettings();
+                if (this.settings.validQuestionTypes.length === 0) {
+                    alert("Please select at least one question type.");
+                    return;
+                }
+                const duration = this.settings.getSetting("timeLimit");
+                if (typeof duration !== "number" || !Number.isFinite(duration) || duration <= 0) {
+                    throw new RangeError("The time limit must be greater than zero.");
+                }
+                this.score = 0;
+                this.game.startGame();
+                this.answerInput.value = "";
+                this.updateQuestionDisplay();
+                this.updateScoreDisplay();
+                this.showGameScreen();
+                this.timer.start(duration);
+                this.answerInput.focus();
             }
-            console.log("Starting the game!");
-            this.score = 0;
-            this.settings.printValidQuestionTypes();
-            // start the game logic
-            this.game.startGame();
-            // start the timer and update its display
-            this.timer.start(this.settings.getSetting("timeLimit"));
-            this.updateTimerDisplay(this.settings.getSetting("timeLimit"));
-            this.updateScoreDisplay();
-            // make sure only the game is showing
-            this.settingsForm.style.display = "none";
-            this.endDiv.style.display = "none";
-            this.description.style.display = "none";
-            this.gameDiv.style.display = "block";
-            // load the next question and make sure the answer box is in focus
-            this.updateQuestionDisplay();
+            catch (error) {
+                this.handleGameError(error);
+            }
         };
         this.settings = new Settings();
         this.game = new Game(this.settings);
-        this.gameDiv = document.getElementById("game");
+        this.gameDiv = getRequiredElement("game");
         this.startButtons = document.querySelectorAll(".start-game");
-        this.endScreenHomeButton = document.getElementById("end-screen-home-button");
-        this.endDiv = document.getElementById("ending");
-        this.settingsForm = document.getElementById("settings");
-        this.description = document.getElementById("description");
-        this.timerEl = document.getElementById("timer");
-        this.questionEl = document.getElementById("question");
-        this.answerInput = document.getElementById("answerInput");
-        this.scoreEl = document.getElementById("score");
-        this.endScoreEl = document.getElementById("endScore");
+        this.endScreenHomeButton = getRequiredElement("end-screen-home-button");
+        this.endDiv = getRequiredElement("ending");
+        this.settingsForm = getRequiredElement("settings");
+        this.description = getRequiredElement("description");
+        this.timerEl = getRequiredElement("timer");
+        this.leftQuestionEl = getRequiredElement("left-question");
+        this.rightQuestionEl = getRequiredElement("right-question");
+        this.answerInput = getRequiredElement("answerInput");
+        this.scoreEl = getRequiredElement("score");
+        this.endScoreEl = getRequiredElement("endScore");
         this.score = 0;
-        this.fractionToggles = { fractionAdditionToggle: document.getElementById("fractionAdditionToggle"),
-            fractionSubtractionToggle: document.getElementById("fractionSubtractionToggle") };
-        this.fractionOptions = { addition: document.getElementById("additionFractionOptions") };
         // create the timer
         this.timer = new Timer((timeLeft) => this.updateTimerDisplay(timeLeft), // Update UI
         () => this.endGame() // Handle game end
         );
         // assign data operator types to the input elements
-        for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
-            const parentDiv = document.getElementById(settingType);
-            if (parentDiv) {
-                parentDiv.querySelectorAll("input").forEach(button => {
-                    button.dataset.operatorType = parentDiv.dataset.operatorType;
-                });
-            }
+        for (const operatorType of ["addition", "subtraction", "multiplication", "division"]) {
+            const parentDiv = getRequiredElement(`${operatorType}-settings`);
+            parentDiv.querySelectorAll("input").forEach(input => {
+                input.dataset.operatorType = operatorType;
+            });
         }
         // get the default values determined by the html
         this.assignDefaults();
@@ -78,14 +81,17 @@ export class UI {
         });
         // home button
         this.endScreenHomeButton.addEventListener("click", () => {
-            this.gameDiv.style.display = "none";
-            this.endDiv.style.display = "none";
-            this.settingsForm.style.display = "block";
-            this.description.style.display = "block";
             this.timer.stop();
+            this.showSettingsScreen();
         });
         // user's answer box
         this.answerInput.addEventListener("input", () => {
+            if (this.timer.hasExpired()) {
+                this.timer.stop();
+                this.updateTimerDisplay(0);
+                this.endGame();
+                return;
+            }
             if (this.game.checkAnswer(this.answerInput.value))
                 this.processCorrectAnswer();
         });
@@ -93,18 +99,16 @@ export class UI {
         const dependentElements = this.settingsForm.querySelectorAll("[data-dependent-on]");
         dependentElements.forEach((element) => {
             const parentId = element.dataset.dependentOn;
-            const parentInput = document.getElementById(parentId);
+            const parentInput = getRequiredElement(parentId);
             const isReversed = element.dataset.reverse === "true";
-            if (parentInput) {
-                // Add an event listener to the parent input
-                parentInput.addEventListener("change", () => {
-                    const shouldHide = isReversed ? parentInput.checked : !parentInput.checked;
-                    element.classList.toggle("hidden", shouldHide);
-                });
-                // Set the initial visibility based on the parent's state
-                const initialHide = isReversed ? parentInput.checked : !parentInput.checked;
-                element.classList.toggle("hidden", initialHide);
-            }
+            // Add an event listener to the parent input
+            parentInput.addEventListener("change", () => {
+                const shouldHide = isReversed ? parentInput.checked : !parentInput.checked;
+                element.classList.toggle("hidden", shouldHide);
+            });
+            // Set the initial visibility based on the parent's state
+            const initialHide = isReversed ? parentInput.checked : !parentInput.checked;
+            element.classList.toggle("hidden", initialHide);
         });
     }
     // Go through all the user-changeable settings on the page and update the settings accordingly
@@ -118,49 +122,54 @@ export class UI {
      * @param input - the HTMLInputElement to process
      */
     updateSetting(input) {
-        // TODO: the divisionreversedmultiplication and subtractionreversedaddition cases are not handled correctly
-        let read_input = input; // this is the input that we want to read from to update the setting
+        let readInput = input; // this is the input that we want to read from to update the setting
         // usually this is the same as the one that we want to change, but in some cases we want to read from a different one
         // first check if we should be getting the settings from another input element
-        if (['subtraction', 'multiplication'].indexOf(input.dataset.operatorType) > -1 && input.dataset.alternate && document.getElementById(`${input.dataset.operatorType}ReverseToggle`).checked) {
-            read_input = document.getElementById(input.dataset.alternate);
+        if ((input.dataset.operatorType === "subtraction" || input.dataset.operatorType === "division") &&
+            input.dataset.alternate &&
+            getRequiredElement(`${input.dataset.operatorType}ReverseToggle`).checked) {
+            readInput = getRequiredElement(input.dataset.alternate);
         }
         if (input.type === "number") {
-            if (input.valueAsNumber) { // if there is a valid number in the input, we want to use that
-                // the settings that involve a number box are all either bounds or miscellaneous settings
-                if (input.dataset.operatorType && input.dataset.boundType) {
-                    this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, read_input.valueAsNumber);
-                }
-                else
-                    this.settings.updateSetting(input.id, input.valueAsNumber);
+            const value = Number.isFinite(readInput.valueAsNumber)
+                ? readInput.valueAsNumber
+                : Number(readInput.placeholder);
+            if (!Number.isFinite(value)) {
+                throw new Error(`The setting #${readInput.id} needs a valid number or placeholder.`);
             }
-            else { // if there is no valid number in the input, we want to use the default value
-                if (input.dataset.operatorType && input.dataset.boundType) {
-                    this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, parseInt(read_input.placeholder));
-                }
-                else
-                    this.settings.updateSetting(input.id, parseInt(read_input.placeholder));
+            if (input.dataset.operatorType && input.dataset.operationSetting) {
+                this.settings.updateOperationSetting(input.dataset.operatorType, input.dataset.operationSetting, value);
+            }
+            else if (input.dataset.operatorType && input.dataset.boundType) {
+                this.settings.updateBound(input.dataset.operatorType, input.dataset.boundType, value);
+            }
+            else {
+                this.settings.updateSetting(input.id, value);
             }
         }
         if (input.type === "checkbox") {
             if (input.dataset.numberType && input.dataset.operatorType) { // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
                 // make sure that the given operator type is enabled at the highest level
-                console.log(input);
-                let masterOperatorTypeEnabled = document.getElementById(input.dataset.operatorType + "Toggle").checked;
-                this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, read_input.checked && masterOperatorTypeEnabled);
-                //                if (input.checked && masterOperatorTypeEnabled) {
-                //                    console.log(`enabled ${input.dataset.numberType} ${input.dataset.operatorType}`);
-                //                }
+                const masterOperatorTypeEnabled = getRequiredElement(`${input.dataset.operatorType}Toggle`).checked;
+                this.settings.updateQuestionType(input.dataset.numberType, input.dataset.operatorType, readInput.checked && masterOperatorTypeEnabled);
             }
+            const reverseSettings = {
+                subtractionReverseToggle: "subtractionReversedAddition",
+                divisionReverseToggle: "divisionReversedMultiplication"
+            };
+            const reverseSetting = reverseSettings[input.id];
+            if (reverseSetting)
+                this.settings.updateSetting(reverseSetting, input.checked);
         }
     }
     updateQuestionDisplay() {
-        this.questionEl.innerHTML = this.game.loadNextQuestion();
-        this.answerInput.focus();
+        const question = this.game.loadNextQuestion();
+        this.leftQuestionEl.textContent = question.questionLeft;
+        this.rightQuestionEl.textContent = question.questionRight;
     }
     endGame() {
-        this.gameDiv.style.display = "none";
-        this.endDiv.style.display = "block";
+        this.gameDiv.hidden = true;
+        this.endDiv.hidden = false;
     }
     updateTimerDisplay(timeLeft) {
         this.timerEl.textContent = timeLeft.toString();
@@ -173,8 +182,31 @@ export class UI {
     processCorrectAnswer() {
         this.score++;
         this.updateScoreDisplay();
-        this.updateQuestionDisplay(); // load the next question
-        this.answerInput.value = ""; // clear the input box
-        this.answerInput.focus();
+        this.answerInput.value = "";
+        try {
+            this.updateQuestionDisplay();
+            this.answerInput.focus();
+        }
+        catch (error) {
+            this.handleGameError(error);
+        }
+    }
+    showGameScreen() {
+        this.settingsForm.hidden = true;
+        this.description.hidden = true;
+        this.endDiv.hidden = true;
+        this.gameDiv.hidden = false;
+    }
+    showSettingsScreen() {
+        this.gameDiv.hidden = true;
+        this.endDiv.hidden = true;
+        this.settingsForm.hidden = false;
+        this.description.hidden = false;
+    }
+    handleGameError(error) {
+        console.error(error);
+        this.timer.stop();
+        this.showSettingsScreen();
+        alert(error instanceof Error ? error.message : "Unable to generate a question.");
     }
 }

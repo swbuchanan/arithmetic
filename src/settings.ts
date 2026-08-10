@@ -1,7 +1,6 @@
 // manages the user-determined settings
 
-import { NumberType } from "./question.js" 
-import { OperatorType, QuestionType } from "./question.js" 
+import type { NumberType, OperatorType, QuestionType } from "./question.js";
 
 type Bounds = {
     leftMin: number;
@@ -13,6 +12,8 @@ type Bounds = {
 export type OperationSettings = {
     bounds: Bounds;
     decimalPlaces: number;
+    fractionDenominatorBound: number;
+    fractionNumeratorBound: number;
     onlyReducedFractions: boolean;
     improperFractions: boolean;
 };
@@ -28,6 +29,8 @@ export class Settings {
         const defaultSettings = {
 //            bounds: {leftMin: 1, leftMax: 99, rightMin: 1, rightMax: 99},
             decimalPlaces: 2,
+            fractionDenominatorBound: 9,
+            fractionNumeratorBound: 9,
             onlyReducedFractions: true,
             improperFractions: true,
         }
@@ -52,8 +55,6 @@ export class Settings {
             allowRearrangements: false,
             divisionReversedMultiplication: true,
             subtractionReversedAddition: true,
-            additionFractionDenominatorBound: 9,
-            additionFractionNumeratorBound: 9,
         }
         this.validQuestionTypes = [];
     }
@@ -96,6 +97,22 @@ export class Settings {
         this.miscSettings[setting] = value;
     }
 
+    public updateOperationSetting(operationName: OperatorType, setting: "decimalPlaces" | "fractionDenominatorBound" | "fractionNumeratorBound", value: number) {
+        if (!Number.isInteger(value)) {
+            throw new RangeError(`${setting} must be a whole number.`);
+        }
+        if (setting === "decimalPlaces" && (value < 0 || value > 100)) {
+            throw new RangeError("Decimal places must be between 0 and 100.");
+        }
+        if (setting === "fractionDenominatorBound" && (value < 2 || value > 100)) {
+            throw new RangeError("The fraction denominator bound must be between 2 and 100.");
+        }
+        if (setting === "fractionNumeratorBound" && value < 1) {
+            throw new RangeError("The fraction numerator bound must be at least 1.");
+        }
+        this.operationSettings[operationName][setting] = value;
+    }
+
     /**
      * @param operationName - The name of the operation whose bounds we want to update
      * @param boundName - The name of the bound we want to update
@@ -103,7 +120,7 @@ export class Settings {
      * @throws Error if the value is not a number or if the operation name or bound name is not valid
      */
     public updateBound(operationName: OperatorType, boundName: string, value: number) {
-        if (!value) {
+        if (!Number.isFinite(value)) {
             throw new Error(`Bad value passed.`);
         }
         if (!operationName || !boundName) {

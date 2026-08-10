@@ -1,104 +1,194 @@
-/* Removing the arrows on the number input boxes */
-/* For most browsers (Chrome, Edge, etc.) */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+@font-face {
+    font-family: "Latin Modern Roman";
+    src: url("./fonts/lmroman10-regular.otf") format("opentype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
 }
-/* For Firefox */
+:root {
+    color-scheme: dark;
+    --font-family: "Latin Modern Roman", serif;
+    --page-background: #444448;
+    --panel-background: #393940;
+    --input-background: #333338;
+    --text-color: #d0d0d0;
+    --accent-color: #6ca6ef;
+    --focus-color: #9ab57d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+[hidden],
+.hidden {
+    display: none !important;
+}
+
+html {
+    min-height: 100%;
+    background: var(--page-background);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: center;
+    color: var(--text-color);
+    background: var(--page-background);
+    font-family: var(--font-family);
+    font-size: 1rem;
+}
+
+button,
+input,
+select,
+textarea,
+code {
+    font-family: var(--font-family);
+}
+
+button {
+    padding: 0.45rem 0.8rem;
+    color: var(--text-color);
+    background: #50505a;
+    border: 1px solid #686875;
+    border-radius: 0.35rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #5b5b67;
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
 input[type="number"] {
+    width: 4.25rem;
+    padding: 0.2rem 0.3rem;
+    color: #ffffff;
+    background: #555558;
+    border: 1px solid transparent;
+    border-radius: 0.2rem;
     -moz-appearance: textfield;
 }
 
-input[type="number"] {
-    width: 35px;
-    background-color: #555558;
-    color: #ffffff;
-    font-family: "Computer Modern", mono;
-    font-size: 14px;
-    border: 0;
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
 }
-input[type="number"]:focus {
-    width: 35px;
-    outline: none;
-    background-color: #555558;
-    color: #ffffff;
-    box-shadow: 0 0 5px 2px #778866;
-}
+
 input[type="checkbox"] {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0 0.25rem 0 0;
+    vertical-align: -0.15rem;
     accent-color: #555568;
-    width: 20px;
-    height: 20px;
-}
-
-#addition-settings,
-#multiplication-settings,
-#subtraction-settings,
-#division-settings
-{
-    margin-left: 20px
-}
-
-#answerInput {
-    background-color: #333333;
-    color: #bbbbbb;
-    border: 0px;
-    font-family: "Computer Modern", mono;
-    font-size: 36px;
-    height: 50px;
-    width: 80px;
-}
-
-#answerInput:focus {
-    outline: none !important;
-    /*            outline-color: #FF0000; */
-    border-color: #719ECE;
-    box-shadow: 0 0 10px #719ECE;
 }
 
 #app {
-    width: 50%;
-    align-items: center;
-    justify-content: center;
+    width: min(58rem, 100%);
 }
 
-#game {
-    display: none;
-    padding-top: 40%;
+#description {
+    padding-block: 0.5rem;
+    line-height: 1.45;
+}
+
+#description p {
+    margin: 0.4rem 0;
+}
+
+#settings {
+    width: 100%;
+    padding: 1.25rem clamp(1rem, 5vw, 3.75rem);
+    background: var(--panel-background);
+    border: 1px solid #505050;
+    border-radius: 0.65rem;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+    line-height: 1.8;
+}
+
+.operator-label {
+    display: block;
+    margin-top: 0.75rem;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.operator-label:first-child {
+    margin-top: 0;
+}
+
+.operator-settings {
+    margin-left: 1.5rem;
+    padding-bottom: 0.75rem;
+}
+
+.dependent-options {
+    margin-left: 1.5rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid #55555f;
+}
+
+#settings hr {
+    margin: 1rem 0;
+    border: 0;
+    border-top: 1px solid #55555f;
+}
+
+#game,
+#ending {
+    padding-top: clamp(3rem, 15vh, 8rem);
     text-align: center;
 }
 
 #question {
-    font-size: 36px;
-}
-
-#description {
-    padding-top: 20px;
-}
-
-body {
+    min-height: 3.75rem;
     display: flex;
+    align-items: center;
     justify-content: center;
-    /* Horizontally center */
-    height: 100vh;
-    /* Full viewport height */
-    margin: 0;
-    font-family: "Computer Modern", mono;
-    color: #bbbbbb;
-    background-color: #444448;
+    gap: 0.35em;
+    font-size: clamp(2rem, 7vw, 3rem);
+    line-height: 1.2;
+    flex-wrap: wrap;
 }
 
-form {
-    background: #393940;
-    padding: 20px 60px;
-    border: 1px solid #505050;
-    border-radius: 10px;
-    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.label {
-    color: #4488dd;
+#answerInput {
+    width: 8ch;
+    min-width: 6ch;
+    padding: 0.12em 0.2em;
+    color: var(--text-color);
+    background: var(--input-background);
+    border: 1px solid transparent;
+    border-radius: 0.2rem;
+    font-size: inherit;
+    line-height: inherit;
+    text-align: center;
 }
 
-.hidden {
-    display: none
+#answerInput:focus {
+    border-color: var(--focus-color);
+    box-shadow: 0 0 0.35rem 0.15rem rgba(154, 181, 125, 0.45);
+}
+
+@media (max-width: 40rem) {
+    body {
+        padding: 0.75rem;
+    }
+
+    #settings {
+        padding-inline: 1rem;
+    }
+
+    .operator-settings {
+        margin-left: 0.75rem;
+    }
 }

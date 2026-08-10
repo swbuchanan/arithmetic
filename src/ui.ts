@@ -1,46 +1,51 @@
 import { Game } from "./game.js";
 import { Timer } from "./timer.js";
 import { Settings } from "./settings.js";
-import { NumberType, OperatorType } from "./question.js";
+import type { NumberType, OperatorType } from "./question.js";
+
+function getRequiredElement<T extends HTMLElement>(id: string): T {
+    const element = document.getElementById(id);
+    if (element === null) {
+        throw new Error(`Required element #${id} was not found. Check that the deployed HTML and JavaScript versions match.`);
+    }
+    return element as T;
+}
 
 export class UI {
 
     private settings: Settings;
     private timer: Timer;
     private game: Game;
-    private timerEl:HTMLSpanElement;
-    private questionEl:HTMLParagraphElement;
-    private gameDiv:HTMLDivElement;
-    private endDiv:HTMLDivElement;
-    private answerInput:HTMLInputElement;
-    private startButtons:NodeListOf<HTMLButtonElement>;
-    private endScreenHomeButton:HTMLButtonElement;
-    private settingsForm:HTMLFormElement;
-    private description:HTMLDivElement;
-    private scoreEl:HTMLSpanElement;
-    private endScoreEl:HTMLSpanElement;
-    private score:number;
-    private fractionToggles:Record<string, HTMLInputElement>;
-    private fractionOptions:Record<string, HTMLDivElement>;
+    private timerEl: HTMLSpanElement;
+    private leftQuestionEl: HTMLSpanElement;
+    private rightQuestionEl: HTMLSpanElement;
+    private gameDiv: HTMLElement;
+    private endDiv: HTMLElement;
+    private answerInput: HTMLInputElement;
+    private startButtons: NodeListOf<HTMLButtonElement>;
+    private endScreenHomeButton: HTMLButtonElement;
+    private settingsForm: HTMLFormElement;
+    private description: HTMLElement;
+    private scoreEl: HTMLSpanElement;
+    private endScoreEl: HTMLSpanElement;
+    private score: number;
 
     constructor() {
         this.settings = new Settings();
         this.game = new Game(this.settings);
-        this.gameDiv = document.getElementById("game") as HTMLDivElement;
+        this.gameDiv = getRequiredElement("game");
         this.startButtons = document.querySelectorAll<HTMLButtonElement>(".start-game");
-        this.endScreenHomeButton = document.getElementById("end-screen-home-button") as HTMLButtonElement;
-        this.endDiv = document.getElementById("ending") as HTMLDivElement;
-        this.settingsForm = document.getElementById("settings") as HTMLFormElement;
-        this.description = document.getElementById("description") as HTMLDivElement;
-        this.timerEl = document.getElementById("timer") as HTMLSpanElement;
-        this.questionEl = document.getElementById("question") as HTMLParagraphElement;
-        this.answerInput = document.getElementById("answerInput") as HTMLInputElement;
-        this.scoreEl = document.getElementById("score") as HTMLSpanElement;
-        this.endScoreEl = document.getElementById("endScore") as HTMLSpanElement;
+        this.endScreenHomeButton = getRequiredElement("end-screen-home-button");
+        this.endDiv = getRequiredElement("ending");
+        this.settingsForm = getRequiredElement("settings");
+        this.description = getRequiredElement("description");
+        this.timerEl = getRequiredElement("timer");
+        this.leftQuestionEl = getRequiredElement("left-question");
+        this.rightQuestionEl = getRequiredElement("right-question");
+        this.answerInput = getRequiredElement("answerInput");
+        this.scoreEl = getRequiredElement("score");
+        this.endScoreEl = getRequiredElement("endScore");
         this.score = 0;
-        this.fractionToggles = {fractionAdditionToggle: document.getElementById("fractionAdditionToggle") as HTMLInputElement,
-                                fractionSubtractionToggle: document.getElementById("fractionSubtractionToggle") as HTMLInputElement};
-        this.fractionOptions = {addition: document.getElementById("additionFractionOptions") as HTMLDivElement};
     
         // create the timer
         this.timer = new Timer(
@@ -49,14 +54,11 @@ export class UI {
         );
 
         // assign data operator types to the input elements
-        for (const settingType of ["addition-settings", "subtraction-settings", "multiplication-settings", "division-settings"]) {
-            const parentDiv = document.getElementById(settingType) as HTMLElement;
-            
-            if (parentDiv) {
-                parentDiv.querySelectorAll<HTMLInputElement>("input").forEach(button => {
-                    button.dataset.operatorType = parentDiv.dataset.operatorType;
-                });
-            }
+        for (const operatorType of ["addition", "subtraction", "multiplication", "division"] as OperatorType[]) {
+            const parentDiv = getRequiredElement(`${operatorType}-settings`);
+            parentDiv.querySelectorAll<HTMLInputElement>("input").forEach(input => {
+                input.dataset.operatorType = operatorType;
+            });
         }
 
         // get the default values determined by the html
@@ -83,15 +85,18 @@ export class UI {
 
         // home button
         this.endScreenHomeButton.addEventListener("click", () => {
-            this.gameDiv.style.display = "none";
-            this.endDiv.style.display = "none";
-            this.settingsForm.style.display = "block";
-            this.description.style.display = "block";
             this.timer.stop();
+            this.showSettingsScreen();
         });
 
         // user's answer box
         this.answerInput.addEventListener("input", () => {
+            if (this.timer.hasExpired()) {
+                this.timer.stop();
+                this.updateTimerDisplay(0);
+                this.endGame();
+                return;
+            }
             if (this.game.checkAnswer(this.answerInput.value)) this.processCorrectAnswer();
         });
 
@@ -100,19 +105,17 @@ export class UI {
 
         dependentElements.forEach((element) => {
             const parentId = element.dataset.dependentOn!;
-            const parentInput = document.getElementById(parentId) as HTMLInputElement;
+            const parentInput = getRequiredElement<HTMLInputElement>(parentId);
             const isReversed = element.dataset.reverse === "true";
-            if (parentInput) {
-                // Add an event listener to the parent input
-                parentInput.addEventListener("change", () => {
-                    const shouldHide = isReversed ? parentInput.checked : !parentInput.checked;
-                    element.classList.toggle("hidden", shouldHide);
-                });
-    
-                // Set the initial visibility based on the parent's state
-                const initialHide = isReversed ? parentInput.checked : !parentInput.checked;
-                element.classList.toggle("hidden", initialHide);
-            }
+            // Add an event listener to the parent input
+            parentInput.addEventListener("change", () => {
+                const shouldHide = isReversed ? parentInput.checked : !parentInput.checked;
+                element.classList.toggle("hidden", shouldHide);
+            });
+
+            // Set the initial visibility based on the parent's state
+            const initialHide = isReversed ? parentInput.checked : !parentInput.checked;
+            element.classList.toggle("hidden", initialHide);
         });
     }
 
@@ -128,85 +131,93 @@ export class UI {
      * @param input - the HTMLInputElement to process
      */
     updateSetting(input: HTMLInputElement) {
-        // TODO: the divisionreversedmultiplication and subtractionreversedaddition cases are not handled correctly
-
-        let read_input = input; // this is the input that we want to read from to update the setting
+        let readInput = input; // this is the input that we want to read from to update the setting
         // usually this is the same as the one that we want to change, but in some cases we want to read from a different one
 
         // first check if we should be getting the settings from another input element
-        if (['subtraction', 'multiplication'].indexOf(input.dataset.operatorType!) > -1 && input.dataset.alternate && (document.getElementById(`${input.dataset.operatorType}ReverseToggle`) as HTMLInputElement).checked) {
-            read_input = document.getElementById(input.dataset.alternate) as HTMLInputElement;
+        if ((input.dataset.operatorType === "subtraction" || input.dataset.operatorType === "division") &&
+            input.dataset.alternate &&
+            getRequiredElement<HTMLInputElement>(`${input.dataset.operatorType}ReverseToggle`).checked) {
+            readInput = getRequiredElement<HTMLInputElement>(input.dataset.alternate);
         }
 
         if (input.type === "number") {
-            if (input.valueAsNumber) { // if there is a valid number in the input, we want to use that
-                // the settings that involve a number box are all either bounds or miscellaneous settings
-                if (input.dataset.operatorType && input.dataset.boundType) {
-                    this.settings.updateBound(input.dataset.operatorType as OperatorType,
-                                              input.dataset.boundType,
-                                              read_input.valueAsNumber);
-                } else this.settings.updateSetting(input.id, input.valueAsNumber);
-            } else { // if there is no valid number in the input, we want to use the default value
-                if (input.dataset.operatorType && input.dataset.boundType) {
-                    this.settings.updateBound(input.dataset.operatorType as OperatorType,
-                                              input.dataset.boundType,
-                                              parseInt(read_input.placeholder));
-                } else this.settings.updateSetting(input.id, parseInt(read_input.placeholder));
+            const value = Number.isFinite(readInput.valueAsNumber)
+                ? readInput.valueAsNumber
+                : Number(readInput.placeholder);
+
+            if (!Number.isFinite(value)) {
+                throw new Error(`The setting #${readInput.id} needs a valid number or placeholder.`);
+            }
+
+            if (input.dataset.operatorType && input.dataset.operationSetting) {
+                this.settings.updateOperationSetting(
+                    input.dataset.operatorType as OperatorType,
+                    input.dataset.operationSetting as "decimalPlaces" | "fractionDenominatorBound" | "fractionNumeratorBound",
+                    value
+                );
+            } else if (input.dataset.operatorType && input.dataset.boundType) {
+                this.settings.updateBound(input.dataset.operatorType as OperatorType,
+                                          input.dataset.boundType,
+                                          value);
+            } else {
+                this.settings.updateSetting(input.id, value);
             }
         }
 
         if (input.type === "checkbox") {
             if (input.dataset.numberType && input.dataset.operatorType) { // if this has a dataset.operatorType and dataset.numberType, is a checkbox for a question type, otherwise it is something else
                 // make sure that the given operator type is enabled at the highest level
-                console.log(input);
-                let masterOperatorTypeEnabled = (document.getElementById(input.dataset.operatorType as string + "Toggle") as HTMLInputElement).checked;
-                this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, read_input.checked && masterOperatorTypeEnabled);
-//                if (input.checked && masterOperatorTypeEnabled) {
-//                    console.log(`enabled ${input.dataset.numberType} ${input.dataset.operatorType}`);
-//                }
+                const masterOperatorTypeEnabled = getRequiredElement<HTMLInputElement>(`${input.dataset.operatorType}Toggle`).checked;
+                this.settings.updateQuestionType(input.dataset.numberType as NumberType, input.dataset.operatorType as OperatorType, readInput.checked && masterOperatorTypeEnabled);
             }
+
+            const reverseSettings: Record<string, string> = {
+                subtractionReverseToggle: "subtractionReversedAddition",
+                divisionReverseToggle: "divisionReversedMultiplication"
+            };
+            const reverseSetting = reverseSettings[input.id];
+            if (reverseSetting) this.settings.updateSetting(reverseSetting, input.checked);
         }
     }
 
     startGame = () => { // this has to be an arrow function for context reasons that I don't quite understand
         // check to see which question types are enabled and update the settings
-        // TODO: there should also be some check to make sure that no lower bounds are higher than any upper bounds
-        this.readSettings();
-        if (this.settings.validQuestionTypes.length === 0) {
-            alert("Please select at least one question type.");
-            return;
+        try {
+            this.readSettings();
+            if (this.settings.validQuestionTypes.length === 0) {
+                alert("Please select at least one question type.");
+                return;
+            }
+
+            const duration = this.settings.getSetting("timeLimit");
+            if (typeof duration !== "number" || !Number.isFinite(duration) || duration <= 0) {
+                throw new RangeError("The time limit must be greater than zero.");
+            }
+
+            this.score = 0;
+            this.game.startGame();
+            this.answerInput.value = "";
+            this.updateQuestionDisplay();
+            this.updateScoreDisplay();
+
+            this.showGameScreen();
+            this.timer.start(duration);
+            this.answerInput.focus();
+        } catch (error) {
+            this.handleGameError(error);
         }
-        console.log("Starting the game!");
-
-        this.score = 0;
-        this.settings.printValidQuestionTypes();
-
-        // start the game logic
-        this.game.startGame();
-
-        // start the timer and update its display
-        this.timer.start(this.settings.getSetting("timeLimit") as number);
-        this.updateTimerDisplay(this.settings.getSetting("timeLimit") as number);
-        this.updateScoreDisplay();
-
-        // make sure only the game is showing
-        this.settingsForm.style.display = "none";
-        this.endDiv.style.display = "none";
-        this.description.style.display = "none";
-        this.gameDiv.style.display = "block";
-
-        // load the next question and make sure the answer box is in focus
-        this.updateQuestionDisplay();
     };
 
     updateQuestionDisplay() {
-        this.questionEl.innerHTML = this.game.loadNextQuestion();
-        this.answerInput.focus();
+        const question = this.game.loadNextQuestion();
+        this.leftQuestionEl.textContent = question.questionLeft;
+        this.rightQuestionEl.textContent = question.questionRight;
     }
 
     endGame() {
-        this.gameDiv.style.display = "none";
-        this.endDiv.style.display = "block";
+        this.gameDiv.hidden = true;
+        this.endDiv.hidden = false;
     }
 
     updateTimerDisplay(timeLeft: number): void {
@@ -222,10 +233,34 @@ export class UI {
     processCorrectAnswer() {
         this.score++;
         this.updateScoreDisplay();
-        this.updateQuestionDisplay();   // load the next question
-        this.answerInput.value = "";    // clear the input box
-        this.answerInput.focus();
+        this.answerInput.value = "";
+        try {
+            this.updateQuestionDisplay();
+            this.answerInput.focus();
+        } catch (error) {
+            this.handleGameError(error);
+        }
     }
 
+    private showGameScreen() {
+        this.settingsForm.hidden = true;
+        this.description.hidden = true;
+        this.endDiv.hidden = true;
+        this.gameDiv.hidden = false;
+    }
+
+    private showSettingsScreen() {
+        this.gameDiv.hidden = true;
+        this.endDiv.hidden = true;
+        this.settingsForm.hidden = false;
+        this.description.hidden = false;
+    }
+
+    private handleGameError(error: unknown) {
+        console.error(error);
+        this.timer.stop();
+        this.showSettingsScreen();
+        alert(error instanceof Error ? error.message : "Unable to generate a question.");
+    }
 
 }

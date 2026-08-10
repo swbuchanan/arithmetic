@@ -1,14 +1,14 @@
-tsc && mv *.js ../public
+#!/usr/bin/env bash
 
-start_python_server_if_not_running() {
-    local port=${1:-8000}
-    
-    if lsof -i :$port >/dev/null 2>&1; then
-        echo "Python server already running on port $port"
-    else
-        echo "Starting Python server on port $port..."
-        (cd "../public" && python3 -m http.server "$port") &
-    fi
-}
+set -euo pipefail
 
-start_python_server_if_not_running
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+project_dir="$(cd -- "$script_dir/.." && pwd)"
+public_dir="$project_dir/public"
+port="${1:-8000}"
+
+tsc --project "$script_dir/tsconfig.json" --outDir "$public_dir"
+cp "$script_dir/style.css" "$public_dir/style.css"
+
+echo "Serving $public_dir at http://localhost:$port"
+exec python3 -m http.server "$port" --bind 127.0.0.1 --directory "$public_dir"

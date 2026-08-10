@@ -1,0 +1,11 @@
+Latin Modern Roman
+==================
+
+This directory includes an unmodified copy of lmroman10-regular.otf from
+the Latin Modern font family, version 2.004, by Boguslaw Jackowski and
+Janusz M. Nowacki (on behalf of TeX user groups).
+
+Latin Modern is based on Donald E. Knuth's Computer Modern fonts. The font
+is distributed under the GUST Font License; see GUST-FONT-LICENSE.txt in
+this directory. The copy used here comes from Debian's fonts-lmodern
+package.

@@ -1,145 +1,130 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A customizable arithmetic speed drill.">
+    <link rel="preload" href="./fonts/lmroman10-regular.otf" as="font" type="font/otf" crossorigin>
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="arithmetic.js"></script>
     <title>Arithmetic Game</title>
 </head>
-
 <body>
-    <script type="module" src="arithmetic.js"></script>
+    <main id="app">
+        <section id="description">
+            <p>A more customizable Zetamac-style arithmetic drill.</p>
+            <p>Fraction answers can be entered as <code>a/b</code> or as mixed numbers in the form <code>a b/c</code>.</p>
+        </section>
+
+        <form id="settings" autocomplete="off">
+            <!-- ADDITION -->
+            <label class="operator-label"><input type="checkbox" id="additionToggle" checked> Addition</label>
+            <div id="addition-settings" class="operator-settings" data-operator-type="addition">
+                <label>Range: (<input type="number" id="additionLeftMin" data-bound-type="leftMin" placeholder="1" step="any"></label>
+                <label>to <input type="number" id="additionLeftMax" data-bound-type="leftMax" placeholder="99" step="any">)</label> +
+                (<input type="number" id="additionRightMin" data-bound-type="rightMin" placeholder="1" step="any">
+                to <input type="number" id="additionRightMax" data-bound-type="rightMax" placeholder="99" step="any">)
+                <br>
+                <label><input type="checkbox" id="integerAdditionToggle" data-number-type="integer" checked> Integers</label>
+                <br>
+                <label><input type="checkbox" id="decimalAdditionToggle" data-number-type="decimal"> Decimals</label>
+                <div id="additionDecimalOptions" data-dependent-on="decimalAdditionToggle" class="hidden dependent-options">
+                    <label>Decimal places: <input type="number" id="decimalAdditionAmount" data-number-type="decimal" data-operation-setting="decimalPlaces" placeholder="2" min="0" max="10"></label>
+                </div>
+                <br>
+                <label><input type="checkbox" id="fractionAdditionToggle" data-number-type="fraction"> Fractions</label>
+                <div id="additionFractionOptions" data-dependent-on="fractionAdditionToggle" class="hidden dependent-options">
+                    <label>Denominator bound: <input type="number" id="additionFractionDenominatorBound" data-number-type="fraction" data-operation-setting="fractionDenominatorBound" placeholder="9" min="2" max="100"></label>
+                    <br>
+                    <label>Numerator bound: <input type="number" id="additionFractionNumeratorBound" data-number-type="fraction" data-operation-setting="fractionNumeratorBound" placeholder="9" min="1"></label>
+                </div>
+            </div>
+
+            <!-- SUBTRACTION -->
+            <label class="operator-label"><input type="checkbox" id="subtractionToggle" checked> Subtraction</label>
+            <div id="subtraction-settings" class="operator-settings" data-operator-type="subtraction">
+                <label><input type="checkbox" id="subtractionReverseToggle" checked> Addition problems in reverse</label>
+                <div id="subtraction-options" data-dependent-on="subtractionReverseToggle" data-reverse="true" class="hidden dependent-options">
+                    <label>Range: (<input type="number" id="subtractionLeftMin" data-alternate="additionLeftMin" data-bound-type="leftMin" placeholder="1" step="any"></label>
+                    <label>to <input type="number" id="subtractionLeftMax" data-alternate="additionLeftMax" data-bound-type="leftMax" placeholder="99" step="any">)</label> −
+                    (<input type="number" id="subtractionRightMin" data-alternate="additionRightMin" data-bound-type="rightMin" placeholder="1" step="any">
+                    to <input type="number" id="subtractionRightMax" data-alternate="additionRightMax" data-bound-type="rightMax" placeholder="99" step="any">)
+                    <br>
+                    <label><input type="checkbox" id="integerSubtractionToggle" data-alternate="integerAdditionToggle" data-number-type="integer" checked> Integers</label>
+                    <br>
+                    <label><input type="checkbox" id="decimalSubtractionToggle" data-alternate="decimalAdditionToggle" data-number-type="decimal"> Decimals</label>
+                    <div id="subtractionDecimalOptions" data-dependent-on="decimalSubtractionToggle" class="hidden dependent-options">
+                        <label>Decimal places: <input type="number" id="decimalSubtractionAmount" data-alternate="decimalAdditionAmount" data-number-type="decimal" data-operation-setting="decimalPlaces" placeholder="2" min="0" max="10"></label>
+                    </div>
+                    <br>
+                    <label><input type="checkbox" id="fractionSubtractionToggle" data-alternate="fractionAdditionToggle" data-number-type="fraction"> Fractions</label>
+                    <div id="subtractionFractionOptions" data-dependent-on="fractionSubtractionToggle" class="hidden dependent-options">
+                        <label>Denominator bound: <input type="number" id="subtractionFractionDenominatorBound" data-alternate="additionFractionDenominatorBound" data-number-type="fraction" data-operation-setting="fractionDenominatorBound" placeholder="9" min="2" max="100"></label>
+                        <br>
+                        <label>Numerator bound: <input type="number" id="subtractionFractionNumeratorBound" data-alternate="additionFractionNumeratorBound" data-number-type="fraction" data-operation-setting="fractionNumeratorBound" placeholder="9" min="1"></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MULTIPLICATION -->
+            <label class="operator-label"><input type="checkbox" id="multiplicationToggle" checked> Multiplication</label>
+            <div id="multiplication-settings" class="operator-settings" data-operator-type="multiplication">
+                <label>Range: (<input type="number" id="multiplicationLeftMin" data-bound-type="leftMin" placeholder="2" step="any"></label>
+                <label>to <input type="number" id="multiplicationLeftMax" data-bound-type="leftMax" placeholder="12" step="any">)</label> ×
+                (<input type="number" id="multiplicationRightMin" data-bound-type="rightMin" placeholder="2" step="any">
+                to <input type="number" id="multiplicationRightMax" data-bound-type="rightMax" placeholder="12" step="any">)
+                <br>
+                <label><input type="checkbox" id="integerMultiplicationToggle" data-number-type="integer" checked> Integers</label>
+                <br>
+                <label><input type="checkbox" id="decimalMultiplicationToggle" data-number-type="decimal"> Decimals</label>
+                <div id="multiplicationDecimalOptions" data-dependent-on="decimalMultiplicationToggle" class="hidden dependent-options">
+                    <label>Decimal places: <input type="number" id="decimalMultiplicationAmount" data-number-type="decimal" data-operation-setting="decimalPlaces" placeholder="2" min="0" max="10"></label>
+                </div>
+                <br>
+                <label><input type="checkbox" id="fractionMultiplicationToggle" data-number-type="fraction"> Fractions</label>
+            </div>
+
+            <!-- DIVISION -->
+            <label class="operator-label"><input type="checkbox" id="divisionToggle" checked> Division</label>
+            <div id="division-settings" class="operator-settings" data-operator-type="division">
+                <label><input type="checkbox" id="divisionReverseToggle" checked> Multiplication problems in reverse</label>
+                <div id="division-options" data-dependent-on="divisionReverseToggle" data-reverse="true" class="hidden dependent-options">
+                    <label>Range: (<input type="number" id="divisionLeftMin" data-alternate="multiplicationLeftMin" data-bound-type="leftMin" placeholder="1" step="any"></label>
+                    <label>to <input type="number" id="divisionLeftMax" data-alternate="multiplicationLeftMax" data-bound-type="leftMax" placeholder="100" step="any">)</label> ÷
+                    (<input type="number" id="divisionRightMin" data-alternate="multiplicationRightMin" data-bound-type="rightMin" placeholder="1" step="any">
+                    to <input type="number" id="divisionRightMax" data-alternate="multiplicationRightMax" data-bound-type="rightMax" placeholder="10" step="any">)
+                    <br>
+                    <label><input type="checkbox" id="integerDivisionToggle" data-alternate="integerMultiplicationToggle" data-number-type="integer" checked> Integers</label>
+                    <br>
+                    <label><input type="checkbox" id="decimalDivisionToggle" data-alternate="decimalMultiplicationToggle" data-number-type="decimal"> Decimals</label>
+                    <div id="divisionDecimalOptions" data-dependent-on="decimalDivisionToggle" class="hidden dependent-options">
+                        <label>Decimal places: <input type="number" id="decimalDivisionAmount" data-alternate="decimalMultiplicationAmount" data-number-type="decimal" data-operation-setting="decimalPlaces" placeholder="2" min="0" max="10"></label>
+                    </div>
+                    <br>
+                    <label><input type="checkbox" id="fractionDivisionToggle" data-alternate="fractionMultiplicationToggle" data-number-type="fraction"> Fractions</label>
+                </div>
+            </div>
+
+            <hr>
+            <label>Time limit (seconds): <input type="number" id="timeLimit" placeholder="120" min="1"></label>
+            <p><button type="button" class="start-game">Start game</button></p>
+        </form>
+
+        <section id="game" hidden>
+            <div id="question" aria-live="polite" aria-atomic="true">
+                <span id="left-question"></span>
+                <input id="answerInput" autocomplete="off" inputmode="text" spellcheck="false" aria-label="Answer">
+                <span id="right-question"></span>
+            </div>
+            <p>Time left: <span id="timer"></span></p>
+            <p>Score: <span id="score"></span></p>
+        </section>
+
+        <section id="ending" hidden>
+            <p>Final score: <span id="endScore"></span></p>
+            <button type="button" class="start-game">Try again</button>
+            <button type="button" id="end-screen-home-button">Home</button>
+        </section>
+    </main>
 </body>
-
-<div id="app">
-    <div id="description">
-        A more customizable zetamac-type drill.
-        <br>
-        Fraction answers can be input as fractions in the form "a/b" or as mixed numbers with a single space in the form "a b/c".
-        <br>
-        <br>
-        Known issues to address in future updates:
-        - If the upper and lower bounds are too close in fraction mode in gets weird.
-        <br>
-        - The bounds don't properly handle negative numbers. Ensure that all bounds are positive or implement custom validation logic in the script to handle negative values.
-        <br>
-        <br>
-    </div>
-    <form id="settings" style="width: 80%">
-
-        <!-- ADDITION -->
-        <label class="label"><input type="checkbox" id="additionToggle" data-operator-type="addition" checked="true"/> Addition</label>
-        <br>
-        <div id="addition-settings" data-operator-type="addition">
-            <label>Range: (<input type="number" id="additionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
-            <label> to <input type="number" id="additionLeftMax" data-bound-type="leftMax" placeholder=99 />)</label> +
-            (<input type="number" id="additionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="additionRightMax" data-bound-type="rightMax" placeholder=99 />)
-            <br>
-            <label><input type="checkbox" id="integerAdditionToggle" data-number-type="integer" checked="true"/> Integers</label>
-            <br>
-            <label>
-                <input type="checkbox" id="decimalAdditionToggle" data-number-type="decimal" /> Decimals
-            </label>
-            <div id="additionDecimalOptions" data-dependent-on="decimalAdditionToggle" class="hidden" style="margin-left: 20px">
-            <!-- <label id="decimalAdditionDisplay" class="hidden"><br>Decimal places </label><input type="number" id="decimalAdditionAmount" placeholder=2 /> -->
-                <label>Decimal places: <input type="number" id="decimalAdditionAmount" data-number-type="decimal" placeholder=2 /> </label>
-            </div>
-            <br>
-            <label><input type="checkbox" id="fractionAdditionToggle" data-number-type="fraction" /> Fractions</label>
-            <div id="additionFractionOptions" data-dependent-on="fractionAdditionToggle" class="hidden" style="margin-left: 20px">
-                <label>Denominator bound: <input type="number"id="additionFractionDenominatorBound" data-number-type="fraction" placeholder=9 /> </label>
-                <br>
-                <label>Numerator bound: <input type="number" id="additionFractionNumeratorBound" data-number-type="fraction" placeholder=9 /> </label>
-            </div>
-        </div>
-
-        <br>
-        <br>
-
-        <!-- SUBTRACTION -->
-        <label class="label"><input type="checkbox" id="subtractionToggle" checked="true"/> Subtraction</label>
-        <br>
-        <div id="subtraction-settings" data-operator-type="subtraction">
-            <label><input type="checkbox" id="subtractionReverseToggle" checked="true"/> Addition problems in reverse</label>
-            <br>
-            <div id="subtraction-options" data-dependent-on="subtractionReverseToggle" data-reverse="true" class="hidden">
-                <label>Range: (<input type="number" id="subtractionLeftMin" data-alternate="additionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
-                <label> to <input type="number" id="subtractionLeftMax" data-alternate="additionLeftMax" data-bound-type="leftMax" placeholder=99 />)</label> -
-                (<input type="number" id="subtractionRightMin" data-alternate="additionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="subtractionRightMax" data-bound-type="rightMax" placeholder=99 />)
-                <br>
-                <label><input type="checkbox" id="integerSubtractionToggle" data-alternate="integerAdditionToggle" data-number-type="integer" checked="true"/> Integers</label>
-                <br>
-                <label><input type="checkbox" id="decimalSubtractionToggle" data-alternate="decimalAdditionToggle" data-number-type="decimal" /> Decimals</label>
-                <div id="subtractionDecimalOptions" data-dependent-on="decimalSubtractionToggle" class="hidden" style="margin-left: 20px">
-                    <label>Decimal places: <input type="number" id="decimalSubtractionAmount" data-alternate="decimalAdditionAmount" data-number-type="decimal" placeholder=2 /> </label>
-                </div>
-                <br>
-                <label><input type="checkbox" id="fractionSubtractionToggle" data-alternate="fractionAdditionToggle" data-number-type="fraction" /> Fractions</label>
-                <div id="subtractionFractionOptions" data-dependent-on="fractionSubtractionToggle" class="hidden" style="margin-left: 20px">
-                    <label>Denominator bound: <input type="number" id="subtractionFractionDenominatorBound" data-alternate="additionFractionDenominatorBound" data-number-type="fraction" placeholder=9 /> </label>
-                    <br>
-                    <label>Numerator bound: <input type="number" id="subtractionFractionNumeratorBound" data-alternate="additionFractionNumeratorBound" data-number-type="fraction" placeholder=9 /> </label>
-                </div>
-            </div>
-        </div>
-        <br><br>
-
-        <!-- MULTIPLICATION -->
-        <label class="label"><input type="checkbox" id="multiplicationToggle" checked="true"/> Multiplication</label>
-        <br>
-        <div id="multiplication-settings" data-operator-type="multiplication">
-            <label>Range: (<input type="number" id="multiplicationLeftMin" data-bound-type="leftMin" placeholder=2 /></label>
-            <label> to <input type="number" id="multiplicationLeftMax" data-bound-type="leftMax" placeholder=12 />)</label> x
-            (<input type="number" id="multiplicationRightMin" data-bound-type="rightMin" placeholder=2 /> to <input type="number" id="multiplicationRightMax" data-bound-type="rightMax" placeholder=12 />)
-                <br>
-            <label><input type="checkbox" id="integerMultiplicationToggle" data-number-type="integer" checked="true"/> Integers</label>
-                <br>
-            <label><input type="checkbox" id="decimalMultiplicationToggle" data-number-type="decimal" /> Decimals</label>
-                <label id="decimal-multiplication-display" data-dependent-on="decimalMultiplicationToggle" class="hidden"><br>Decimal places </label><input type="number" id="decimal-multiplication-amount" class="hidden" placeholder=2 />
-            <br>
-            <label><input type="checkbox" id="fractionMultiplicationToggle" data-number-type="fraction" /> Fractions</label>
-        </div>
-        <br><br>
-
-
-      <!-- DIVISION -->
-        <label class="label"><input type="checkbox" id="divisionToggle" checked="true"/> Division</label>
-        <br>
-        <div id="division-settings" data-operator-type="division">
-            <label><input type="checkbox" id="divisionReverseToggle" checked="true"/> Multiplication problems in reverse</label>
-            <br>
-            <div id="division-options" data-dependent-on="divisionReverseToggle" data-reverse="true" class="hidden">
-                <label>Range: (<input type="number" id="divisionLeftMin" data-bound-type="leftMin" placeholder=1 /></label>
-                <label> to <input type="number" id="divisionLeftMax" data-bound-type="leftMax" placeholder= 100 />)</label> ÷
-                (<input type="number" id="divisionRightMin" data-bound-type="rightMin" placeholder=1 /> to <input type="number" id="divisionRightMax" data-bound-type="rightMax" placeholder=10 />)
-                    <br>
-                <label><input type="checkbox" id="integerDivisionToggle" data-number-type="integer" checked="true"/> Integers</label>
-                    <br>
-                <label><input type="checkbox" id="decimalDivisionToggle" data-number-type="decimal" /> Decimals</label>
-                    <br>
-                <label><input type="checkbox" id="fractionDivisionToggle" data-number-type="fraction" /> Fractions</label>
-            </div>
-        </div>
-        <br><br>
-        <label>Time Limit (seconds): <input type="number" id="timeLimit" placeholder=120></label>
-        <p></p>
-        <button type="button" class="start-game">Start Game</button>
-    </form>
-
-    <div id="game">
-        <span id="question"></span>
-        <span id="line-break" style="display: none"><br><br></span>
-        <input id="answerInput" autocomplete="off"/>
-        <p>Time Left: <span id="timer"></span></p>
-        <p id="myscore">Score: <span id="score"></span></p>
-    </div>
-    
-    <div id="ending" style="display:none;">
-        <p>Final score: <span id="endScore"></span></p>
-        <button type="button" class="start-game">Try again</button>
-        <button type="button" id="end-screen-home-button">Home</button>
-    </div>
-
-</div>
-
-
 </html>

@@ -1,5 +1,6 @@
 
-import { OperationSettings } from "./settings.js";
+import type { NumberType } from "./question.js";
+import type { OperationSettings } from "./settings.js";
 
 // type Operation = (a: number, b: number) => number;
 type Operation = (a: string, b: string) => number;
@@ -57,6 +58,8 @@ export const operations: Record<string, Operation> = {
 
 // find gcd using Euclid's algorithm
 export function gcd(a: number, b: number): number {
+  a = Math.abs(Math.trunc(a));
+  b = Math.abs(Math.trunc(b));
   while (b != 0){
     const temp = b;
     b = a % b;
@@ -153,68 +156,155 @@ export function parseFraction(input: string): {
 // given a string, returns a number
 // the important thing is that it can deal with mixed numbers
 export function parseNumber(number: string): number {
-    let base = 0;
-    if (number.includes("/")) {
-        if (number.includes(" ")) {
-            if (number.split(" ").length > 2) return NaN;
-            base = parseFloat(number.split(" ")[0]);
-            // Removed unnecessary logging
-            number = number.split(" ")[1];
-        }
-        let numberArr = number.split("/");
-        if (numberArr.length > 2) return NaN;
-        const denominator = parseFloat(numberArr[1]);
-        if (denominator === 0) throw new Error("Division by zero error in parseNumber.");
-        return base + parseFloat(numberArr[0]) / denominator;
-    };
-    return base + parseFloat(number);
+    const normalized = number.trim();
+    if (normalized === "") return NaN;
+
+    if (!normalized.includes("/")) return Number(normalized);
+
+    const parts = normalized.split(/\s+/);
+    if (parts.length > 2) return NaN;
+
+    const fractionParts = parts[parts.length - 1].split("/");
+    if (fractionParts.length !== 2) return NaN;
+
+    const numerator = Number(fractionParts[0]);
+    const denominator = Number(fractionParts[1]);
+    if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0) return NaN;
+
+    const fraction = numerator / denominator;
+    if (parts.length === 1) return fraction;
+
+    const whole = Number(parts[0]);
+    if (!Number.isFinite(whole)) return NaN;
+
+    // In a mixed number such as "-1 1/2", the sign applies to the
+    // complete value rather than only to the whole-number component.
+    return parts[0].startsWith("-")
+        ? whole - Math.abs(fraction)
+        : whole + fraction;
 }
 
 // generates a number of the given type
-export function generateNum(numberType: string, lowerBound: number, upperBound: number, operationSettings: OperationSettings): string {
-    if (numberType === "integer") return generateInt(lowerBound, upperBound);
-    if (numberType === "decimal") return generateDec(lowerBound, upperBound, operationSettings.decimalPlaces);
-    if (numberType === "fraction") return generateFrac(lowerBound, upperBound);
-    throw new Error("Invalid number type.");
+export function generateNum(numberType: NumberType, lowerBound: number, upperBound: number, operationSettings: OperationSettings): string {
+    switch (numberType) {
+        case "integer":
+            return generateInt(lowerBound, upperBound);
+        case "decimal":
+            return generateDec(lowerBound, upperBound, operationSettings.decimalPlaces);
+        case "fraction":
+            return generateFrac(
+                lowerBound,
+                upperBound,
+                operationSettings.fractionNumeratorBound,
+                operationSettings.fractionDenominatorBound
+            );
+    }
 }
 
 // generate a random integer between the bounds, inclusive
 export function generateInt(lowerBound: number, upperBound: number): string {
-    let randy = Math.round(Math.random()*(upperBound - lowerBound)) + lowerBound;
+    if (!Number.isFinite(lowerBound) || !Number.isFinite(upperBound)) {
+        throw new RangeError("Integer bounds must be finite numbers.");
+    }
+
+    const lower = Math.ceil(Math.min(lowerBound, upperBound));
+    const upper = Math.floor(Math.max(lowerBound, upperBound));
+    if (lower > upper) {
+        throw new RangeError("The selected range does not contain an integer.");
+    }
+
+    const randy = Math.floor(Math.random() * (upper - lower + 1)) + lower;
     console.log(`generated ${randy}`);
     return String(randy);
 }
 
 // generate a random decimal with the given conditions
 export function generateDec(lowerBound: number, upperBound: number, decimalPlaces?: number): string {
-  const num = Math.random()*(upperBound - lowerBound) + lowerBound;
-  return String(parseFloat(num.toFixed(decimalPlaces)));
+    if (!Number.isFinite(lowerBound) || !Number.isFinite(upperBound)) {
+        throw new RangeError("Decimal bounds must be finite numbers.");
+    }
+
+    const lower = Math.min(lowerBound, upperBound);
+    const upper = Math.max(lowerBound, upperBound);
+    const places = decimalPlaces ?? 2;
+    const num = Math.random() * (upper - lower) + lower;
+    return String(parseFloat(num.toFixed(places)));
 }
 
-// generate a random mixed number between the bounds
-// at the moment the numerator and denominator are always at most 9, and the denominator is at least 2
-// TODO: add optional arguments that specify how large or small the numerator and denominator can be
-// or think of another way to do it; maybe just a difficulty score for the fractions or some such
-export function generateFrac(lowerBound: number, upperBound: number): string {
-    if (lowerBound > upperBound) {
-        console.log("WARNING: for some reason the lower bound is above the upper bound. For now I'm just going to switch them, but this should be avoided.")
-        const temp = lowerBound;
-        lowerBound = upperBound;
-        upperBound = temp;
+// Generate a reduced fraction between the bounds. The search is deliberately
+// bounded so a narrow range can never lock the browser's main thread.
+export function generateFrac(lowerBound: number, upperBound: number, numeratorBound = 9, denominatorBound = 9): string {
+    if (!Number.isFinite(lowerBound) || !Number.isFinite(upperBound)) {
+        throw new RangeError("Fraction bounds must be finite numbers.");
     }
-    if (lowerBound == upperBound) return String(lowerBound);
-    let base: number;
 
-    let numerator: number;
-    let denominator: number;
-    // TODO: it's hard to write a stupider method to generate a good fraction than this. FIX
-    do {
-        base = parseInt(generateInt(lowerBound, upperBound));
-        numerator = parseInt(generateInt(1,20));
-        denominator = parseInt(generateInt(2,10));
-    } while (gcd(numerator, denominator) !== 1 || base - numerator/denominator < lowerBound);
-    let baseStr = String(Math.floor(base - numerator/denominator));
-    console.log(`The bounds are ${lowerBound} and ${upperBound}; the base I generated is ${base}, which after offsetting by ${numerator/denominator} becomes ${baseStr}`)
-    if (baseStr === "0") return String(numerator) + "/" + String(denominator);
-    return baseStr + " " + String(numerator) + "/" + String(denominator);
+    if (!Number.isFinite(numeratorBound) || numeratorBound < 1 ||
+        !Number.isFinite(denominatorBound) || denominatorBound < 2) {
+        throw new RangeError("Fraction numerator and denominator bounds are invalid.");
+    }
+
+    const lower = Math.min(lowerBound, upperBound);
+    const upper = Math.max(lowerBound, upperBound);
+    if (lower === upper) return String(lower);
+
+    const tolerance = Number.EPSILON * Math.max(1, Math.abs(lower), Math.abs(upper)) * 16;
+    const candidates: Array<{numerator: number, denominator: number}> = [];
+
+    const maxNumerator = Math.floor(numeratorBound);
+    const maxDenominator = Math.min(100, Math.floor(denominatorBound));
+
+    for (let denominator = 2; denominator <= maxDenominator; denominator++) {
+        const first = Math.ceil((lower - tolerance) * denominator);
+        const last = Math.floor((upper + tolerance) * denominator);
+        if (first > last) continue;
+
+        // Split at zero because the displayed numerator of a negative mixed
+        // number uses its absolute remainder. Within each half, eligible
+        // residues repeat every `denominator` values.
+        const signedRanges: Array<[number, number]> = [
+            [first, Math.min(last, -1)],
+            [Math.max(first, 0), last]
+        ];
+
+        for (const [rangeFirst, rangeLast] of signedRanges) {
+            if (rangeFirst > rangeLast) continue;
+
+            const count = rangeLast - rangeFirst + 1;
+            const checks = Math.min(count, denominator);
+            for (let offset = 0; offset < checks; offset++) {
+                const baseNumerator = rangeFirst + offset;
+                const fractionalNumerator = Math.abs(baseNumerator) % denominator;
+
+                if (fractionalNumerator === 0 ||
+                    fractionalNumerator > maxNumerator ||
+                    gcd(baseNumerator, denominator) !== 1) {
+                    continue;
+                }
+
+                const cycles = Math.floor((rangeLast - baseNumerator) / denominator);
+                const numerator = baseNumerator + Math.floor(Math.random() * (cycles + 1)) * denominator;
+                const value = numerator / denominator;
+                if (value >= lower - tolerance && value <= upper + tolerance) {
+                    candidates.push({numerator, denominator});
+                }
+            }
+        }
+    }
+
+    if (candidates.length === 0) {
+        throw new RangeError("The selected range contains no reduced fraction within the numerator and denominator bounds.");
+    }
+
+    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+    return formatMixedFraction(chosen.numerator, chosen.denominator);
+}
+
+function formatMixedFraction(numerator: number, denominator: number): string {
+    const sign = numerator < 0 ? "-" : "";
+    const absoluteNumerator = Math.abs(numerator);
+    const whole = Math.floor(absoluteNumerator / denominator);
+    const remainder = absoluteNumerator % denominator;
+
+    if (whole === 0) return `${sign}${remainder}/${denominator}`;
+    return `${sign}${whole} ${remainder}/${denominator}`;
 }
