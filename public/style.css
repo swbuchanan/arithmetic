@@ -1,13 +1,13 @@
 @font-face {
-    font-family: "Latin Modern Roman";
-    src: url("./fonts/lmroman10-regular.otf") format("opentype");
+    font-family: "DejaVu Sans Mono";
+    src: url("./fonts/DejaVuSansMono.ttf") format("truetype");
     font-style: normal;
     font-weight: 400;
     font-display: swap;
 }
 :root {
     color-scheme: dark;
-    --font-family: "Latin Modern Roman", serif;
+    --font-family: "DejaVu Sans Mono", monospace;
     --page-background: #444448;
     --panel-background: #393940;
     --input-background: #333338;

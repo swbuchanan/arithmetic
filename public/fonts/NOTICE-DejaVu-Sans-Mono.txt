@@ -1,0 +1,10 @@
+DejaVu Sans Mono Book
+=====================
+
+This directory includes an unmodified copy of DejaVuSansMono.ttf from version
+2.37 of the DejaVu font family. It was copied from Debian's fonts-dejavu-mono
+package.
+
+DejaVu changes to the original Bitstream Vera fonts are in the public domain.
+The underlying Bitstream Vera font license permits redistribution; see
+DEJAVU-FONT-LICENSE.txt in this directory.
