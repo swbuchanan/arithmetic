@@ -49,10 +49,10 @@ export class QuestionGenerator {
         // pick a random question type from the allowed types
         const chosenType = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
 
-        let leftNum = Utils.generateNum(chosenType.numberType,
-                                        settings.getOperationBoundsByName(chosenType.operatorType).leftMin,
-                                        settings.getOperationBoundsByName(chosenType.operatorType).leftMax,
-                                        settings.getOperationSettings(chosenType.operatorType));
+        const generatedLeft = Utils.generateNum(chosenType.numberType,
+                                                settings.getOperationBoundsByName(chosenType.operatorType).leftMin,
+                                                settings.getOperationBoundsByName(chosenType.operatorType).leftMax,
+                                                settings.getOperationSettings(chosenType.operatorType));
         let rightNum = Utils.generateNum(chosenType.numberType,
                                          settings.getOperationBoundsByName(chosenType.operatorType).rightMin,
                                          settings.getOperationBoundsByName(chosenType.operatorType).rightMax,
@@ -62,41 +62,31 @@ export class QuestionGenerator {
         // reversed-division modes. Retry a bounded number of times so a range
         // containing other values remains usable without risking a hang.
         if (chosenType.operatorType === "division") {
-            for (let attempt = 0; Utils.parseNumber(rightNum) === 0 && attempt < 20; attempt++) {
+            for (let attempt = 0; Utils.parseExactNumber(rightNum)?.numerator === 0n && attempt < 20; attempt++) {
                 rightNum = Utils.generateNum(chosenType.numberType,
                                              settings.getOperationBoundsByName(chosenType.operatorType).rightMin,
                                              settings.getOperationBoundsByName(chosenType.operatorType).rightMax,
                                              settings.getOperationSettings(chosenType.operatorType));
             }
-            if (Utils.parseNumber(rightNum) === 0) {
+            if (Utils.parseExactNumber(rightNum)?.numerator === 0n) {
                 throw new RangeError("The division right-hand range must contain a non-zero value.");
             }
         }
 
-        // apply the operation to the two numbers
-        const answerValue = Utils.operations[chosenType.operatorType](leftNum, rightNum);
-        if (!Number.isFinite(answerValue)) {
-            throw new RangeError("The selected bounds produced a non-finite answer.");
-        }
-        let answer = String(answerValue);
-
-        console.log(`The answer can be obtained by adding ${leftNum} and ${rightNum}, which I evaluate as ${Utils.parseNumber(leftNum)} and ${Utils.parseNumber(rightNum)} resp.`);
-        let operationString = this.operationStrings[chosenType.operatorType];
-        console.log(`${operationString} with ${leftNum} and ${rightNum} gives ${answer}`);
-
+        let leftNum = generatedLeft;
+        let answer: string;
         if (chosenType.operatorType === "subtraction" && settings.getSetting("subtractionReversedAddition")) {
-            answer = leftNum;
-            leftNum = String(Utils.parseNumber(leftNum) + Utils.parseNumber(rightNum));
+            leftNum = Utils.formatOperationResult(generatedLeft, rightNum, "addition", chosenType.numberType);
+            answer = generatedLeft;
+        } else if (chosenType.operatorType === "division" && settings.getSetting("divisionReversedMultiplication")) {
+            leftNum = Utils.formatOperationResult(generatedLeft, rightNum, "multiplication", chosenType.numberType);
+            answer = generatedLeft;
+        } else {
+            answer = Utils.formatOperationResult(generatedLeft, rightNum, chosenType.operatorType, chosenType.numberType);
         }
 
-        if (chosenType.operatorType === "division" && settings.getSetting("divisionReversedMultiplication")) {
-            answer = leftNum;
-            leftNum = String(Utils.parseNumber(leftNum) * Utils.parseNumber(rightNum));
-        }
-
-        if (!Number.isFinite(Utils.parseNumber(leftNum)) || !Number.isFinite(Utils.parseNumber(answer))) {
-            throw new RangeError("The selected bounds produced a non-finite question.");
-        }
+        const operationString = this.operationStrings[chosenType.operatorType];
+        console.log(`${leftNum} ${operationString} ${rightNum} = ${answer}`);
 
         let questionLeft = `${leftNum} ${operationString} ${rightNum} = `;
         let questionRight = ``;

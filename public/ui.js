@@ -13,7 +13,6 @@ function getRequiredElement(id) {
 }
 export class UI {
     constructor() {
-        var _a;
         this.score = 0;
         this.activeAttempt = null;
         this.startGame = () => {
@@ -75,7 +74,7 @@ export class UI {
         this.historyEmpty = getRequiredElement("historyEmpty");
         this.historyGraph = getRequiredElement("historyGraph");
         this.repository = new BrowserStateRepository();
-        const initialSnapshot = (_a = this.repository.getLastUsedSettings()) !== null && _a !== void 0 ? _a : DEFAULT_SETTINGS_SNAPSHOT;
+        const initialSnapshot = this.repository.getLastUsedSettings() ?? DEFAULT_SETTINGS_SNAPSHOT;
         this.settings = new Settings(initialSnapshot);
         this.game = new Game(this.settings);
         this.timer = new Timer(timeLeft => this.updateTimerDisplay(timeLeft), () => this.endGame());
@@ -188,7 +187,7 @@ export class UI {
                 this.reportPersistenceError(error);
                 savedPreset = this.repository.findPresetByName(name);
             }
-            this.renderPresetOptions(savedPreset === null || savedPreset === void 0 ? void 0 : savedPreset.id);
+            this.renderPresetOptions(savedPreset?.id);
             this.renderHistoryForSnapshot(snapshot);
         }
         catch (error) {

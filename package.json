@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/storage.test.mjs",
+    "build": "tsc --project src/tsconfig.json --outDir public",
+    "test": "tsc --project src/tsconfig.json --outDir public && node --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit --project src/tsconfig.json"
   }
 }

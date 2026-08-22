@@ -15,13 +15,12 @@ function getOptionalInput(form, id) {
     return form.querySelector(`#${id}`);
 }
 function readNumber(form, id) {
-    var _a, _b, _c, _d;
     const input = getRequiredInput(form, id);
     const value = Number.isFinite(input.valueAsNumber)
         ? input.valueAsNumber
         : Number(input.placeholder);
     if (!Number.isFinite(value)) {
-        throw new RangeError(`${(_d = (_c = (_b = (_a = input.labels) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.textContent) === null || _c === void 0 ? void 0 : _c.trim()) !== null && _d !== void 0 ? _d : id} needs a valid number.`);
+        throw new RangeError(`${input.labels?.[0]?.textContent?.trim() ?? id} needs a valid number.`);
     }
     if (input.value !== "" && !input.checkValidity()) {
         throw new RangeError(input.validationMessage || `${id} is outside the allowed range.`);
@@ -35,7 +34,7 @@ function setNumber(form, id, value) {
 }
 function cloneOperationSettings(settings) {
     return {
-        bounds: Object.assign({}, settings.bounds),
+        bounds: { ...settings.bounds },
         decimalPlaces: settings.decimalPlaces,
         fractionDenominatorBound: settings.fractionDenominatorBound,
         fractionNumeratorBound: settings.fractionNumeratorBound,

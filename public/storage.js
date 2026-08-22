@@ -14,7 +14,7 @@ const UNAVAILABLE_STORAGE = {
 let fallbackIdCounter = 0;
 function defaultIdFactory() {
     const cryptoWithUuid = globalThis.crypto;
-    if (typeof (cryptoWithUuid === null || cryptoWithUuid === void 0 ? void 0 : cryptoWithUuid.randomUUID) === "function") {
+    if (typeof cryptoWithUuid?.randomUUID === "function") {
         return cryptoWithUuid.randomUUID();
     }
     fallbackIdCounter += 1;
@@ -212,9 +212,11 @@ export class BrowserStateRepository {
         this.persist();
     }
     appendAttempt(configuration, input) {
-        var _a;
         const parsedConfiguration = requireEffectiveConfiguration(configuration);
-        const attempt = parseAttempt(Object.assign(Object.assign({}, input), { id: (_a = input.id) !== null && _a !== void 0 ? _a : this.idFactory() }));
+        const attempt = parseAttempt({
+            ...input,
+            id: input.id ?? this.idFactory(),
+        });
         if (this.state.histories.some(bucket => bucket.attempts.some(candidate => candidate.id === attempt.id))) {
             throw new Error(`An attempt with ID "${attempt.id}" already exists.`);
         }

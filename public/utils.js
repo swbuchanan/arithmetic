@@ -41,6 +41,202 @@ export const operations = {
     multiplication: (a, b) => parseNumber(a) * parseNumber(b),
     division: (a, b) => parseNumber(a) / parseNumber(b),
 };
+const MAX_EXACT_DIGITS = 100;
+const MAX_DECIMAL_EXPONENT = 100;
+function bigintAbs(value) {
+    return value < 0n ? -value : value;
+}
+function bigintGcd(a, b) {
+    a = bigintAbs(a);
+    b = bigintAbs(b);
+    while (b !== 0n) {
+        const remainder = a % b;
+        a = b;
+        b = remainder;
+    }
+    return a;
+}
+function normalizeExactNumber(numerator, denominator) {
+    if (denominator === 0n)
+        throw new RangeError("Division by zero is not allowed.");
+    if (numerator === 0n)
+        return { numerator: 0n, denominator: 1n };
+    const sign = denominator < 0n ? -1n : 1n;
+    const divisor = bigintGcd(numerator, denominator);
+    return {
+        numerator: sign * numerator / divisor,
+        denominator: sign * denominator / divisor
+    };
+}
+function floorExactDivision(numerator, denominator) {
+    const quotient = numerator / denominator;
+    const remainder = numerator % denominator;
+    return remainder !== 0n && numerator < 0n ? quotient - 1n : quotient;
+}
+function ceilExactDivision(numerator, denominator) {
+    const quotient = numerator / denominator;
+    const remainder = numerator % denominator;
+    return remainder !== 0n && numerator > 0n ? quotient + 1n : quotient;
+}
+function scaleExactBoundary(value, scale, round) {
+    const exact = parseExactNumber(String(value));
+    if (exact === null) {
+        throw new RangeError("The numeric bound cannot be represented exactly.");
+    }
+    const scaledNumerator = exact.numerator * scale;
+    return round === "up"
+        ? ceilExactDivision(scaledNumerator, exact.denominator)
+        : floorExactDivision(scaledNumerator, exact.denominator);
+}
+function toSafeInteger(value, errorMessage) {
+    const converted = Number(value);
+    if (!Number.isSafeInteger(converted))
+        throw new RangeError(errorMessage);
+    return converted;
+}
+function hasReasonableDigitCount(...parts) {
+    return parts.every(part => part.replace(/^[+-]/, "").length <= MAX_EXACT_DIGITS);
+}
+/** Parse an integer, decimal, fraction, or mixed number without losing precision. */
+export function parseExactNumber(input) {
+    const normalized = input.trim();
+    if (normalized === "")
+        return null;
+    if (normalized.includes("/")) {
+        const parts = normalized.split(/\s+/);
+        if (parts.length > 2)
+            return null;
+        if (parts.length === 1) {
+            const fractionMatch = /^([+-]?\d+)\/([+-]?\d+)$/.exec(parts[0]);
+            if (fractionMatch === null || !hasReasonableDigitCount(fractionMatch[1], fractionMatch[2]))
+                return null;
+            const denominator = BigInt(fractionMatch[2]);
+            if (denominator === 0n)
+                return null;
+            return normalizeExactNumber(BigInt(fractionMatch[1]), denominator);
+        }
+        const wholeMatch = /^([+-]?\d+)$/.exec(parts[0]);
+        const fractionMatch = /^(\d+)\/(\d+)$/.exec(parts[1]);
+        if (wholeMatch === null || fractionMatch === null ||
+            !hasReasonableDigitCount(wholeMatch[1], fractionMatch[1], fractionMatch[2])) {
+            return null;
+        }
+        const denominator = BigInt(fractionMatch[2]);
+        if (denominator === 0n)
+            return null;
+        const fractionalNumerator = BigInt(fractionMatch[1]);
+        const whole = BigInt(wholeMatch[1]);
+        const sign = wholeMatch[1].startsWith("-") ? -1n : 1n;
+        const numerator = sign * (bigintAbs(whole) * denominator + fractionalNumerator);
+        return normalizeExactNumber(numerator, denominator);
+    }
+    const decimalMatch = /^([+-]?)(?:(\d+)(?:\.(\d*))?|\.(\d+))(?:[eE]([+-]?\d+))?$/.exec(normalized);
+    if (decimalMatch === null)
+        return null;
+    const integerDigits = decimalMatch[2] ?? "0";
+    const fractionDigits = decimalMatch[3] ?? decimalMatch[4] ?? "";
+    const exponentText = decimalMatch[5] ?? "0";
+    if (!hasReasonableDigitCount(integerDigits, fractionDigits, exponentText))
+        return null;
+    const exponent = Number(exponentText);
+    if (!Number.isInteger(exponent) || Math.abs(exponent) > MAX_DECIMAL_EXPONENT)
+        return null;
+    const digits = `${integerDigits}${fractionDigits}`;
+    let numerator = BigInt(digits === "" ? "0" : digits);
+    let denominator = 1n;
+    const decimalScale = fractionDigits.length - exponent;
+    if (decimalScale > 0)
+        denominator = 10n ** BigInt(decimalScale);
+    else if (decimalScale < 0)
+        numerator *= 10n ** BigInt(-decimalScale);
+    if (decimalMatch[1] === "-")
+        numerator = -numerator;
+    return normalizeExactNumber(numerator, denominator);
+}
+function addExactNumbers(left, right) {
+    const commonDivisor = bigintGcd(left.denominator, right.denominator);
+    const leftScale = right.denominator / commonDivisor;
+    const rightScale = left.denominator / commonDivisor;
+    return normalizeExactNumber(left.numerator * leftScale + right.numerator * rightScale, left.denominator * leftScale);
+}
+function multiplyExactNumbers(left, right) {
+    const leftCancellation = bigintGcd(left.numerator, right.denominator);
+    const rightCancellation = bigintGcd(right.numerator, left.denominator);
+    return normalizeExactNumber((left.numerator / leftCancellation) * (right.numerator / rightCancellation), (left.denominator / rightCancellation) * (right.denominator / leftCancellation));
+}
+export function calculateExactResult(leftInput, rightInput, operatorType) {
+    const left = parseExactNumber(leftInput);
+    const right = parseExactNumber(rightInput);
+    if (left === null || right === null) {
+        throw new TypeError("Generated operands must be valid integers, decimals, or fractions.");
+    }
+    switch (operatorType) {
+        case "addition":
+            return addExactNumbers(left, right);
+        case "subtraction":
+            return addExactNumbers(left, { numerator: -right.numerator, denominator: right.denominator });
+        case "multiplication":
+            return multiplyExactNumbers(left, right);
+        case "division":
+            if (right.numerator === 0n)
+                throw new RangeError("Division by zero is not allowed.");
+            return multiplyExactNumbers(left, {
+                numerator: right.denominator,
+                denominator: right.numerator
+            });
+    }
+}
+export function formatExactFraction(value) {
+    const normalized = normalizeExactNumber(value.numerator, value.denominator);
+    const sign = normalized.numerator < 0n ? "-" : "";
+    const absoluteNumerator = bigintAbs(normalized.numerator);
+    const whole = absoluteNumerator / normalized.denominator;
+    const remainder = absoluteNumerator % normalized.denominator;
+    if (remainder === 0n)
+        return `${sign}${whole}`;
+    if (whole === 0n)
+        return `${sign}${remainder}/${normalized.denominator}`;
+    return `${sign}${whole} ${remainder}/${normalized.denominator}`;
+}
+/** Return an exact decimal when the rational has a finite base-10 expansion. */
+export function formatExactDecimal(value) {
+    const normalized = normalizeExactNumber(value.numerator, value.denominator);
+    let remainingDenominator = normalized.denominator;
+    let factorsOfTwo = 0;
+    let factorsOfFive = 0;
+    while (remainingDenominator % 2n === 0n) {
+        remainingDenominator /= 2n;
+        factorsOfTwo++;
+    }
+    while (remainingDenominator % 5n === 0n) {
+        remainingDenominator /= 5n;
+        factorsOfFive++;
+    }
+    if (remainingDenominator !== 1n)
+        return null;
+    const decimalPlaces = Math.max(factorsOfTwo, factorsOfFive);
+    const scale = 10n ** BigInt(decimalPlaces);
+    const scaledNumerator = bigintAbs(normalized.numerator) * scale / normalized.denominator;
+    const sign = normalized.numerator < 0n ? "-" : "";
+    if (decimalPlaces === 0)
+        return `${sign}${scaledNumerator}`;
+    const digits = scaledNumerator.toString().padStart(decimalPlaces + 1, "0");
+    const integerPart = digits.slice(0, -decimalPlaces);
+    const fractionalPart = digits.slice(-decimalPlaces).replace(/0+$/, "");
+    return fractionalPart === "" ? `${sign}${integerPart}` : `${sign}${integerPart}.${fractionalPart}`;
+}
+export function formatExactResult(value, numberType) {
+    if (numberType === "decimal") {
+        return formatExactDecimal(value) ?? formatExactFraction(value);
+    }
+    if (numberType === "integer" && value.denominator === 1n) {
+        return value.numerator.toString();
+    }
+    return formatExactFraction(value);
+}
+export function formatOperationResult(leftInput, rightInput, operatorType, numberType) {
+    return formatExactResult(calculateExactResult(leftInput, rightInput, operatorType), numberType);
+}
 // find gcd using Euclid's algorithm
 export function gcd(a, b) {
     a = Math.abs(Math.trunc(a));
@@ -130,32 +326,10 @@ export function parseFraction(input) {
 // given a string, returns a number
 // the important thing is that it can deal with mixed numbers
 export function parseNumber(number) {
-    const normalized = number.trim();
-    if (normalized === "")
+    const exact = parseExactNumber(number);
+    if (exact === null)
         return NaN;
-    if (!normalized.includes("/"))
-        return Number(normalized);
-    const parts = normalized.split(/\s+/);
-    if (parts.length > 2)
-        return NaN;
-    const fractionParts = parts[parts.length - 1].split("/");
-    if (fractionParts.length !== 2)
-        return NaN;
-    const numerator = Number(fractionParts[0]);
-    const denominator = Number(fractionParts[1]);
-    if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0)
-        return NaN;
-    const fraction = numerator / denominator;
-    if (parts.length === 1)
-        return fraction;
-    const whole = Number(parts[0]);
-    if (!Number.isFinite(whole))
-        return NaN;
-    // In a mixed number such as "-1 1/2", the sign applies to the
-    // complete value rather than only to the whole-number component.
-    return parts[0].startsWith("-")
-        ? whole - Math.abs(fraction)
-        : whole + fraction;
+    return Number(exact.numerator) / Number(exact.denominator);
 }
 // generates a number of the given type
 export function generateNum(numberType, lowerBound, upperBound, operationSettings) {
@@ -175,10 +349,17 @@ export function generateInt(lowerBound, upperBound) {
     }
     const lower = Math.ceil(Math.min(lowerBound, upperBound));
     const upper = Math.floor(Math.max(lowerBound, upperBound));
+    if (!Number.isSafeInteger(lower) || !Number.isSafeInteger(upper)) {
+        throw new RangeError("Integer bounds must be within the safe integer range.");
+    }
     if (lower > upper) {
         throw new RangeError("The selected range does not contain an integer.");
     }
-    const randy = Math.floor(Math.random() * (upper - lower + 1)) + lower;
+    const candidateCount = upper - lower + 1;
+    if (!Number.isSafeInteger(candidateCount)) {
+        throw new RangeError("The integer range is too large to generate safely.");
+    }
+    const randy = Math.floor(Math.random() * candidateCount) + lower;
     console.log(`generated ${randy}`);
     return String(randy);
 }
@@ -187,11 +368,35 @@ export function generateDec(lowerBound, upperBound, decimalPlaces) {
     if (!Number.isFinite(lowerBound) || !Number.isFinite(upperBound)) {
         throw new RangeError("Decimal bounds must be finite numbers.");
     }
+    const places = decimalPlaces ?? 2;
+    if (!Number.isInteger(places) || places < 0 || places > 10) {
+        throw new RangeError("Decimal places must be a whole number between 0 and 10.");
+    }
     const lower = Math.min(lowerBound, upperBound);
     const upper = Math.max(lowerBound, upperBound);
-    const places = decimalPlaces !== null && decimalPlaces !== void 0 ? decimalPlaces : 2;
-    const num = Math.random() * (upper - lower) + lower;
-    return String(parseFloat(num.toFixed(places)));
+    const scale = 10n ** BigInt(places);
+    const rangeError = "The decimal bounds and precision produce values that are too large to generate safely.";
+    const scaledLower = toSafeInteger(scaleExactBoundary(lower, scale, "up"), rangeError);
+    const scaledUpper = toSafeInteger(scaleExactBoundary(upper, scale, "down"), rangeError);
+    if (scaledLower > scaledUpper) {
+        throw new RangeError("The selected range contains no value at the requested decimal precision.");
+    }
+    const candidateCount = scaledUpper - scaledLower + 1;
+    if (!Number.isSafeInteger(candidateCount)) {
+        throw new RangeError("The decimal range is too large to generate safely.");
+    }
+    const scaledValue = Math.floor(Math.random() * candidateCount) + scaledLower;
+    return formatScaledDecimal(scaledValue, places);
+}
+function formatScaledDecimal(scaledValue, decimalPlaces) {
+    const sign = scaledValue < 0 ? "-" : "";
+    const absoluteDigits = Math.abs(scaledValue).toString();
+    if (decimalPlaces === 0)
+        return `${sign}${absoluteDigits}`;
+    const digits = absoluteDigits.padStart(decimalPlaces + 1, "0");
+    const integerPart = digits.slice(0, -decimalPlaces);
+    const fractionalPart = digits.slice(-decimalPlaces).replace(/0+$/, "");
+    return fractionalPart === "" ? `${sign}${integerPart}` : `${sign}${integerPart}.${fractionalPart}`;
 }
 // Generate a reduced fraction between the bounds. The search is deliberately
 // bounded so a narrow range can never lock the browser's main thread.
@@ -205,15 +410,22 @@ export function generateFrac(lowerBound, upperBound, numeratorBound = 9, denomin
     }
     const lower = Math.min(lowerBound, upperBound);
     const upper = Math.max(lowerBound, upperBound);
-    if (lower === upper)
+    if (lower === upper && Number.isInteger(lower)) {
+        if (!Number.isSafeInteger(lower)) {
+            throw new RangeError("Fraction bounds must be within the safe integer range.");
+        }
         return String(lower);
-    const tolerance = Number.EPSILON * Math.max(1, Math.abs(lower), Math.abs(upper)) * 16;
+    }
     const candidates = [];
     const maxNumerator = Math.floor(numeratorBound);
     const maxDenominator = Math.min(100, Math.floor(denominatorBound));
+    if (!Number.isSafeInteger(maxNumerator)) {
+        throw new RangeError("The fraction numerator bound is too large to generate safely.");
+    }
     for (let denominator = 2; denominator <= maxDenominator; denominator++) {
-        const first = Math.ceil((lower - tolerance) * denominator);
-        const last = Math.floor((upper + tolerance) * denominator);
+        const rangeError = "The fraction bounds are too large to generate safely.";
+        const first = toSafeInteger(scaleExactBoundary(lower, BigInt(denominator), "up"), rangeError);
+        const last = toSafeInteger(scaleExactBoundary(upper, BigInt(denominator), "down"), rangeError);
         if (first > last)
             continue;
         // Split at zero because the displayed numerator of a negative mixed
@@ -227,6 +439,9 @@ export function generateFrac(lowerBound, upperBound, numeratorBound = 9, denomin
             if (rangeFirst > rangeLast)
                 continue;
             const count = rangeLast - rangeFirst + 1;
+            if (!Number.isSafeInteger(count)) {
+                throw new RangeError("The fraction range is too large to generate safely.");
+            }
             const checks = Math.min(count, denominator);
             for (let offset = 0; offset < checks; offset++) {
                 const baseNumerator = rangeFirst + offset;
@@ -238,10 +453,7 @@ export function generateFrac(lowerBound, upperBound, numeratorBound = 9, denomin
                 }
                 const cycles = Math.floor((rangeLast - baseNumerator) / denominator);
                 const numerator = baseNumerator + Math.floor(Math.random() * (cycles + 1)) * denominator;
-                const value = numerator / denominator;
-                if (value >= lower - tolerance && value <= upper + tolerance) {
-                    candidates.push({ numerator, denominator });
-                }
+                candidates.push({ numerator, denominator });
             }
         }
     }

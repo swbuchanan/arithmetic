@@ -61,7 +61,7 @@ function parseOperationSettings(value) {
 }
 function copyOperationSettings(settings) {
     return {
-        bounds: Object.assign({}, settings.bounds),
+        bounds: { ...settings.bounds },
         decimalPlaces: settings.decimalPlaces,
         fractionDenominatorBound: settings.fractionDenominatorBound,
         fractionNumeratorBound: settings.fractionNumeratorBound,
@@ -75,7 +75,7 @@ function copySettingsSnapshot(snapshot) {
         const operator = snapshot.operators[operatorType];
         operators[operatorType] = {
             enabled: operator.enabled,
-            numberTypes: Object.assign({}, operator.numberTypes),
+            numberTypes: { ...operator.numberTypes },
             operationSettings: copyOperationSettings(operator.operationSettings),
         };
     }
@@ -290,7 +290,7 @@ export class Settings {
             this.operationSettings[operatorType] = copyOperationSettings(operator.operationSettings);
             this.operatorControls[operatorType] = {
                 enabled: operator.enabled,
-                numberTypes: Object.assign({}, operator.numberTypes),
+                numberTypes: { ...operator.numberTypes },
             };
         }
         this.miscSettings = {
@@ -307,7 +307,7 @@ export class Settings {
             const controls = this.operatorControls[operatorType];
             operators[operatorType] = {
                 enabled: controls.enabled,
-                numberTypes: Object.assign({}, controls.numberTypes),
+                numberTypes: { ...controls.numberTypes },
                 operationSettings: copyOperationSettings(this.operationSettings[operatorType]),
             };
         }
@@ -377,7 +377,7 @@ export class Settings {
     getOperationBounds() {
         const boundsMap = {};
         for (const operatorType of OPERATOR_TYPES) {
-            boundsMap[operatorType] = Object.assign({}, this.operationSettings[operatorType].bounds);
+            boundsMap[operatorType] = { ...this.operationSettings[operatorType].bounds };
         }
         return boundsMap;
     }
@@ -424,7 +424,10 @@ export class Settings {
             throw new Error("Bad value passed.");
         if (!BOUND_NAMES.some(name => name === boundName))
             throw new Error("No such bound exists.");
-        this.operationSettings[operationName].bounds = Object.assign(Object.assign({}, this.operationSettings[operationName].bounds), { [boundName]: value });
+        this.operationSettings[operationName].bounds = {
+            ...this.operationSettings[operationName].bounds,
+            [boundName]: value,
+        };
     }
     getSetting(name) {
         return this.miscSettings[name];

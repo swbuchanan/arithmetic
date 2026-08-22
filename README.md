@@ -19,7 +19,7 @@ Then open <http://localhost:8000>. Pass a different port as the first argument i
 ## Test
 
 ```bash
-node --test tests/storage.test.mjs
+npm test
 tsc --noEmit --project src/tsconfig.json
 ```
 
